@@ -843,22 +843,27 @@
 /* 授权横幅出现后，进度条区稍微压暗，视觉重心交出去 */
 .dsc-splash.is-grant .dsc-log { opacity: .5; transition: opacity 600ms ease-out; }
 
-/* ── 工牌准入（《流浪地球2》北京航天中心 IQC 实验室胸卡） ─────────────────
-   按参考图实测比例复刻：卡面 1.586（ID-1 卡），正面/背面各一张。
-   卡面用参考图的原色：浅灰紫 #D3D1DE、深红 #920000 / #A30100、近黑 #0B0D12、
-   背面徽标蓝 #1B3F6B、白面板 #FDFDFD。尺寸全部用容器查询单位（cqh/cqw），
-   所以卡放大缩小，比例与参考图一致。
+/* ── 工牌准入（《流浪地球2》北京航天中心 IQC 实验室胸卡）· v3 ─────────────
+   按参考图**实测比例**重排（卡面 1.586；正面 459×288 / 背面 459×286）。
+   关键修正：字号按 cap-height 反推（cap ≈ 0.72em），此前把字高直接当 font-size，
+   整张卡的字都偏小约 30%；CS 在参考里是**宽体超重**且底部被卡边裁切，不是窄体。
+   字体：
+     IQC / 编号带 / 条码行 / 顶部机构名 → DIN 系（Bahnschrift Condensed）
+     CS                                     → Arial Black（宽体超重）
+     实验室名 / 姓名 / 职务                  → Noto Sans SC（思源黑体，Bold / Medium）
    ─────────────────────────────────────────────────────────────────────── */
 
 .dsc-badge {
-  --bd-lav: #d3d1de;
-  --bd-lav-2: #c9c6d6;
-  --bd-red: #920000;
-  --bd-red-2: #a30100;
+  --bd-lav: #d3d1df;
+  --bd-lav-2: #c6c3d4;
+  --bd-red: #9a0208;
+  --bd-red-2: #a8030a;
   --bd-red-text: #7c1a21;
-  --bd-ink: #0b0d12;
-  --bd-white: #fdfdff;
+  --bd-ink: #0a0c10;
+  --bd-white: #fbfbfd;
   --bd-blue: #1b3f6b;
+  /* 字号按"字高"标定，所以乘了 1/0.72 的系数 */
+  --bd-mul: 1.39;
 
   position: absolute;
   inset: 0;
@@ -879,22 +884,20 @@
   transition: opacity 360ms ease-in, transform 420ms ease-in;
 }
 
-/* 工牌上台时把背后内容压暗 */
 .dsc-badge::before {
   content: "";
   position: absolute;
   inset: -10%;
   pointer-events: none;
   background: radial-gradient(46% 40% at 50% 50%,
-    color-mix(in srgb, var(--dsc-bg, #080305) 74%, #000) 0%,
-    transparent 72%);
+    color-mix(in srgb, var(--dsc-bg, #080305) 78%, #000) 0%,
+    transparent 74%);
   opacity: 0;
   transition: opacity 420ms ease-out;
 }
 
 .dsc-splash.is-badge .dsc-badge::before { opacity: 1; }
 
-/* 3D 翻面舞台：容器查询的锚点，子元素用 cqh/cqw 定位 */
 .dsc-badge__stage {
   position: relative;
   width: clamp(330px, 48vmin, 560px);
@@ -903,24 +906,39 @@
   transform-style: preserve-3d;
   transform: rotateY(0deg);
   transition: transform 780ms cubic-bezier(.2, .8, .2, 1);
-  /* 不能在这里加 filter/opacity：任何分组属性都会把 preserve-3d 压平 */
 }
 
 .dsc-badge.is-flipped .dsc-badge__stage { transform: rotateY(180deg); }
 
+/* 卡面材质：微渐变 + 极细竖向纹理 + 顶部受光 + 边缘阴影（参考图是实拍塑料卡） */
 .dsc-badge__face {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   overflow: hidden;
-  border-radius: 2.4cqh;
-  background: linear-gradient(170deg, #d9d7e2 0%, var(--bd-lav) 52%, var(--bd-lav-2) 100%);
+  border-radius: 2.6cqh;
+  background:
+    linear-gradient(102deg, rgba(255, 255, 255, .3) 0%, rgba(255, 255, 255, 0) 24%),
+    linear-gradient(168deg, #dad8e2 0%, var(--bd-lav) 46%, var(--bd-lav-2) 100%);
   color: var(--bd-ink);
   box-shadow:
-    0 2.6cqh 4.6cqh rgba(0, 0, 0, .55),
-    0 .2cqh 1cqh rgba(0, 0, 0, .35),
-    inset 0 0 0 .12cqh rgba(20, 24, 30, .18);
+    0 3.2cqh 5.2cqh rgba(0, 0, 0, .62),
+    0 .3cqh 1.1cqh rgba(0, 0, 0, .4),
+    inset 0 .12cqh 0 rgba(255, 255, 255, .55),
+    inset 0 0 0 .1cqh rgba(24, 26, 34, .22);
+}
+
+.dsc-badge__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.5) 0 .06cqh, transparent .06cqh .5cqh),
+    radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.35), transparent 60%);
+  opacity: .1;
+  mix-blend-mode: soft-light;
 }
 
 .dsc-badge__face--back { transform: rotateY(180deg); }
@@ -929,37 +947,34 @@
 
 .dsc-badge__face--front > * { position: absolute; }
 
-/* 顶部重复机构名（红字，无底色） */
 .dsc-badge__strip {
-  top: 1.4cqh;
-  left: 2.4%;
-  right: 2.4%;
+  top: 1.2cqh;
+  left: 1.6%;
+  right: 1.6%;
   display: flex;
-  justify-content: space-between;
-  gap: 2%;
+  justify-content: flex-start;
+  gap: 6.5%;
   color: var(--bd-red-text);
-  font-family: var(--dsc-font-display);
-  font-size: 3.3cqh;
-  font-weight: 700;
-  letter-spacing: .1em;
+  font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", sans-serif;
+  font-weight: 600;
+  font-size: 4.8cqh;
+  letter-spacing: .07em;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
-  color: #6f1116;
+  -webkit-text-stroke: .06cqh var(--bd-red-text);
 }
 
-/* 白色 BSC 徽标水印：只裁出 logo 左侧的"徽章 + BSC"（参考图正面就是这一块）
-   —— 整条 logo 会把"北京航天中心"压到 IQC 上，很脏。 */
 .dsc-badge__wm {
   left: 50%;
-  top: 42%;
-  width: 52%;
+  top: 40%;
+  width: 64%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   overflow: hidden;
   --dsc-logo: #ffffff;
   color: #ffffff;
-  opacity: .55;
+  opacity: .5;
 }
 
 .dsc-badge__wm svg {
@@ -972,34 +987,30 @@
   transform: translateY(-50%);
 }
 
-/* IQC 大字 */
 .dsc-badge__iqc {
   left: 0;
   right: 0;
-  top: 19.5%;
+  top: 16%;
   text-align: center;
-  font-family: var(--dsc-font-heavy);
-  font-weight: 900;
-  font-size: 38cqh;
-  line-height: .84;
-  letter-spacing: -.01em;
-  transform: scaleX(.82);
+  font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", sans-serif;
+  font-weight: 700;
+  font-size: 36cqh;
+  line-height: .82;
+  letter-spacing: 0;
+  transform: scaleX(.8);
+  transform-origin: 50% 60%;
   color: var(--bd-ink);
-  /* 参考图的 IQC 笔画更重：补一圈同色描边把字重压到位 */
-  -webkit-text-stroke: .3cqh var(--bd-ink);
-  paint-order: stroke fill;
 }
 
-/* 实验室中文名 / 英文名 */
 .dsc-badge__lab {
   left: 0;
   right: 0;
-  top: 52.5%;
+  top: 49.5%;
   text-align: center;
   font-family: var(--dsc-font-cjk);
   font-weight: 700;
-  font-size: 6.2cqh;
-  letter-spacing: .02em;
+  font-size: 7cqh;
+  letter-spacing: .01em;
   color: var(--bd-ink);
 }
 
@@ -1008,54 +1019,52 @@
   right: 0;
   top: 61%;
   text-align: center;
-  font-family: var(--dsc-font-display);
-  font-size: 2.9cqh;
-  font-weight: 600;
+  font-family: "Bahnschrift", sans-serif;
+  font-stretch: 75%;
+  font-size: 3cqh;
+  font-weight: 500;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: #2a2f37;
+  color: #2f343c;
 }
 
-/* 红色编号带 */
 .dsc-badge__band {
   left: 0;
   right: 0;
-  top: 79%;
+  top: 79.4%;
   height: 6.6%;
   background: var(--bd-red);
   display: flex;
   align-items: center;
-  padding-left: 3.2%;
+  padding-left: 2.8%;
   color: #f7eeea;
-  font-family: var(--dsc-font-heavy);
-  font-size: 5.1cqh;
-  letter-spacing: .05em;
+  font-family: "Bahnschrift", sans-serif;
+  font-stretch: 75%;
+  font-weight: 700;
+  font-size: 7cqh;
+  letter-spacing: .015em;
 }
 
-/* 条码区（白底 + 黑条） */
 .dsc-badge__barcodeWrap--front {
-  left: 3%;
-  right: 3%;
-  top: 87%;
-  bottom: 2.6%;
+  left: 2.6%;
+  right: 2.6%;
+  top: 86.4%;
+  bottom: 2%;
   background: var(--bd-white);
   display: flex;
   align-items: center;
-  padding: 0 1.4%;
+  padding: 0 1.2%;
 }
 
 .dsc-badge__barcode {
-  display: block;
-  flex: 1;
-  height: 64%;
-  background:
-    repeating-linear-gradient(90deg,
-      var(--bd-ink) 0 .36cqw, transparent .36cqw .58cqw,
-      var(--bd-ink) 0 .16cqw, transparent .16cqw .76cqw,
-      var(--bd-ink) 0 .46cqw, transparent .46cqw .98cqw,
-      var(--bd-ink) 0 .22cqw, transparent .22cqw 1.18cqw,
-      var(--bd-ink) 0 .4cqw, transparent .4cqw 1.38cqw);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  height: 72%;
 }
+
+.dsc-badge__barcode i { background: #06060a; display: block; flex: none; }
 
 /* ── 背面 ─────────────────────────────────────────────────────────────── */
 
@@ -1067,45 +1076,22 @@
 .dsc-badge__col {
   display: grid;
   grid-template-rows: 39% 61%;
-  background: linear-gradient(180deg, #dbd9e3 0%, var(--bd-lav) 100%);
+  background: linear-gradient(180deg, #dcdae5 0%, var(--bd-lav) 100%);
 }
 
-/* 蓝色 BSC 徽标：裁出真实 logo 左侧的徽章部分 */
 .dsc-badge__markCell {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2.2%;
-  padding: 7% 12% 3%;
-}
-
-.dsc-badge__markOrg,
-.dsc-badge__markOrgEn {
-  display: block;
-  text-align: center;
-  color: var(--bd-blue);
-  font-family: var(--dsc-font-cjk);
-  line-height: 1.15;
-}
-
-.dsc-badge__markOrg {
-  margin-top: 3%;
-  font-size: 2.9cqh;
-  font-weight: 700;
-  letter-spacing: .02em;
-}
-
-.dsc-badge__markOrgEn {
-  font-family: var(--dsc-font-display);
-  font-size: 1.5cqh;
-  letter-spacing: .12em;
+  gap: 1.2%;
+  padding: 5% 11% 2%;
 }
 
 .dsc-badge__mark {
   position: relative;
-  width: 92%;
+  width: 74%;
   aspect-ratio: 1;
   flex: none;
   overflow: hidden;
@@ -1123,20 +1109,49 @@
   transform: translateY(-50%);
 }
 
-/* 红底大白 CS */
+.dsc-badge__markOrg,
+.dsc-badge__markOrgEn {
+  display: block;
+  text-align: center;
+  color: var(--bd-blue);
+  line-height: 1.12;
+}
+
+.dsc-badge__markOrg {
+  margin-top: 2%;
+  font-family: var(--dsc-font-cjk);
+  font-size: 3.2cqh;
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+
+.dsc-badge__markOrgEn {
+  font-family: "Bahnschrift", sans-serif;
+  font-size: 1.3cqh;
+  font-weight: 500;
+  letter-spacing: .09em;
+}
+
 .dsc-badge__cs {
   background: var(--bd-red-2);
   color: #ffffff;
-  font-family: var(--dsc-font-heavy);
-  font-weight: 900;
-  font-size: 38cqh;
-  line-height: .84;
-  letter-spacing: -.04em;
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
-  padding: 0 0 0 1.4%;
+  padding: 0 0 0 1%;
   overflow: hidden;
+}
+
+.dsc-badge__cs span {
+  display: block;
+  font-family: "Impact", "Arial Black", sans-serif;
+  font-weight: 400;
+  font-size: 70cqh;
+  line-height: .78;
+  letter-spacing: -.01em;
+  transform: scaleX(.48) translateY(4%);
+  transform-origin: left bottom;
+  white-space: nowrap;
 }
 
 .dsc-badge__right {
@@ -1149,43 +1164,44 @@
 
 .dsc-badge__idrow {
   position: absolute;
-  left: 7%;
-  top: 11%;
-  font-family: var(--dsc-font-display);
+  left: 6.4%;
+  top: 14%;
+  font-family: "Bahnschrift", sans-serif;
+  font-stretch: 75%;
   color: var(--bd-ink);
-  line-height: 1.02;
+  line-height: 1.06;
 }
 
 .dsc-badge__idpre {
   display: block;
-  font-size: 3.2cqh;
-  letter-spacing: .08em;
+  font-size: 4.6cqh;
+  font-weight: 500;
+  letter-spacing: .1em;
 }
 
 .dsc-badge__idcode {
   display: block;
-  font-size: 6.2cqh;
+  font-size: 8.8cqh;
   font-weight: 700;
-  letter-spacing: .02em;
+  letter-spacing: .01em;
 }
 
 .dsc-badge__name {
   position: absolute;
-  right: 6%;
+  right: 5%;
   top: 4%;
-  font-family: var(--dsc-font-heavy);
-  font-weight: 900;
-  font-size: 18cqh;
+  font-family: var(--dsc-font-cjk);
+  font-weight: 400;
+  font-size: 16cqh;
   line-height: 1;
-  letter-spacing: .02em;
-  max-width: 68%;
+  letter-spacing: 0;
   color: var(--bd-ink);
+  max-width: 66%;
 }
 
-/* 白色信息面板 */
 .dsc-badge__white {
   background: var(--bd-white);
-  padding: 5% 6.5% 3.2%;
+  padding: 4.6% 6% 2.6%;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -1194,43 +1210,46 @@
 .dsc-badge__labBack {
   font-family: var(--dsc-font-cjk);
   font-weight: 700;
-  font-size: 5.6cqh;
-  letter-spacing: .01em;
+  font-size: 7.6cqh;
+  letter-spacing: 0;
   color: var(--bd-ink);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .dsc-badge__role {
-  margin-top: .8%;
+  margin-top: 1.4%;
   text-align: right;
   font-family: var(--dsc-font-cjk);
   font-weight: 700;
-  font-size: 5.2cqh;
-  letter-spacing: .02em;
+  font-size: 7.2cqh;
+  letter-spacing: .01em;
   color: var(--bd-ink);
   white-space: nowrap;
 }
 
 .dsc-badge__code {
   margin-top: auto;
-  font-family: var(--dsc-font-display);
-  font-size: 3.7cqh;
-  letter-spacing: .09em;
+  font-family: "Bahnschrift", sans-serif;
+  font-stretch: 75%;
+  font-size: 5cqh;
+  font-weight: 600;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  color: #191d23;
+  color: #171b21;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .dsc-badge__barcodeWrap--back {
-  height: 20%;
-  margin-top: 1.2%;
+  height: 16%;
+  margin-top: 2%;
+  margin-bottom: 2.5%;
   display: flex;
   align-items: center;
 }
+
+.dsc-badge__barcodeWrap--back .dsc-badge__barcode { height: 100%; }
 
 /* ── 取景框 / 扫描线 / 状态（不参与 3D 翻面） ─────────────────────────── */
 
@@ -1310,7 +1329,7 @@
   color: #f8ece9;
   background: var(--bd-red);
   border-color: var(--bd-red);
-  box-shadow: 0 0 calc(22px * var(--dsc-glow, 1)) rgba(146, 0, 0, .65);
+  box-shadow: 0 0 calc(22px * var(--dsc-glow, 1)) rgba(154, 2, 8, .65);
 }
 
 .dsc-badge__ok {
@@ -1375,6 +1394,7 @@
   62% { opacity: 1; transform: rotate(-3deg) scale(1.06); filter: blur(0); }
   100% { opacity: 1; transform: rotate(-3deg) scale(1); filter: none; }
 }
+
 
 
 
