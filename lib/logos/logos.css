@@ -1,0 +1,265 @@
+/* ============================================================================
+ * dsh-supreme-command — 徽标样式（lib/logos/logos.css）
+ *
+ * 两个徽标（UEG 静态 / BSC 橄榄枝动画）的全部配色与动画都在这里。
+ * 规则约束：
+ *  1. 每个选择器都以 .dsc-bsc / .dsc-ueg 作用域开头，没有任何页面级全局选择器
+ *     （不用根元素变量、标签选择器、通配符或裸标签选择器），内联进 DSH 页面不会污染宿主。
+ *  2. 颜色只有一个来源：currentColor（根 svg 上 color: var(--dsc-logo, currentColor)）。
+ *  3. 类名、keyframes 全部 dsc- 前缀。
+ *  4. 动画时长 / 延迟 / 关键帧语义与源文件一致（逐条对照 bsc2.svg 的 <style>）。
+ *
+ * 使用：
+ *   <link rel="stylesheet" href="/dsh-command/logos.css">
+ *   <div class="dsc-bsc" data-mode="play">…BSC_SVG…</div>
+ *   <div class="dsc-ueg">…UEG_SVG…</div>
+ * ========================================================================== */
+
+/* ── 作用域容器 & 画布 ──────────────────────────────────────────────────── */
+
+.dsc-bsc,
+.dsc-ueg {
+  display: block;
+  line-height: 0;
+}
+
+.dsc-bsc-svg,
+.dsc-ueg-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 橄榄叶浮现节拍：默认 100ms/片。挂在容器上（不写根元素），
+   所以外部可以在 .dsc-bsc 上按实例覆盖，例如 style="--olive-leaf-display-time:60ms"。 */
+.dsc-bsc {
+  --olive-leaf-display-time: 100ms;
+}
+
+/* ── 配色：全部走 currentColor ──────────────────────────────────────────── */
+
+.dsc-bsc-svg .dsc-bsc-st0,
+.dsc-bsc-svg .dsc-bsc-st1,
+.dsc-bsc-svg .dsc-bsc-st2,
+.dsc-ueg-svg .dsc-ueg-st0 {
+  fill: currentColor;
+}
+
+.dsc-bsc-svg .dsc-bsc-st0,
+.dsc-ueg-svg .dsc-ueg-st0 {
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+}
+
+/* ── 橄榄枝：20 片叶子逐片浮现 ──────────────────────────────────────────── */
+/* 源文件里橄榄枝下所有叶子先 opacity:0；左右同序号使用同一延迟。 */
+
+.dsc-bsc-svg .dsc-bsc-olive .dsc-bsc-leaf {
+  opacity: 0;
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l01,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r01 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 10);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l02,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r02 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 9);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l03,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r03 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 8);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l04,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r04 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 7);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l05,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r05 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 6);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l06,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r06 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 5);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l07,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r07 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 4);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l08,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r08 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 3);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l09,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r09 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 2);
+}
+
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-l10,
+.dsc-bsc-svg .dsc-bsc-leaf.dsc-bsc-r10 {
+  animation: dsc-olive-display var(--olive-leaf-display-time, 100ms) forwards;
+  animation-delay: calc(var(--olive-leaf-display-time, 100ms) * 1);
+}
+
+@keyframes dsc-olive-display {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── 中心双环：描边跑圈 3s/4s，50% 时 offset→0，100% 填实 ────────────────── */
+/* 两个圆环的 stroke-dasharray / offset 都是 2000（源文件原值）。 */
+
+.dsc-bsc-svg .dsc-bsc-inner-circle {
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: dsc-fill 3s ease-in-out forwards;
+  animation-delay: 2s;
+}
+
+.dsc-bsc-svg .dsc-bsc-outer-circle {
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: dsc-fill 4s ease-in-out forwards;
+  animation-delay: 1s;
+}
+
+@keyframes dsc-fill {
+  0% {
+    fill: transparent;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    fill: currentColor;
+  }
+}
+
+/* ── 中央三角：自下而上 clip 揭示 ───────────────────────────────────────── */
+
+.dsc-bsc-svg .dsc-bsc-triangle {
+  clip-path: inset(100% 0 0 0);
+  animation: dsc-triangle-reveal 2s forwards;
+}
+
+@keyframes dsc-triangle-reveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ── 中央 BSC 字标：从中线向两侧展开 ────────────────────────────────────── */
+
+.dsc-bsc-svg .dsc-bsc-center-text {
+  clip-path: inset(0 50% 0 50%);
+  animation: dsc-wings-reveal 3s forwards;
+  /* 延迟必须写在 animation 简写之后（源文件写在前面的 3s 会被简写重置为 0） */
+  animation-delay: 3s;
+}
+
+@keyframes dsc-wings-reveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ── 上下两行文字：从左向右擦除式揭示 ───────────────────────────────────── */
+
+.dsc-bsc-svg .dsc-bsc-text-first {
+  clip-path: inset(0 100% 0 0);
+  animation: dsc-text-first-reveal 2s forwards;
+  animation-delay: 2s;
+}
+
+@keyframes dsc-text-first-reveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.dsc-bsc-svg .dsc-bsc-text-second {
+  clip-path: inset(0 100% 0 0);
+  animation: dsc-text-second-reveal 2s forwards;
+  animation-delay: 2s;
+}
+
+@keyframes dsc-text-second-reveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ── still 终态：所有元素直接落到位（data-mode="still"） ─────────────────── */
+/* 选择器比播放态多一层 .dsc-bsc-svg，稳赢同权重规则，不依赖 !important。
+   stroke 只给两个圆环：文字/叶子/三角本来没有描边，给它们加 stroke
+   会凭空多出 1 单位宽的描边（源文件不是这个效果）。 */
+
+.dsc-bsc[data-mode='still'] .dsc-bsc-svg .dsc-bsc-leaf,
+.dsc-bsc[data-mode='still'] .dsc-bsc-svg .dsc-bsc-triangle,
+.dsc-bsc[data-mode='still'] .dsc-bsc-svg .dsc-bsc-center-text,
+.dsc-bsc[data-mode='still'] .dsc-bsc-svg .dsc-bsc-text-first,
+.dsc-bsc[data-mode='still'] .dsc-bsc-svg .dsc-bsc-text-second {
+  animation: none;
+  opacity: 1;
+  clip-path: inset(0);
+  fill: currentColor;
+}
+
+.dsc-bsc[data-mode='still'] .dsc-bsc-svg .dsc-bsc-inner-circle,
+.dsc-bsc[data-mode='still'] .dsc-bsc-svg .dsc-bsc-outer-circle {
+  animation: none;
+  opacity: 1;
+  clip-path: inset(0);
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-dashoffset: 0;
+}
+
+/* ── 无障碍：系统要求减少动态效果时等同 still ───────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-bsc .dsc-bsc-svg .dsc-bsc-leaf,
+  .dsc-bsc .dsc-bsc-svg .dsc-bsc-triangle,
+  .dsc-bsc .dsc-bsc-svg .dsc-bsc-center-text,
+  .dsc-bsc .dsc-bsc-svg .dsc-bsc-text-first,
+  .dsc-bsc .dsc-bsc-svg .dsc-bsc-text-second {
+    animation: none;
+    opacity: 1;
+    clip-path: inset(0);
+    fill: currentColor;
+  }
+
+  .dsc-bsc .dsc-bsc-svg .dsc-bsc-inner-circle,
+  .dsc-bsc .dsc-bsc-svg .dsc-bsc-outer-circle {
+    animation: none;
+    opacity: 1;
+    clip-path: inset(0);
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-dashoffset: 0;
+  }
+}

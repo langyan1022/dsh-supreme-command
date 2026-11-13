@@ -1,0 +1,1215 @@
+/* ============================================================================
+ * dsh-supreme-command — DSH 界面皮肤（theme.css）
+ * ----------------------------------------------------------------------------
+ * 观感：暗色金属控制台 + 红色 HUD 玻璃（发丝红线条 / 四角直角框 / 扫描线 / 暗角 /
+ * 发光强调）。这是一套**生产力皮肤**：正文接近白，红色只出现在强调、描边、选中态。
+ *
+ * 契约（见 docs/CONFIG.md；Host 侧注入方式已对齐）：
+ *   开关      html[data-dsh-command="on"] 由内联脚本在首帧前设到 <html> 上，所有规则都挂在它下面
+ *   只消费    --dsc-accent / --dsc-accent-2 / --dsc-bg / --dsc-text /
+ *             --dsc-glow / --dsc-scanlines / --dsc-grain / --dsc-vignette /
+ *             --dsc-hud-frames（设置面板「HUD 四角框」开关，1|0）
+ *             每个都带 fallback → 没有 Host 注入时单文件打开也不崩
+ *   派生      只由这些变量用 color-mix() 算出（见 §1），不新增可配置色
+ *   token     声明在 body 上，选择器写成 html[data-dsh-command="on"] body
+ *             （0,1,2）稳压宿主的 body[data-ds-dark-theme]（0,1,1）与
+ *             body（0,0,1）→ 宿主深浅色两种状态都被盖成同一套暗色 HUD
+ *
+ * 前提（Host 侧已确认，不是「同特异性靠顺序」的侥幸）：
+ *   1) html[data-dsh-command="on"] 由内联脚本在首帧前设置；
+ *   2) <style id="dsh-command-vars"> 把 --dsc-* 声明在 :root 上；
+ *   3) 本文件的 <link> 在 </head> 前、晚于宿主 CSS —— 所以「同特异性」的兜底
+ *      （例如 html[data-platform=darwin] body{background:transparent} vs 本文件
+ *      的 body 底色，两者都是 0,1,2）也是本文件赢。除此之外全部靠特异性取胜，
+ *      不依赖解析顺序。
+ *
+ * 装饰层（全部 pointer-events:none，不吃点击、不改布局）：
+ *   html::before   扫描线 + 缓慢掠过的扫描带（--dsc-scanlines 控制密度，--dsc-glow 控制亮度）
+ *   html::after    暗角（--dsc-vignette）
+ *   body::before   颗粒/网格（--dsc-grain）+ 顶部微标签带（SECURE CHANNEL · HARNESS OS + 左右 LED）
+ *   body::after    屏幕四角 HUD 直角框 + 四边刻度带（tick rail）+ 内层发丝框（受 --dsc-hud-frames 控制）
+ *   面板四角框     真实宿主钩子：composer 卡 / dock 面板 / 代码卡（见 §5、§10）
+ *   主色发光       :focus-visible / 选中态 / 链接 hover（强度由 --dsc-glow 缩放，
+ *                  glow=0 时 box-shadow 的 blur 为 0，发光完全消失）
+ *
+ * HUD 二级层（§7–§13，全部由 §1 的派生变量驱动，和四角框共用 --dsc-hud-frames 闸门）：
+ *   §7  侧栏（右缘发丝线 / 底部斜纹网格 / 激活项发光条 / hover 左缘刻度）
+ *   §8  菜单 / 弹层 / 提示（发丝框 + 角标 + 顶部高光，backdrop blur 原样保留）
+ *   §9  composer（四角 reticle + 顶部高光 + 聚焦内发光 + 聚焦扫描线）
+ *   §10 代码块 / 表格 / 内联代码（左侧 accent 轨道 + 顶部发丝）
+ *   §11 按钮（primary 单角切角、ghost 角落刻度、danger LED）
+ *   §12 滚动条 / 选中文本
+ *   §13 状态点 / toast / 进度条（LED 呼吸，reduced-motion 下停）
+ *   视口级 HUD（四角直角标 + 四边刻度带 + 内层发丝框）为了不新增 DOM 钩子，
+ *   直接并与 §4 的 body::after 上；顶部微标签带并在 §4 的 body::before 上。
+ *
+ * 新增元素一律「只有绘制、没有盒模型」：background-image / outline / inset shadow /
+ * clip-path（只挂在按钮且 focus 时自动让位）。**不新增任何布局属性**，所以零布局位移。
+ *
+ * --dsc-hud-frames = 0 时：四角框与发丝描边**强度归零**（alpha→0），不是 display:none，
+ * 所以开关那一下不会引起布局抖动。
+ *
+ * !important 策略：**本文件不使用 !important**。所有覆盖靠特异性完成（见上方 token 那一行），
+ * 这样宿主升级时不会和它自己的 !important 打架，也不会污染用户级样式。
+ *
+ * 不改：字体族、字号、布局尺寸、圆角体系。只上色 + 叠装饰层。
+ * ========================================================================== */
+
+/* ============================================================================
+ * §0 可动画的自定义属性（Chromium ≥ 85；宿主是 Electron，稳）
+ * ----------------------------------------------------------------------------
+ * 这是本文件唯一两枚「非契约」的内部属性，不暴露给 Host，也不参与配置：
+ *   --dsc-focus-a  composer 聚焦强度（0 → 1），驱动聚焦内发光
+ *   --dsc-scan-y   composer 扫描线的纵向位置（注册成 <percentage> 才能被 keyframes 插值）
+ * 不支持 @property 的引擎里 var() 的 fallback 会接管：聚焦强度恒为 0（发光不出现），
+ * 扫描线停在 112%（在卡外，不可见）—— 退化成「没有这两个动效」，不会崩、不会错位。
+ * ========================================================================== */
+@property --dsc-focus-a {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --dsc-scan-y {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 112%;
+}
+
+/* ============================================================================
+ * §1 派生变量 —— 只由 Host 注入的变量算出（8 个配色/质感 + HUD 四角框开关）
+ * ========================================================================== */
+html[data-dsh-command="on"] {
+  /* 宿主在首帧前写 :root{color-scheme:light}（(0,1,0)），这里 (0,1,1) 压过它：
+     原生滚动条/表单控件/自动填充跟着走暗色，不会在深色皮肤里露出白控件。 */
+  color-scheme: dark;
+
+  /* 画布底色：兜住宿主 head CSS 的 body{background-color:#fff} 与 darwin 下的透明 body。
+     这是颜色声明，不涉及布局。 */
+  background-color: var(--dsc-bg, #080305);
+
+  /* ---- 层级底色：只跟 --dsc-text 混出「石墨金属」，不掺 accent ----
+     区分：内容是 HUD 屏（--dsc-bg 红黑），外壳是金属机身（石墨灰）。
+     accent 只出现在线条、选中、气泡、内联代码这些「HUD 发光件」上。 */
+  --dsc-bg-1: color-mix(in srgb, var(--dsc-bg, #080305) 92%, var(--dsc-text, #f3e7e4) 8%);
+  --dsc-bg-2: color-mix(in srgb, var(--dsc-bg, #080305) 86%, var(--dsc-text, #f3e7e4) 14%);
+  --dsc-bg-3: color-mix(in srgb, var(--dsc-bg, #080305) 80%, var(--dsc-text, #f3e7e4) 20%);
+  --dsc-bg-4: color-mix(in srgb, var(--dsc-bg, #080305) 74%, var(--dsc-text, #f3e7e4) 26%);
+
+  /* ---- 红玻璃面板：底色 + 一点点 accent，用于用户气泡 / 平台模块 ---- */
+  --dsc-panel: color-mix(in srgb, var(--dsc-bg, #080305) 89%, var(--dsc-text, #f3e7e4) 11%);
+  --dsc-glass: color-mix(in srgb, var(--dsc-bg, #080305) 84%, var(--dsc-accent, #ff3b30) 16%);
+
+  /* ---- 线条：发丝级红（宿主全部边框 token 都由这几支派生） ---- */
+  --dsc-line-soft: color-mix(in srgb, var(--dsc-accent, #ff3b30) 9%, transparent);
+  --dsc-line: color-mix(in srgb, var(--dsc-accent, #ff3b30) 16%, transparent);
+  --dsc-line-strong: color-mix(in srgb, var(--dsc-accent, #ff3b30) 34%, transparent);
+
+  /* ---- HUD 四角框 ---- 
+     --dsc-hud-frames 是 Host 注入的第 9 个变量（设置面板「HUD 四角框」开关，1|0）。
+     开关不切 display，而是把强度乘到 0：关掉时没有布局抖动，也没有残留亮线。 */
+  --dsc-hud-frame-alpha: calc(var(--dsc-hud-frames, 1) * 0.55);
+  --dsc-hud-line: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-frame-alpha) * 76%), transparent);
+  --dsc-hud-stroke: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-frame-alpha) * 18%), transparent);
+
+  /* ---- HUD 二级层（§7–§13 共用）----
+     和四角框共用同一道闸门，避免出现「关了四角框还剩半套刻度」：
+       frames=0            → 整层 alpha 归零（角标/刻度/标签带/面板框一起消失）
+       frames=1, glow=0    → 降到 0.22 倍（显著减弱而不是整块消失，像屏幕待机）
+       frames=1, glow=1    → 1 倍
+     --dsc-hud-ui-alpha 是这组强度唯一的源头；下面是四支派生色。 */
+  --dsc-hud-ui-alpha: calc(
+    var(--dsc-hud-frames, 1) * clamp(0.22, calc(0.22 + var(--dsc-glow, 1) * 0.78), 1)
+  );
+  --dsc-hud-tick: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 68%), transparent);
+  --dsc-hud-tick-soft: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 34%), transparent);
+  --dsc-hud-grid: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 13%), transparent);
+  /* accent-2 只当「第二笔」：HUD 里所有双色细节（右 LED、双色轨道、激活条端头）都用它，
+     和启动屏里 accent=主标题 / accent-2=副标题 的分工一致。 */
+  --dsc-hud-tick-2: color-mix(in srgb, var(--dsc-accent-2, #ff8a5c) calc(var(--dsc-hud-ui-alpha) * 46%), transparent);
+  --dsc-hud-band: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 18%), transparent);
+  --dsc-hud-led: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 90%), transparent);
+  --dsc-hud-led-2: color-mix(in srgb, var(--dsc-accent-2, #ff8a5c) calc(var(--dsc-hud-ui-alpha) * 86%), transparent);
+
+  /* ---- 文字阶梯：正文=--dsc-text（近白），其余往底色收 ---- */
+  --dsc-text-2: color-mix(in srgb, var(--dsc-text, #f3e7e4) 78%, var(--dsc-bg, #080305));
+  --dsc-text-3: color-mix(in srgb, var(--dsc-text, #f3e7e4) 64%, var(--dsc-bg, #080305));
+  --dsc-text-4: color-mix(in srgb, var(--dsc-text, #f3e7e4) 40%, var(--dsc-bg, #080305));
+
+  /* ---- 发光 ---- */
+  --dsc-glow-soft: color-mix(in srgb, var(--dsc-accent, #ff3b30) 30%, transparent);
+
+  /* ---- 语义状态色：固定色相，不跟预设走（成功/警告/危险必须一眼分得开），
+          只拿 12% accent 调和一下，免得在青/紫皮肤里显得突兀 ---- */
+  --dsc-ok: color-mix(in srgb, #3ddc84 88%, var(--dsc-accent, #ff3b30) 12%);
+  --dsc-warn: color-mix(in srgb, #f5b544 88%, var(--dsc-accent, #ff3b30) 12%);
+  --dsc-err: color-mix(in srgb, #ff4d6a 88%, var(--dsc-accent, #ff3b30) 12%);
+}
+
+/* ============================================================================
+ * §2 token 覆盖 —— DSH 的全部语义 token 映射到 --dsc-* 色板
+ *    选择器 html[data-dsh-command="on"] body (0,1,2)
+ *    > 宿主 body[data-ds-dark-theme] (0,1,1) / body (0,0,1) → 深浅两态同一套暗色
+ * ========================================================================== */
+html[data-dsh-command="on"] body {
+  /* ---------- 背景层级 ---------- */
+  --dsw-alias-bg-base: var(--dsc-bg, #080305);
+  --dsw-alias-bg-layer-1: var(--dsc-bg-1);
+  --dsw-alias-bg-layer-2: var(--dsc-bg-2);
+  --dsw-alias-bg-layer-3: var(--dsc-bg-3);
+  --dsw-alias-bg-layer-4: var(--dsc-bg-4);
+  --dsw-alias-bg-overlay: color-mix(in srgb, var(--dsc-bg, #080305) 62%, var(--dsc-text, #f3e7e4) 38%);
+  --dsw-alias-bg-skeleton: color-mix(in srgb, var(--dsc-text, #f3e7e4) 8%, transparent);
+  --dsw-alias-bg-module-platform: var(--dsc-panel);
+  --dsw-alias-bg-multi-select: var(--dsc-bg-3);
+  --dsw-alias-bg-document-preview: var(--dsc-bg-1);
+  --dsw-alias-bg-document-selection: color-mix(in srgb, var(--dsc-accent, #ff3b30) 30%, transparent);
+  --dsw-alias-label-document-preview: var(--dsc-text-2);
+  /* 遮罩保持黑色半透明（宿主规范：模态遮罩不模糊背景） */
+  --dsw-alias-bg-mask-1: rgb(0 0 0 / 55%);
+  --dsw-alias-bg-mask-2: rgb(0 0 0 / 20%);
+  --dsw-alias-bg-mask-3: rgb(0 0 0 / 74%);
+  --dsw-alias-bg-mask-photo: rgb(0 0 0 / 88%);
+  --dsw-alias-bg-mask-drop: color-mix(in srgb, var(--dsc-bg, #080305) 70%, transparent);
+
+  /* ---------- 文字 ---------- */
+  --dsw-alias-label-primary: var(--dsc-text, #f3e7e4);          /* 正文：近白，不是红字 */
+  --dsw-alias-label-secondary: var(--dsc-text-2);
+  --dsw-alias-label-tertiary: var(--dsc-text-3);
+  --dsw-alias-label-caption: color-mix(in srgb, var(--dsc-text, #f3e7e4) 54%, var(--dsc-bg, #080305));
+  --dsw-alias-label-dimmed: color-mix(in srgb, var(--dsc-text, #f3e7e4) 36%, var(--dsc-bg, #080305));
+  /* 压在 accent 亮块（主按钮）上的字 = 底色墨水：六套预设（含紫 #a855f7）对它的对比度都 > 4.8 */
+  --dsw-alias-label-primary-foreground: color-mix(in srgb, var(--dsc-bg, #080305) 94%, var(--dsc-text, #f3e7e4) 6%);
+  --dsw-alias-label-primary-inverted: var(--dsw-alias-label-primary-foreground);
+  --dsw-alias-label-primary-dimmed: var(--dsc-text-2);
+  --dsw-alias-label-primary-bluish: var(--dsc-text, #f3e7e4);
+  --dsw-alias-label-shimmer: color-mix(in srgb, var(--dsc-text, #f3e7e4) 42%, transparent);
+  --dsw-alias-label-deep-diving: var(--dsc-accent-2, #ff8a5c);
+  --dsw-alias-label-deep-diving-shimmer: color-mix(in srgb, var(--dsc-accent-2, #ff8a5c) 42%, transparent);
+
+  /* ---------- 边框（全是 accent 的发丝线） ---------- */
+  --dsw-alias-border-l1: var(--dsc-line-soft);
+  --dsw-alias-border-l2: var(--dsc-line);
+  --dsw-alias-border-l3: color-mix(in srgb, var(--dsc-accent, #ff3b30) 24%, transparent);
+  --dsw-alias-border-l4: var(--dsc-line-strong);
+  --dsw-alias-border-inverted: color-mix(in srgb, var(--dsc-text, #f3e7e4) 14%, transparent);
+  --dsw-alias-border-inverted2: color-mix(in srgb, var(--dsc-text, #f3e7e4) 8%, transparent);
+  --dsw-alias-border-l2-darkmode-thin: var(--dsc-line-soft);
+
+  /* ---------- 品牌 / 按钮 ---------- */
+  --dsw-alias-brand-primary: var(--dsc-accent, #ff3b30);
+  --dsw-alias-brand-primary-invert: var(--dsc-bg, #080305);
+  --dsw-alias-brand-primary-new-colorprimary-new-color: var(--dsc-accent, #ff3b30);
+  --dsw-alias-brand-text: var(--dsc-accent, #ff3b30);
+  --dsw-alias-button-primary-fill: var(--dsc-accent, #ff3b30);
+  --dsw-alias-button-primary-hover: color-mix(in srgb, var(--dsc-accent, #ff3b30) 60%, var(--dsc-accent-2, #ff8a5c));
+  --dsw-alias-button-primary-dimmed: color-mix(in srgb, var(--dsc-accent, #ff3b30) 40%, var(--dsc-bg, #080305));
+  --dsw-alias-button-ghost-active-fill: color-mix(in srgb, var(--dsc-accent, #ff3b30) 20%, transparent);
+  --dsw-alias-button-ghost-active-hover: color-mix(in srgb, var(--dsc-accent, #ff3b30) 26%, transparent);
+  --dsw-alias-button-ghost-active-border: var(--dsc-line-strong);
+  --dsw-alias-button-contrast-fill: var(--dsc-text, #f3e7e4);
+  --dsw-alias-button-elevated-fill: var(--dsc-bg-2);
+  --dsw-alias-button-floating-fill: var(--dsc-bg-2);
+  --dsw-alias-button-floating-hover: var(--dsc-bg-3);
+  --dsw-alias-button-info-fill: var(--dsc-accent, #ff3b30);
+  --dsw-alias-button-info-hover: var(--dsw-alias-button-primary-hover);
+  --dsw-alias-button-tool-bar-fill: color-mix(in srgb, var(--dsc-bg-2) 78%, transparent);
+  --dsw-alias-button-tool-bar-fill-invisible: color-mix(in srgb, var(--dsc-bg, #080305) 38%, transparent);
+  --dsw-alias-button-tool-bar-hover: color-mix(in srgb, var(--dsc-bg-3) 86%, transparent);
+
+  /* ---------- 交互态（hover 一律是 accent 微光，不是灰） ---------- */
+  --dsw-alias-interactive-bg-hover: color-mix(in srgb, var(--dsc-accent, #ff3b30) 12%, transparent);
+  --dsw-alias-interactive-bg-active: color-mix(in srgb, var(--dsc-accent, #ff3b30) 20%, transparent);
+  --dsw-alias-interactive-bg-hover-solid: var(--dsc-bg-3);
+  --dsw-alias-interactive-bg-hover-accent: color-mix(in srgb, var(--dsc-accent, #ff3b30) 26%, transparent);
+  --dsw-alias-interactive-bg-hover-danger: color-mix(in srgb, var(--dsc-err) 14%, transparent);
+
+  /* ---------- 状态（语义必须可辨：绿 / 琥珀 / 品红，跟 accent 拉开色相） ---------- */
+  --dsw-alias-state-business-primary: var(--dsc-accent, #ff3b30);
+  --dsw-alias-state-business-tertiary: color-mix(in srgb, var(--dsc-accent, #ff3b30) 16%, transparent);
+  --dsw-alias-state-success-primary: var(--dsc-ok);
+  --dsw-alias-state-success-secondary: color-mix(in srgb, var(--dsc-ok) 62%, var(--dsc-text, #f3e7e4));
+  --dsw-alias-state-success-tertiary: color-mix(in srgb, var(--dsc-bg, #080305) 82%, var(--dsc-ok));
+  --dsw-alias-state-warn-primary: var(--dsc-warn);
+  --dsw-alias-state-warn-secondary: color-mix(in srgb, var(--dsc-warn) 62%, var(--dsc-text, #f3e7e4));
+  --dsw-alias-state-warn-tertiary: color-mix(in srgb, var(--dsc-bg, #080305) 82%, var(--dsc-warn));
+  --dsw-alias-state-warn-label: color-mix(in srgb, var(--dsc-warn) 55%, var(--dsc-text, #f3e7e4));
+  --dsw-alias-state-error-primary: var(--dsc-err);
+  --dsw-alias-state-error-secondary: color-mix(in srgb, var(--dsc-err) 65%, var(--dsc-text, #f3e7e4));
+  --dsw-alias-state-error-tertiary: color-mix(in srgb, var(--dsc-bg, #080305) 82%, var(--dsc-err));
+  --dsw-alias-state-done-primary: var(--dsc-accent-2, #ff8a5c);
+  --dsw-alias-state-idle-primary: var(--dsc-text-4);
+
+  /* ---------- Markdown ---------- */
+  --dsw-alias-markdown-code-block: color-mix(in srgb, var(--dsc-bg, #080305) 86%, var(--dsc-text, #f3e7e4) 14%);
+  --dsw-alias-markdown-code-block-banner: color-mix(in srgb, var(--dsc-bg, #080305) 81%, var(--dsc-text, #f3e7e4) 19%);
+  --dsw-alias-markdown-inline-code: color-mix(in srgb, var(--dsc-bg, #080305) 82%, var(--dsc-accent, #ff3b30) 18%);
+  --dsw-alias-markdown-tag: color-mix(in srgb, var(--dsc-bg, #080305) 78%, var(--dsc-accent, #ff3b30) 22%);
+  --dsw-alias-markdown-placeholder: color-mix(in srgb, var(--dsc-text, #f3e7e4) 22%, var(--dsc-bg, #080305));
+  --dsw-alias-markdown-citation: var(--dsc-bg-2);
+  --dsw-alias-markdown-code-segment-selected: var(--dsc-bg-3);
+  --dsw-alias-markdown-code-segment-unselected: var(--dsc-bg-1);
+
+  /* ---------- 代码 diff（保持红绿语义，但压到 HUD 的低亮度） ---------- */
+  --dsw-alias-code-diff-added: color-mix(in srgb, var(--dsc-ok) 15%, transparent);
+  --dsw-alias-code-diff-deleted: color-mix(in srgb, var(--dsc-err) 15%, transparent);
+  --dsw-alias-file-diff-added-bg: color-mix(in srgb, var(--dsc-bg, #080305) 82%, var(--dsc-ok) 18%);
+  --dsw-alias-file-diff-added-gutter: color-mix(in srgb, var(--dsc-bg, #080305) 88%, var(--dsc-ok) 12%);
+  --dsw-alias-file-diff-added-marker: var(--dsc-ok);
+  --dsw-alias-file-diff-deleted-bg: color-mix(in srgb, var(--dsc-bg, #080305) 82%, var(--dsc-err) 18%);
+  --dsw-alias-file-diff-deleted-gutter: color-mix(in srgb, var(--dsc-bg, #080305) 88%, var(--dsc-err) 12%);
+  --dsw-alias-file-diff-deleted-marker: var(--dsc-err);
+
+  /* ---------- 滚动条：发丝红滑块 ---------- */
+  --dsw-alias-scrollbar-bg-l1: color-mix(in srgb, var(--dsc-accent, #ff3b30) 26%, transparent);
+  --dsw-alias-scrollbar-bg-l2: color-mix(in srgb, var(--dsc-accent, #ff3b30) 30%, transparent);
+  --dsw-alias-scrollbar-hover-l1: color-mix(in srgb, var(--dsc-accent, #ff3b30) 54%, transparent);
+  --dsw-alias-scrollbar-hover-l2: color-mix(in srgb, var(--dsc-accent, #ff3b30) 60%, transparent);
+
+  /* ---------- 侧栏 / 气泡 / 输入 / 菜单 ---------- */
+  --dsw-specific-sidebar-fill: var(--dsc-panel);
+  --dsw-specific-sidebar-nav-item-active: color-mix(in srgb, var(--dsc-accent, #ff3b30) 10%, transparent);
+  --dsw-specific-sidebar-nav-item-active-accent: color-mix(in srgb, var(--dsc-accent, #ff3b30) 14%, transparent);
+  --dsw-specific-bubble: var(--dsc-glass);                                    /* 用户气泡：红玻璃 */
+  --dsw-specific-bubble-highlight: color-mix(in srgb, var(--dsc-bg, #080305) 76%, var(--dsc-accent, #ff3b30) 24%);
+  --dsw-specific-input-major: var(--dsc-bg-2);
+  --dsw-specific-login-input: var(--dsc-bg-1);
+  --dsw-specific-selector: var(--dsc-bg-2);
+  --dsw-specific-tip: color-mix(in srgb, var(--dsc-accent, #ff3b30) 12%, transparent);
+  /* 菜单材质：保持半透明（要让底下滚动内容透出来一点，但不能糊），
+     分组吸顶标题按宿主规范用 94% 不透明——那是「遮住滚动内容」的功能要求，不要改薄。 */
+  --dsw-menu-surface-fill: color-mix(in srgb, var(--dsc-bg-3) 88%, transparent);
+  --dsw-alias-menu-group-header-fill: color-mix(in srgb, var(--dsc-bg-3) 94%, transparent);
+  --dsw-specific-menu: var(--dsw-menu-surface-fill);
+  --dsw-alias-menu-icon: var(--dsc-text-2);
+
+  /* ---------- 浮层 / 提示 ---------- */
+  --dsw-alias-toast-bg: var(--dsc-bg-4);
+  --dsw-alias-toast-label: var(--dsc-text, #f3e7e4);
+  --dsw-alias-tooltip-bg: var(--dsc-bg-4);
+  --dsw-alias-turn-trigger-bg: var(--dsc-bg-2);
+  --dsw-alias-turn-trigger-bg-hover: var(--dsc-bg-3);
+  --dsw-alias-switch-thumb: color-mix(in srgb, var(--dsc-text, #f3e7e4) 82%, var(--dsc-bg, #080305));
+  --dsw-alias-link: var(--dsc-accent, #ff3b30);
+
+  /* ---------- 焦点环（focus.css 读它，兜底是 state-business-primary） ---------- */
+  --dsw-focus-ring-color: var(--dsc-accent, #ff3b30);
+
+  /* ---------- 插画 token（空状态/引导页的装饰插画） ---------- */
+  --dsw-alias-illustration-background: var(--dsc-bg-1);
+  --dsw-alias-illustration-surface: var(--dsc-bg-2);
+  --dsw-alias-illustration-backing: var(--dsc-bg-3);
+  --dsw-alias-illustration-shadow: var(--dsc-bg-1);
+  --dsw-alias-illustration-inset: var(--dsc-bg-3);
+  --dsw-alias-illustration-detail: var(--dsc-text-3);
+
+  /* ---------- 引导页 ---------- */
+  --dsw-alias-onboarding-accent: var(--dsc-accent, #ff3b30);
+  --dsw-alias-onboarding-card-fill: color-mix(in srgb, var(--dsc-bg-2) 80%, transparent);
+  --dsw-alias-onboarding-secondary-fill: var(--dsc-bg-3);
+  --dsw-alias-onboarding-checkbox-border: var(--dsw-alias-border-l2);
+
+  /* ---------- 语法高亮：强制用宿主「深色」版 shiki 调色板 ----------
+     宿主的浅色 shiki 字色是给白底写的（正文深色），套到我们的深色代码块上会看不清。
+     这两组值抄自宿主 shiki.css 的 body[data-ds-dark-theme] 分支（token 级，非布局）。 */
+  --shiki-token-constant: #4dabf7;
+  --shiki-token-string: #69db7c;
+  --shiki-token-comment: #adb5bd;
+  --shiki-token-keyword: #faa2c1;
+  --shiki-token-parameter: #ffa94d;
+  --shiki-token-function: #b197fc;
+  --shiki-token-string-expression: #8ce99a;
+  --shiki-token-punctuation: #ced4da;
+  --shiki-token-link: #74c0fc;
+
+  /* ---------- 首帧启动屏（React 挂载前的 boot 骨架） ----------
+     boot 骨架自身读 --dsw-alias-bg-base（已被覆盖），但它的文字色挂在 hashed 类上；
+     这里在 #root 的第一个孩子上补一份“暗底亮字”，auto 模式下宿主是浅色时也不会出现
+     深字压深底。变量只在 boot 骨架里被消费，正常界面上是死值，无害。 */
+}
+
+html[data-dsh-command="on"] #root > :first-child {
+  --dsh-boot-bg: var(--dsc-bg, #080305);
+  --dsh-boot-label-primary: var(--dsc-text, #f3e7e4);
+  --dsh-boot-label-secondary: var(--dsc-text-2);
+  --dsh-boot-label-tertiary: var(--dsc-text-3);
+  --dsh-boot-border: var(--dsc-line);
+  --dsh-boot-brand: var(--dsc-accent, #ff3b30);
+}
+
+/* ============================================================================
+ * §3 基础面：画布 / 选中 / 原生滚动条
+ * ========================================================================== */
+html[data-dsh-command="on"] body {
+  background-color: var(--dsc-bg, #080305);
+  color: var(--dsc-text, #f3e7e4);
+  /* Firefox 细滚动条走标准属性；WebKit 那条路由宿主 ::-webkit-scrollbar + 上面的 token 管 */
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l1) transparent;
+}
+
+html[data-dsh-command="on"] ::selection {
+  background-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 38%, transparent);
+  color: var(--dsc-text, #f3e7e4);
+}
+
+/* ============================================================================
+ * §4 装饰层（固定定位、pointer-events:none、全部可归零）
+ * ----------------------------------------------------------------------------
+ * z-index 取一个「高于普通内容、低于宿主浮层」的档位：CRT 效果盖在正文和面板上，
+ * 但不盖模态/toast（它们有更高的显式 z-index）。全部不吃指针事件。
+ * ========================================================================== */
+
+/* ---- 扫描线 + 缓慢掠过的扫描带 ---- */
+html[data-dsh-command="on"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147482000;
+  pointer-events: none;
+  background-image:
+    /* ① 扫描带：每 11s 从上往下掠一次，亮度随 --dsc-glow */
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-glow, 1) * 7%), transparent) 50%,
+      transparent 100%
+    ),
+    /* ② 红色微细扫描线：密度与亮度都由 --dsc-scanlines 和 --dsc-glow 共同缩放 */
+    repeating-linear-gradient(
+      180deg,
+      color-mix(
+          in srgb,
+          var(--dsc-accent, #ff3b30) calc(var(--dsc-scanlines, 0.5) * var(--dsc-glow, 1) * 6.5%),
+          transparent
+        )
+        0 1px,
+      transparent 1px 4px
+    ),
+    /* ③ CRT 物理暗线：--dsc-scanlines 归零时 alpha 也是 0 */
+    repeating-linear-gradient(
+      180deg,
+      rgb(0 0 0 / calc(var(--dsc-scanlines, 0.5) * 0.2)) 1px,
+      transparent 1px 4px
+    );
+  background-size: 100% 240px, 100% 100%, 100% 100%;
+  background-repeat: no-repeat, repeat, repeat;
+  background-position: 0 -100%, 0 0, 0 0;
+  animation: dsc-command-sweep 11s linear infinite;
+}
+
+@keyframes dsc-command-sweep {
+  from {
+    background-position: 0 -100%, 0 0, 0 0;
+  }
+  to {
+    background-position: 0 100%, 0 0, 0 0;
+  }
+}
+
+/* ---- 暗角 ---- */
+html[data-dsh-command="on"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147482001;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      120% 92% at 50% 44%,
+      transparent 44%,
+      rgb(0 0 0 / calc(var(--dsc-vignette, 0.6) * 0.62)) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(0 0 0 / calc(var(--dsc-vignette, 0.6) * 0.32)) 0%,
+      transparent 13%,
+      transparent 88%,
+      rgb(0 0 0 / calc(var(--dsc-vignette, 0.6) * 0.4)) 100%
+    );
+}
+
+/* ---- 颗粒 / 网格（极淡，--dsc-grain 控制）+ 顶部微标签带 ----
+ * 标签带是 body::before 的「文字 + 背景层」，不是新 DOM：fixed 定位、pointer-events:none，
+ * 不参与布局、不吃点击。文字内容固定英文短标（用户要的是 HUD 身份，不是可配置文案）。
+ * 强度闸门：文字/薄雾/LED 全部由 --dsc-hud-ui-alpha 派生 → frames=0 时整条带子归零。 */
+html[data-dsh-command="on"] body::before {
+  content: "SECURE CHANNEL · HARNESS OS";
+  position: fixed;
+  inset: 0;
+  z-index: 2147481999;
+  pointer-events: none;
+  padding-top: 1px;
+  font-family: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+  font-size: 7.5px;
+  line-height: 9px;
+  letter-spacing: .34em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 82%), transparent);
+  text-shadow: 0 0 calc(var(--dsc-glow, 1) * 5px)
+    color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 34%), transparent);
+  background-image:
+    /* ① 标签带薄雾：顶部 12px 一层 accent 微光 */
+    linear-gradient(180deg, var(--dsc-hud-band) 0%, transparent 100%),
+    /* ② 标签带下沿发丝线（把微字和宿主标题栏区隔开，中段转 accent-2） */
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--dsc-hud-tick-soft) 22%,
+      var(--dsc-hud-tick-2) 50%,
+      var(--dsc-hud-tick-soft) 78%,
+      transparent 100%
+    ),
+    /* ③ 左 LED / ④ 右 LED：5px 圆点，左右分别吃 accent / accent-2 */
+    radial-gradient(circle at 50% 50%, var(--dsc-hud-led) 0 2px, transparent 2.6px),
+    radial-gradient(circle at 50% 50%, var(--dsc-hud-led-2) 0 2px, transparent 2.6px),
+    /* ⑤ 细颗粒：3px 点阵 */
+    radial-gradient(
+      circle at 50% 50%,
+      color-mix(in srgb, var(--dsc-text, #f3e7e4) calc(var(--dsc-grain, 0.35) * 7%), transparent) 0.7px,
+      transparent 1.1px
+    ),
+    /* ⑥ HUD 网格：56px 方格的发丝线 */
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-grain, 0.35) * 3.2%), transparent) 0 1px,
+      transparent 1px 56px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-grain, 0.35) * 3.2%), transparent) 0 1px,
+      transparent 1px 56px
+    );
+  background-size: 100% 12px, 100% 1px, 5px 5px, 5px 5px, 3px 3px, 100% 100%, 100% 100%;
+  background-position: left top, left 9px, 16px 3px, right 16px top 3px, left top, left top, left top;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat, repeat;
+}
+
+/* ---- 屏幕 HUD 一级层：四角直角标 + 四边刻度带 + 内层发丝框 ----
+ * 全部画在同一个 fixed 覆盖层上（inset 10px），零盒模型：只用 background-image + outline。
+ * 20 层背景 = 8 角标 + 4 内框 + 8 刻度带（每边长短两档，26px / 13px 一个刻度）。
+ * frames=0 → --dsc-hud-line / --dsc-hud-tick* 的 alpha 归零，整层一起消失。 */
+html[data-dsh-command="on"] body::after {
+  content: "";
+  position: fixed;
+  inset: 10px;
+  z-index: 2147482002;
+  pointer-events: none;
+  outline: 1px solid var(--dsc-hud-stroke);
+  outline-offset: 0;
+  background-image:
+    /* ① 四角直角标（每角横线 + 竖线，8 层） */
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    /* ② 内层发丝框（上 / 下 / 左 / 右，4 层） */
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    /* ③ 四边刻度带（上 / 下 / 左 / 右 各长短两档，8 层） */
+    repeating-linear-gradient(90deg, var(--dsc-hud-tick) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(90deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 13px),
+    repeating-linear-gradient(90deg, var(--dsc-hud-tick) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(90deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 13px),
+    repeating-linear-gradient(0deg, var(--dsc-hud-tick) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(0deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 13px),
+    repeating-linear-gradient(0deg, var(--dsc-hud-tick) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(0deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 13px);
+  background-repeat: no-repeat;
+  background-size:
+    30px 2px, 2px 30px, 30px 2px, 2px 30px, 30px 2px, 2px 30px, 30px 2px, 2px 30px,
+    calc(100% - 12px) 1px, calc(100% - 12px) 1px, 1px calc(100% - 12px), 1px calc(100% - 12px),
+    100% 9px, 100% 4px, 100% 9px, 100% 4px, 9px 100%, 4px 100%, 9px 100%, 4px 100%;
+  background-position:
+    left top, left top, right top, right top,
+    left bottom, left bottom, right bottom, right bottom,
+    6px 6px, 6px calc(100% - 7px), 6px 6px, calc(100% - 7px) 6px,
+    left top, left top, left bottom, left bottom,
+    left top, left top, right top, right top;
+}
+
+/* ============================================================================
+ * §5 面板四角 HUD 框 —— 挂在真实 DSH DOM 的稳定钩子上
+ * ----------------------------------------------------------------------------
+ * 钩子都来自宿主 client bundle 里实测存在的 data 属性（括号内=出现频次），
+ * 不依赖任何 hashed 类名；钩子不存在时规则只是不匹配，不会报错也不会变形。
+ *   [data-composer-card] (5)     composer 卡片 —— 最值得有 HUD 边框的面板
+ *   [data-dockkit-pane]  (15)    dock 面板
+ *   [data-dockkit-float] (13)    浮动 dock 面板
+ *   [data-dsc-hud]               本插件对外的可选增强钩子（预览页 / 宿主都能用）
+ * 其余容器保持干净；[data-composer-seat] / [data-conversation-scroll] 只消费 token，不加框。
+ *
+ * 只新增 background-image / background-position / outline：不碰 position、不改布局、
+ * 不盖面板自己的 background-color 与 backdrop-filter —— HUD 角标是叠上去的。
+ * 强度由 --dsc-hud-frames 控制：0 时 --dsc-hud-line / --dsc-hud-stroke 的 alpha 归零。
+ * ========================================================================== */
+html[data-dsh-command="on"]
+  :is(
+    [data-dsc-hud],
+    [data-composer-card],
+    [data-dockkit-pane],
+    [data-dockkit-float]
+  ) {
+  background-image:
+    /* ① 四角直角标（8 层，14px 臂长，内缩 7px） */
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    /* ② 内层发丝框（上 / 下 / 左 / 右，4 层，和角标同一条 7px 内缩线） */
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    /* ③ 顶部 1px 高光（模拟机壳倒角，两端淡出，不碰圆角） */
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--dsc-hud-tick) 18%,
+      var(--dsc-hud-tick) 82%,
+      transparent 100%
+    ),
+    /* ④ 底部柔影（暗色渐隐，替代 box-shadow，不覆盖宿主 elevation） */
+    linear-gradient(0deg, color-mix(in srgb, var(--dsc-bg, #080305) 55%, transparent), transparent),
+    /* ⑤ 四角切角刻度（7×7 斜纹贴片，8 角标内侧的「机加工」细节） */
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px);
+  background-repeat: no-repeat;
+  background-size:
+    14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px,
+    calc(100% - 14px) 1px, calc(100% - 14px) 1px, 1px calc(100% - 14px), 1px calc(100% - 14px),
+    calc(100% - 28px) 1px, 100% 22px,
+    7px 7px, 7px 7px, 7px 7px, 7px 7px;
+  background-position:
+    left 7px top 7px, left 7px top 7px,
+    right 7px top 7px, right 7px top 7px,
+    left 7px bottom 7px, left 7px bottom 7px,
+    right 7px bottom 7px, right 7px bottom 7px,
+    7px 7px, 7px calc(100% - 8px), 7px 7px, calc(100% - 8px) 7px,
+    14px 7px, left bottom,
+    4px 4px, right 4px top 4px, left 4px bottom 4px, right 4px bottom 4px;
+  /* 发丝描边用 outline 而不是 box-shadow：outline 不参与布局，也不会覆盖面板自带的
+     elevation（box-shadow）—— 宿主的面板阴影原样保留。 */
+  outline: 1px solid var(--dsc-hud-stroke);
+  outline-offset: -1px;
+}
+
+/* ============================================================================
+ * §6 强调发光（强度 = --dsc-glow；glow=0 时 blur 与 alpha 同时归零 → 发光消失）
+ * 只挂状态/ARIA 钩子，不改底色、不改布局；text-shadow 会继承给子元素（正合语义）。
+ * 注意：发光只给 [data-dsc-hud]（本插件可选增强钩子）加。真实宿主面板
+ * （composer card / dock 面板）自带 elevation，不能拿发光去覆盖它们的 box-shadow。 */
+html[data-dsh-command="on"] [data-dsc-hud] {
+  box-shadow: 0 0 calc(var(--dsc-glow, 1) * 16px)
+    color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-glow, 1) * 10%), transparent);
+}
+
+html[data-dsh-command="on"]
+  :is([aria-current="page"], [aria-selected="true"], [aria-pressed="true"], [aria-checked="true"]) {
+  text-shadow: 0 0 calc(var(--dsc-glow, 1) * 8px) var(--dsc-glow-soft);
+}
+
+html[data-dsh-command="on"] a:is(:hover, :focus-visible) {
+  text-shadow: 0 0 calc(var(--dsc-glow, 1) * 7px) var(--dsc-glow-soft);
+}
+
+/* 按钮 hover 的主色弥散光：六套预设共用一条规则，不区分 primary/ghost/danger */
+html[data-dsh-command="on"] button:hover {
+  box-shadow: 0 0 calc(var(--dsc-glow, 1) * 10px)
+    color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-glow, 1) * 18%), transparent);
+}
+
+/* 双焦点环：内环（贴着元素边缘的 1px 主色 hairline，用 box-shadow 画）
+   + 外环（outline，offset 2px 让底色在中间透出一条缝）。
+   outline 不参与布局；box-shadow 只在元素被键盘聚焦时短暂接管，平时宿主 elevation 不受影响。 */
+html[data-dsh-command="on"] :focus-visible {
+  outline: 1px solid var(--dsc-accent, #ff3b30);
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--dsc-accent, #ff3b30) 62%, transparent),
+    0 0 calc(var(--dsc-glow, 1) * 10px) color-mix(in srgb, var(--dsc-accent, #ff3b30) 40%, transparent);
+}
+
+/* ============================================================================
+ * §7 侧栏 —— 右缘发丝线 / 底部斜纹网格 / 激活项发光条 / hover 左缘刻度
+ * ----------------------------------------------------------------------------
+ * 宿主侧栏没有稳定的 data 钩子（真实 DSH 里是 <aside> 语义容器），这里按语义元素
+ * :is(aside, [data-sidebar], [data-side-panel]) 挂 —— 匹配不到时只是不生效，不会变形。
+ * 全部是 background-image + inset shadow：不碰 position / padding / border-width，
+ * 不新增盒模型，所以侧栏宽度、条目高度一个像素都不动。
+ * ========================================================================== */
+html[data-dsh-command="on"] :is(aside, [data-sidebar], [data-side-panel], [data-nav-rail]) {
+  background-image:
+    /* ① 底部斜纹（45° 机加工纹，只铺最后 104px） */
+    repeating-linear-gradient(135deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 8px),
+    /* ② 底部网格横线 */
+    repeating-linear-gradient(0deg, var(--dsc-hud-grid) 0 1px, transparent 1px 26px),
+    /* ③ 底部网格竖线 */
+    repeating-linear-gradient(90deg, var(--dsc-hud-grid) 0 1px, transparent 1px 26px);
+  background-size: 100% 104px, 100% 100%, 100% 100%;
+  background-position: left bottom, left top, left top;
+  background-repeat: no-repeat, repeat, repeat;
+  /* 右缘发丝线：inset shadow 不参与布局，也不会盖掉宿主的 elevation */
+  box-shadow: inset -1px 0 0 var(--dsc-hud-tick-soft);
+}
+
+/* 激活项：左侧 2px 发光条 + 4.8s 呼吸（reduced-motion 停）。
+   只挂导航语义（nav / role=navigation / role=tree / role=listbox），避免误伤
+   segmented / switch 上的 aria-selected。 */
+html[data-dsh-command="on"]
+  :is(nav, [role="navigation"], [role="tree"], [role="treegrid"], [role="listbox"])
+  :is([aria-current="page"], [role="treeitem"][aria-selected="true"], [role="option"][aria-selected="true"]) {
+  background-image: linear-gradient(
+    90deg,
+    var(--dsc-hud-tick) 0 2px,
+    var(--dsc-hud-tick-2) 2px 3px,
+    transparent 3px
+  );
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  animation: dsc-hud-rail 4.8s ease-in-out infinite;
+}
+
+/* hover 左缘刻度：3px 宽的短刻度列，只在指针悬停时出现（不占位、不挡点击） */
+html[data-dsh-command="on"]
+  :is(aside, [data-sidebar], [data-side-panel], [data-nav-rail])
+  :is(a, button, [role="menuitem"], [role="option"], [role="treeitem"]):hover {
+  background-image: repeating-linear-gradient(0deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 4px);
+  background-size: 3px 100%;
+  background-position: left top;
+  background-repeat: no-repeat;
+}
+
+/* ============================================================================
+ * §8 菜单 / 弹层 / 提示 —— 发丝框 + 角标 + 顶部高光（backdrop blur 原样保留）
+ * ----------------------------------------------------------------------------
+ * 宿主浮层没有稳定 data 钩子，按 ARIA 语义挂：[role=menu] / listbox / dialog /
+ * tooltip。只加 outline + background-image，不碰 backdrop-filter —— 菜单的半透明
+ * 磨砂材质是宿主 tokens 给的，这里只叠 HUD 框线。
+ * ========================================================================== */
+html[data-dsh-command="on"] :is([role="menu"], [role="listbox"], [role="dialog"], [role="tooltip"]) {
+  outline: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 40%), transparent);
+  outline-offset: -1px;
+  background-image:
+    /* 四角角标（12px 臂长，6px 内缩） */
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    /* 顶部 1px 高光 */
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--dsc-hud-tick) 20%,
+      var(--dsc-hud-tick) 80%,
+      transparent 100%
+    );
+  background-size:
+    12px 1px, 1px 12px, 12px 1px, 1px 12px, 12px 1px, 1px 12px, 12px 1px, 1px 12px,
+    calc(100% - 24px) 1px;
+  background-position:
+    left 6px top 6px, left 6px top 6px,
+    right 6px top 6px, right 6px top 6px,
+    left 6px bottom 6px, left 6px bottom 6px,
+    right 6px bottom 6px, right 6px bottom 6px,
+    12px 6px;
+  background-repeat: no-repeat;
+}
+
+/* 菜单项 hover：左缘 3px 刻度列（和侧栏 hover 同一套刻度语言） */
+html[data-dsh-command="on"]
+  :is([role="menuitem"], [role="option"], [role="treeitem"]):is(:hover, :focus-visible) {
+  background-image: repeating-linear-gradient(0deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 4px);
+  background-size: 3px 100%;
+  background-position: left top;
+  background-repeat: no-repeat;
+}
+
+/* ============================================================================
+ * §9 composer —— 四角 reticle / 顶部高光 / 聚焦内发光 / 聚焦扫描线
+ * ----------------------------------------------------------------------------
+ * 只挂真实钩子 [data-composer-card]。所有绘制仍然走 background-image + outline：
+ * 不用 box-shadow（会顶掉宿主给 composer 的 elevation），不用伪元素（不逼宿主的
+ * position 变成 relative）。
+ *
+ * 聚焦外发光：四条内缘渐变，透明度由 §0 的 --dsc-focus-a 驱动（注册过的自定义
+ * 属性，:focus-within 时 0 → 1）；不跑动画也能瞬时点亮。
+ * 扫描线：1px 长条，纵向位置由 --dsc-scan-y 驱动；只有 composer 被聚焦时才跑
+ * keyframes，失焦后回到 initial-value 112%（落在卡外，不可见）。
+ * ========================================================================== */
+html[data-dsh-command="on"] [data-composer-card] {
+  background-image:
+    /* ① 四角 reticle（8 层，18px 臂长，比普通面板长一档） */
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    /* ② 内层发丝框（上 / 下 / 左 / 右，4 层，和 reticle 同一条 7px 内缩线） */
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft)),
+    /* ③ 四角切角刻度（7×7 斜纹贴片） */
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
+    /* ④ 顶部 1px 高光 */
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--dsc-hud-tick) 18%,
+      var(--dsc-hud-tick) 82%,
+      transparent 100%
+    ),
+    /* ⑤ 底部柔影（暗色渐隐，替代 box-shadow） */
+    linear-gradient(0deg, color-mix(in srgb, var(--dsc-bg, #080305) 55%, transparent), transparent),
+    /* ⑥ 聚焦内发光（上 / 下 / 左 / 右，alpha = --dsc-focus-a × HUD 闸门） */
+    linear-gradient(
+      180deg,
+      color-mix(
+        in srgb,
+        var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * var(--dsc-focus-a, 0) * 16%),
+        transparent
+      ),
+      transparent
+    ),
+    linear-gradient(
+      0deg,
+      color-mix(
+        in srgb,
+        var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * var(--dsc-focus-a, 0) * 16%),
+        transparent
+      ),
+      transparent
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(
+        in srgb,
+        var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * var(--dsc-focus-a, 0) * 14%),
+        transparent
+      ),
+      transparent
+    ),
+    linear-gradient(
+      270deg,
+      color-mix(
+        in srgb,
+        var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * var(--dsc-focus-a, 0) * 14%),
+        transparent
+      ),
+      transparent
+    ),
+    /* ⑦ 扫描线（2px 光束，聚焦时 y 从 2% 扫到 100%；0.2 的暗场 + 0.8 主色辉光由渐变自带） */
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 18%), transparent) 12%,
+      color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 88%), transparent) 50%,
+      color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 18%), transparent) 88%,
+      transparent 100%
+    );
+  background-repeat: no-repeat;
+  background-size:
+    18px 1px, 1px 18px, 18px 1px, 1px 18px, 18px 1px, 1px 18px, 18px 1px, 1px 18px,
+    calc(100% - 14px) 1px, calc(100% - 14px) 1px, 1px calc(100% - 14px), 1px calc(100% - 14px),
+    7px 7px, 7px 7px, 7px 7px, 7px 7px,
+    calc(100% - 28px) 1px,
+    100% 22px,
+    100% 18px, 100% 18px, 18px 100%, 18px 100%,
+    calc(100% - 16px) 2px;
+  background-position:
+    left 7px top 7px, left 7px top 7px,
+    right 7px top 7px, right 7px top 7px,
+    left 7px bottom 7px, left 7px bottom 7px,
+    right 7px bottom 7px, right 7px bottom 7px,
+    7px 7px, 7px calc(100% - 8px), 7px 7px, calc(100% - 8px) 7px,
+    4px 4px, right 4px top 4px, left 4px bottom 4px, right 4px bottom 4px,
+    14px 7px,
+    left bottom,
+    left top, left bottom, left top, right top,
+    8px var(--dsc-scan-y, 112%);
+}
+
+html[data-dsh-command="on"] [data-composer-card]:focus-within {
+  --dsc-focus-a: 1;
+  /* 聚焦时外壳描边提亮（still outline：不碰宿主 elevation） */
+  outline: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 58%), transparent);
+  animation: dsc-command-composer-scan 2.6s linear infinite;
+}
+
+/* ============================================================================
+ * §10 代码块 / 表格 / 内联代码 —— 左侧 accent 轨道 + 顶部发丝
+ * ----------------------------------------------------------------------------
+ * 宿主 markdown 渲染没有稳定类名，这里只挂语义元素 pre / table / code：
+ * 全部 background-image +（表格单元格的）inset shadow，不动 border-width / padding。
+ * ========================================================================== */
+html[data-dsh-command="on"] pre {
+  background-image:
+    linear-gradient(90deg, var(--dsc-hud-tick) 0 2px, transparent 2px),
+    linear-gradient(90deg, var(--dsc-hud-tick-2) 0 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%;
+  background-position: left top, 3px top;
+  background-repeat: no-repeat;
+}
+
+html[data-dsh-command="on"] table thead th {
+  box-shadow: inset 0 -1px 0 var(--dsc-hud-tick-soft);
+}
+
+html[data-dsh-command="on"] table thead th:first-child {
+  box-shadow:
+    inset 2px 0 0 var(--dsc-hud-tick),
+    inset 0 -1px 0 var(--dsc-hud-tick-soft);
+}
+
+html[data-dsh-command="on"] table tbody td:first-child {
+  box-shadow: inset 2px 0 0 var(--dsc-hud-tick);
+}
+
+/* 内联代码：左缘 1px 轨道（padding 只有 1px 5px，画在 padding 里不压字） */
+html[data-dsh-command="on"] :not(pre) > code {
+  background-image: linear-gradient(90deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px);
+  background-size: 2px 100%;
+  background-position: left top;
+  background-repeat: no-repeat;
+}
+
+/* ============================================================================
+ * §11 按钮 —— primary 单角切角 / ghost 角落刻度 / danger LED
+ * ----------------------------------------------------------------------------
+ * 宿主按钮没有稳定的 variant 钩子，按「类名/属性里带 primary|danger」做尽力匹配：
+ *   [class*="primary"] 命中多数主按钮的语义类；匹配不到时退化成 §6 的 hover 发光。
+ * clip-path 会同时裁掉 outline / box-shadow，所以 :focus-visible 时自动让位
+ * （焦点环完整性优先于切角造型）。切角只切右下 7px 的三角形，不动可点击区域中心。
+ * ========================================================================== */
+html[data-dsh-command="on"]
+  :is(button, [role="button"]):is([class*="primary"], [data-variant="primary"], [data-tone="primary"]):not(:focus-visible) {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+}
+
+html[data-dsh-command="on"]
+  :is(button, [role="button"]):is([class*="primary"], [data-variant="primary"], [data-tone="primary"]) {
+  /* 顶部 1px 高光：机加工按钮的第二笔 */
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--dsc-text, #f3e7e4) 24%, transparent),
+    transparent 62%
+  );
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* ghost / 图标按钮：左下角一个 5px 的 L 形刻度 */
+html[data-dsh-command="on"]
+  :is(button, [role="button"]):not([class*="primary"]):not([class*="danger"]):not([class*="destructive"]) {
+  background-image:
+    linear-gradient(var(--dsc-hud-tick), var(--dsc-hud-tick)),
+    linear-gradient(var(--dsc-hud-tick), var(--dsc-hud-tick));
+  background-size: 5px 1px, 1px 5px;
+  background-position: left 3px bottom 3px, left 3px bottom 3px;
+  background-repeat: no-repeat;
+}
+
+/* danger 按钮：左内缘 3px 红色 LED（落在左内边距里，不压字） */
+html[data-dsh-command="on"]
+  :is(button, [role="button"]):is([class*="danger"], [class*="destructive"], [data-variant="danger"]) {
+  background-image: radial-gradient(circle at 7px 50%, var(--dsc-err) 0 2px, transparent 2.6px);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* ============================================================================
+ * §12 滚动条 / 选中文本
+ * ----------------------------------------------------------------------------
+ * 宿主 scrollbar.css 的 WebKit 规则在 body 上，特异性 (0,0,1)；这里 (0,2,1) 稳压。
+ * 宽度沿用宿主的 5px（--dsh-scrollbar-width），不改；只给轨道加刻度、滑块加主色。
+ * ========================================================================== */
+html[data-dsh-command="on"] ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+html[data-dsh-command="on"] ::-webkit-scrollbar-track {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(0deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 9px);
+  background-size: 100% 100%;
+}
+
+html[data-dsh-command="on"] ::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 34%), transparent);
+  border-radius: 3px;
+}
+
+html[data-dsh-command="on"] ::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 62%), transparent);
+}
+
+/* 选中文本：主色底 + 正文色字（比 §3 的 38% 基线更「实」一档，像 HUD 的选中块） */
+html[data-dsh-command="on"] ::selection {
+  background-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 46%, transparent);
+  color: var(--dsc-text, #f3e7e4);
+  text-shadow: none;
+}
+
+/* ============================================================================
+ * §13 状态点 / toast / 进度条 —— LED 呼吸（reduced-motion 下全部停）
+ * ----------------------------------------------------------------------------
+ * [data-dsc-led] 是本插件对外的可选增强钩子：真实 DSH 的状态点没有稳定 data 钩子，
+ * 宿主里由 [role="status"] 的圆点承担；预览页用它演示同一套呼吸曲线。
+ * ========================================================================== */
+html[data-dsh-command="on"] [data-dsc-led] {
+  animation: dsc-hud-led 2.6s ease-in-out infinite;
+}
+
+/* toast / 状态条：发丝框 + 四角短角标 + 呼吸描边（只用 outline + 背景层，不碰 elevation） */
+html[data-dsh-command="on"] [role="status"] {
+  outline: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 30%), transparent);
+  outline-offset: -1px;
+  background-image:
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-line), var(--dsc-hud-line)),
+    linear-gradient(var(--dsc-hud-tick-soft), var(--dsc-hud-tick-soft));
+  background-size: 8px 1px, 1px 8px, 8px 1px, 1px 8px, calc(100% - 20px) 1px;
+  background-position:
+    left 5px top 5px, left 5px top 5px,
+    right 5px bottom 5px, right 5px bottom 5px,
+    10px 5px;
+  background-repeat: no-repeat;
+  animation: dsc-hud-status 3.6s ease-in-out infinite;
+}
+
+/* 进度条：轨道刻度 + 已填充部分的 accent 条纹 + 走马灯（只动 background-position，不动几何） */
+html[data-dsh-command="on"] :is(progress, [role="progressbar"]) {
+  outline: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 22%), transparent);
+  outline-offset: -1px;
+  background-image: repeating-linear-gradient(90deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 6px);
+  background-size: 100% 100%;
+  animation: dsc-hud-march 1.4s linear infinite;
+}
+
+html[data-dsh-command="on"] progress::-webkit-progress-bar {
+  background-color: var(--dsc-bg-2);
+}
+
+html[data-dsh-command="on"] progress::-webkit-progress-value {
+  background-color: var(--dsc-accent, #ff3b30);
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--dsc-bg, #080305) calc(var(--dsc-hud-ui-alpha) * 42%), transparent) 0 4px,
+    transparent 4px 6px
+  );
+  box-shadow: 0 0 calc(var(--dsc-glow, 1) * 8px)
+    color-mix(in srgb, var(--dsc-accent, #ff3b30) 45%, transparent);
+}
+
+html[data-dsh-command="on"] [role="progressbar"] > * {
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--dsc-bg, #080305) calc(var(--dsc-hud-ui-alpha) * 42%), transparent) 0 4px,
+    transparent 4px 6px
+  );
+}
+
+/* ---- 新增动效的 keyframes（全部只动颜色 / 透明度 / 背景位置，不动几何） ---- */
+@keyframes dsc-hud-led {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.38;
+  }
+}
+
+@keyframes dsc-hud-rail {
+  0%,
+  100% {
+    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 34%), transparent);
+  }
+  50% {
+    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 82%), transparent);
+  }
+}
+
+@keyframes dsc-hud-status {
+  0%,
+  100% {
+    outline-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 30%), transparent);
+  }
+  50% {
+    outline-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) calc(var(--dsc-hud-ui-alpha) * 58%), transparent);
+  }
+}
+
+@keyframes dsc-hud-march {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 6px 0;
+  }
+}
+
+@keyframes dsc-command-composer-scan {
+  from {
+    --dsc-scan-y: 2%;
+  }
+  to {
+    --dsc-scan-y: 100%;
+  }
+}
+
+/* ============================================================================
+ * §14 减少动态偏好：停掉所有动画类装饰（静态层保留，扫描线/暗角/刻度仍在）
+ * ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html[data-dsh-command="on"]::before {
+    animation: none;
+  }
+
+  /* 新增动效全停：状态点 / toast / 进度条 / 侧栏激活条 / composer 扫描线。
+     扫描线的 --dsc-scan-y 回落到 initial-value 112%（卡外 → 不可见），不需要额外声明。 */
+  html[data-dsh-command="on"] [data-dsc-led],
+  html[data-dsh-command="on"] [role="status"],
+  html[data-dsh-command="on"] :is(progress, [role="progressbar"]),
+  html[data-dsh-command="on"] [data-composer-card]:focus-within,
+  html[data-dsh-command="on"]
+    :is(nav, [role="navigation"], [role="tree"], [role="treegrid"], [role="listbox"])
+    :is([aria-current="page"], [role="treeitem"][aria-selected="true"], [role="option"][aria-selected="true"]) {
+    animation: none;
+  }
+}
+
+/* ============================================================================
+ * §15 主题装饰：中央 UEG 模糊水印 + 角落 BSC 机构徽标
+ * ----------------------------------------------------------------------------
+ * 和启动屏同一套语言：启动屏里那层"标题后面的模糊大徽标"搬到界面里，
+ * 再加上右上角的北京航天中心（BSC）机构徽标。
+ * 做法：<div class="dsc-deco">（Host 注入的固定层，pointer-events:none）
+ *   · 遮罩用 SVG 的 alpha（/dsh-command/logo/*.svg?mask=1，Host 会把它刷成全白）
+ *   · 颜色用 background-color: var(--dsc-logo) → 换配色自动跟着走
+ *   · 强度吃 --dsc-hud-ui-alpha（frames=0 时与其它 HUD 装饰一起归零）
+ * ========================================================================== */
+
+.dsc-deco {
+  position: fixed;
+  inset: 0;
+  z-index: 2147481990;
+  pointer-events: none;
+  opacity: var(--dsc-hud-ui-alpha, 1);
+  transition: opacity 420ms ease-out;
+}
+
+/* 中央 UEG 大徽标水印：极淡 + 轻微模糊，只在空白处透出来 */
+/* 水印压在**内容区**中央：左边有导航栏，按整窗居中会偏左。
+   --dsc-content-shift 由 lib/center.js 量出来；量不到时退回半个导航栏宽（134px）。 */
+.dsc-deco__wm {
+  position: absolute;
+  left: calc(50% + var(--dsc-content-shift, 134px));
+  top: 52%;
+  width: min(46vmin, calc(var(--dsc-content-w, 100vw) * 0.46), 520px);
+  aspect-ratio: 3000 / 3500;
+  transform: translate(-50%, -50%);
+  background-color: var(--dsc-logo, var(--dsc-accent, #ff3b30));
+  -webkit-mask-image: var(--dsc-deco-ueg, url('/dsh-command/logo/ueg.svg?mask=1'));
+  mask-image: var(--dsc-deco-ueg, url('/dsh-command/logo/ueg.svg?mask=1'));
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  opacity: calc(0.032 * var(--dsc-glow, 1) + 0.012);
+  filter: blur(3px);
+}
+
+/* 角落 BSC 机构徽标：右上角，压在标题栏下方一点 */
+/* 两枚机构铭牌并列在"会话标题栏"中间：水平对准内容区中心，垂直压在该栏中线 */
+.dsc-deco__mark {
+  position: absolute;
+  top: clamp(48px, 6.6vh, 62px);
+  right: auto;
+  left: calc(50% + var(--dsc-content-shift, 134px));
+  transform: translate(-50%, -50%);
+  width: min(10.5vmin, 124px);
+  aspect-ratio: 3000 / 705;
+  background-color: var(--dsc-logo, var(--dsc-accent, #ff3b30));
+  -webkit-mask-image: var(--dsc-deco-bsc, url('/dsh-command/logo/bsc.svg?mask=1'));
+  mask-image: var(--dsc-deco-bsc, url('/dsh-command/logo/bsc.svg?mask=1'));
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: right top;
+  mask-position: right top;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  opacity: calc(0.52 * var(--dsc-glow, 1));
+  filter: drop-shadow(0 0 calc(10px * var(--dsc-glow, 1))
+    color-mix(in srgb, var(--dsc-accent, #ff3b30) 30%, transparent));
+}
+
+/* 窄屏：水印缩小、角落徽标让位（避免压住标题与按钮） */
+@media (max-width: 900px) {
+  .dsc-deco__wm { width: min(64vmin, 420px); opacity: .04; }
+  .dsc-deco__mark { width: min(30vmin, 180px); opacity: .26; }
+}
+
+/* 550C 主机型号标识（左上角，与右上角 BSC 徽标对称） */
+/* 550C：左侧导航栏底部——水平居中于导航栏（导航宽 = 2 × 内容偏移），垂直再往下一点 */
+.dsc-deco__model {
+  position: absolute;
+  top: auto;
+  bottom: clamp(40px, 6vh, 64px);
+  left: var(--dsc-content-shift, 134px);
+  right: auto;
+  transform: translateX(-50%);
+  width: min(7.2vmin, 84px);
+  aspect-ratio: 3000 / 1029;
+  background-color: var(--dsc-logo, var(--dsc-accent, #ff3b30));
+  -webkit-mask-image: var(--dsc-deco-550c, url('/dsh-command/logo/550c.svg?mask=1'));
+  mask-image: var(--dsc-deco-550c, url('/dsh-command/logo/550c.svg?mask=1'));
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: left top;
+  mask-position: left top;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  opacity: calc(0.4 * var(--dsc-glow, 1));
+  filter: drop-shadow(0 0 calc(8px * var(--dsc-glow, 1))
+    color-mix(in srgb, var(--dsc-accent, #ff3b30) 26%, transparent));
+}
+
+/* 窄窗口：右下边距太窄，角落徽标直接收掉，只留中央水印，别压内容 */
+@media (max-width: 980px) {
+  .dsc-deco__mark,
+  .dsc-deco__model { display: none; }
+}
+
+@media (max-width: 900px) {
+  .dsc-deco__wm { width: min(58vmin, 380px); opacity: .028; }
+}

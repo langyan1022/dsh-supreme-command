@@ -1,0 +1,80 @@
+{
+  "name": "dsh-supreme-command",
+  "version": "1.0.0",
+  "description": "DeepSeek Harness 启动屏与同风格界面主题：暗色金属控制台 + 红色 HUD，启动序列依次为标题砸下、进度与日志、北京航天中心工牌扫描翻面核准、授权通过；界面主题覆盖 125 枚 --dsw-* token，并带 UEG 水印与机构徽标。配色/质感/文案全可调。",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "deepseek-harness-desktop",
+    "startup",
+    "splash",
+    "boot-animation",
+    "theme",
+    "skin",
+    "hud",
+    "sci-fi",
+    "desktop"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "!lib/assets/voice",
+    "preview",
+    "docs",
+    "scripts",
+    "test",
+    "shots",
+    "cordis.patch.yml",
+    "安装.cmd",
+    "卸载.cmd",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "test": "node test/smoke-host.mjs && node test/smoke-splash.mjs && node test/smoke-client.mjs",
+    "check:injection": "node scripts/check-injection.mjs",
+    "check:timeline": "node scripts/check-timeline.mjs",
+    "check:guards": "node scripts/check-guards.mjs",
+    "preview": "node scripts/serve.mjs 8791",
+    "shot": "node scripts/shot.mjs",
+    "install:profile": "node scripts/install.mjs",
+    "check:voice": "node scripts/check-voice.mjs",
+    "import:voice": "node scripts/import-voice.mjs"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20",
+    "dsh": ">=0.2.2-rc.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings"
+      ],
+      "platform": "web"
+    }
+  },
+  "author": "dingb",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/langyan1022/dsh-supreme-command.git"
+  },
+  "bugs": {
+    "url": "https://github.com/langyan1022/dsh-supreme-command/issues"
+  },
+  "homepage": "https://github.com/langyan1022/dsh-supreme-command#readme"
+}

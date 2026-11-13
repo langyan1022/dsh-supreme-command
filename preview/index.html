@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-dsh-command="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsh-supreme-command — 启动屏预览</title>
+
+<!-- 插件本体样式（与真实注入完全同一份文件） -->
+<link rel="stylesheet" href="../lib/theme.css">
+<link rel="stylesheet" href="../lib/splash.css">
+<link rel="stylesheet" href="../lib/logos/logos.css">
+
+<style>
+  /* 预览页外壳：一个"假 DSH"，用真实的 --dsw-alias-* token 搭出来，
+     这样预览同时验证两件事：启动屏盖得住界面、theme.css 的主题层穿得过去。 */
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--dsw-alias-bg-base);
+    color: var(--dsw-alias-label-primary);
+    overflow: hidden;
+  }
+  .mock { display: flex; height: 100vh; }
+  .mock__side {
+    width: 268px; padding: 14px 10px; box-sizing: border-box;
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--dsw-specific-sidebar-fill);
+    border-right: 1px solid var(--dsw-alias-border-l2);
+  }
+  .mock__brand {
+    display: flex; align-items: center; gap: 9px; padding: 4px 8px 14px;
+    font-weight: 700; letter-spacing: .06em; font-size: 13px;
+    color: var(--dsw-alias-label-primary);
+  }
+  .mock__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--dsw-alias-state-business-primary); box-shadow: 0 0 12px var(--dsw-alias-state-business-primary); }
+  .mock__item {
+    padding: 9px 10px; border-radius: 7px; font-size: 12.5px;
+    color: var(--dsw-alias-label-secondary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mock__item.is-active {
+    background: var(--dsw-specific-sidebar-nav-item-active);
+    color: var(--dsw-alias-label-primary);
+  }
+  .mock__main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .mock__top {
+    height: 46px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; border-bottom: 1px solid var(--dsw-alias-border-l1);
+    font: 12px/1 ui-monospace, Consolas, monospace;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: var(--dsw-alias-label-tertiary);
+  }
+  .mock__chat { flex: 1; padding: 26px 18%; display: flex; flex-direction: column; gap: 16px; overflow: hidden; }
+  .mock__bubble { max-width: 78%; padding: 11px 15px; border-radius: 12px; font-size: 13.5px; line-height: 1.7; }
+  .mock__bubble--user {
+    align-self: flex-end;
+    background: var(--dsw-specific-bubble);
+    color: var(--dsw-alias-label-primary);
+    border: 1px solid var(--dsw-alias-border-l2);
+  }
+  .mock__bubble--ai {
+    align-self: flex-start;
+    background: var(--dsw-alias-bg-layer-1);
+    color: var(--dsw-alias-label-primary);
+    border: 1px solid var(--dsw-alias-border-l1);
+  }
+  .mock__composer {
+    margin: 0 18% 22px; padding: 13px 15px; border-radius: 12px; font-size: 13px;
+    border: 1px solid var(--dsw-alias-border-l2);
+    background: var(--dsw-specific-input-major);
+    color: var(--dsw-alias-label-tertiary);
+  }
+  .mock__code {
+    align-self: flex-start; max-width: 78%; padding: 12px 15px; border-radius: 10px;
+    background: var(--dsw-alias-markdown-code-block);
+    border: 1px solid var(--dsw-alias-border-l1);
+    font: 12px/1.6 ui-monospace, Consolas, monospace;
+    color: var(--dsw-alias-label-secondary);
+    white-space: pre;
+  }
+  .mock__link { color: var(--dsw-alias-link); text-decoration: none; border-bottom: 1px solid currentColor; }
+
+  /* 预览控制条（截图时加 ?chrome=0 隐藏） */
+  .bar {
+    position: fixed; left: 14px; bottom: 14px; z-index: 2147483600;
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+    border-radius: 10px; border: 1px solid var(--dsw-alias-border-l3);
+    background: var(--dsw-alias-bg-overlay); backdrop-filter: blur(10px);
+    font: 12px/1 ui-monospace, Consolas, monospace; color: var(--dsw-alias-label-primary);
+  }
+  .bar button, .bar select {
+    font: inherit; padding: 5px 9px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--dsw-alias-border-l3);
+    background: var(--dsw-alias-bg-layer-2); color: inherit;
+  }
+  .bar button:hover { border-color: var(--dsw-alias-state-business-primary); }
+  .bar__hint { opacity: .5; padding: 0 4px; }
+</style>
+</head>
+<body data-ds-dark-theme>
+
+<!-- 主题装饰层（真实环境由 Host 注入；预览里手动放一份，遮罩用 blob 地址） -->
+<div class="dsc-deco" aria-hidden="true">
+  <div class="dsc-deco__wm"></div>
+  <div class="dsc-deco__mark"></div>
+  <div class="dsc-deco__model"></div>
+</div>
+
+<!-- 假 DSH 界面：启动屏盖在它上面 -->
+<div class="mock">
+  <aside class="mock__side">
+    <div class="mock__brand"><i class="mock__dot"></i>DEEPSEEK HARNESS</div>
+    <div class="mock__item is-active">智能量子计算机 · 重点实验室</div>
+    <div class="mock__item">会话记录 / 2026-11-12</div>
+    <div class="mock__item">插件开发 · 启动屏与主题</div>
+    <div class="mock__item">工作报告整理</div>
+    <div class="mock__item">构建失败排查</div>
+  </aside>
+  <main class="mock__main">
+    <header class="mock__top"><span>SESSION · 0912</span><span>LINK OK · ENC AES-256</span></header>
+    <div class="mock__chat">
+      <div class="mock__bubble mock__bubble--user">帮我做一个启动屏 + 同风格主题。</div>
+      <div class="mock__bubble mock__bubble--ai">收到。先落盘契约，再并行铺开：启动屏、主题皮肤、两个 SVG 徽标管线。详见 <a class="mock__link" href="#">docs/CONFIG.md</a>。</div>
+      <div class="mock__code">dsh plugin --profile desktop add link:F:\dsh-startup-theme</div>
+      <div class="mock__bubble mock__bubble--ai">主题层已就位：125 枚 --dsw-* token 换成统帅红色板，扫描线/暗角/四角框都可关。</div>
+    </div>
+    <div class="mock__composer">向 DeepSeek Harness 发送消息…</div>
+  </main>
+</div>
+
+<script type="module">
+  /* 预览页自己扮演 Host：算出与 /dsh-command/config 同样的变量，注入 <html>。
+     真实环境里这些值由 lib/index.js 的 buildVarsCss() 写进 <style>。 */
+  import { PRESETS, resolvePalette } from '../lib/palettes.js'
+
+  const params = new URLSearchParams(location.search)
+  const presetId = params.get('preset') || 'command-red'
+  const preset = PRESETS[presetId] || PRESETS['command-red']
+  const speed = Number(params.get('speed') || 1)
+  const chrome = params.get('chrome') !== '0'
+
+  /* ?host=light → 假装宿主是浅色（不挂 body[data-ds-dark-theme]），验证主题仍压得住 */
+  if (params.get('host') === 'light') document.body.removeAttribute('data-ds-dark-theme')
+
+  const root = document.documentElement
+  const setVar = (k, v) => root.style.setProperty(k, v)
+  const pal = resolvePalette({ preset: presetId })
+  setVar('--dsc-accent', pal.accent)
+  setVar('--dsc-accent-2', pal.accent2)
+  setVar('--dsc-bg', pal.bg)
+  setVar('--dsc-text', pal.text)
+  setVar('--dsc-logo', pal.accent)
+  setVar('--dsc-glow', params.get('glow') || '1')
+  setVar('--dsc-scanlines', params.get('scanlines') || '0.5')
+  setVar('--dsc-grain', params.get('grain') || '0.35')
+  setVar('--dsc-vignette', params.get('vignette') || '0.6')
+  setVar('--dsc-hud-frames', params.get('frames') === '0' ? '0' : '1')
+
+  /* ?nogrant=1 → 隐藏「授权通过」横幅：用 ?static=1&nogrant=1 截"进度/日志阶段"的构图 */
+  if (params.get('nogrant') === '1') {
+    const style = document.createElement('style')
+    style.textContent = '.dsc-grant{display:none!important}'
+    document.head.appendChild(style)
+  }
+
+  /* Logo 走 ES module → Blob URL，模拟 Host 的 /dsh-command/logo/*.svg 路由 */
+  async function logoUrls() {
+    const urls = {}
+    for (const [key, file] of [['ueg', '../lib/logos/ueg.js'], ['bsc', '../lib/logos/bsc.js'], ['model', '../lib/logos/550c.js']]) {
+      try {
+        const mod = await import(file)
+        const svg = key === 'ueg' ? mod.UEG_SVG : (key === 'model' ? mod.MODEL_SVG : mod.BSC_SVG)
+        if (typeof svg === 'string' && svg) {
+          urls[key] = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }))
+        }
+      } catch (err) {
+        console.warn('[preview] logo not ready:', key, err && err.message)
+      }
+    }
+    return urls
+  }
+
+  window.__DSC_SPLASH_CONFIG__ = {
+    enabled: true,
+    mode: 'always',
+    speed,
+    allowSkip: true,
+    /* ?static=1 → 不动画，直接钉在终态（视觉回归/设计评审用，确定性最高） */
+    staticFrame: params.get('static') === '1',
+    staticBadge: params.get('badge') === '1',
+    staticFace: params.get('face') || 'back',
+    badge: params.get('badge') !== '0',
+    badgeName: params.get('badgeName') || '图恒宇',
+    badgeId: params.get('badgeId') || 'IDL.IQC-001',
+    badgeNo: '222179',
+    badgePinyin: 'TU HENGYU',
+    badgeOrg: '北京航天中心',
+    badgeOrgEn: 'BEIJING SPACE CENTER',
+    badgeLab: '智能量子计算机重点实验室',
+    badgeLabEn: 'KEY LABORATORY OF INTELLIGENT QUANTUM COMPUTER',
+    badgeLabShort: 'IQC',
+    badgeRole: '研究员',
+    badgeClearance: 'L1',
+    titleZh: params.get('title1') || '智能量子计算机',
+    titleZh2: params.get('title2') || '重点实验室',
+    subtitleEn: 'KEY LABORATORY OF INTELLIGENT QUANTUM COMPUTER',
+    org: 'DEEPSEEK HARNESS',
+    orgZh: '深度求索',
+    clearLevel: '绝密 / TOP SECRET',
+    operator: '丁兵兵',
+    operatorId: '0912',
+    footer: 'POWERED BY DEEPSEEK',
+    statusLines: ['建立安全信道 … OK', '校验操作员生物签名 … OK', '解密绝密指令包 … OK', '载入 HARNESS 运行时 … OK'],
+    showUeg: params.get('ueg') !== '0',
+    showBsc: params.get('bsc') !== '0',
+    showModel: params.get('model') !== '0',
+    logoColor: 'accent',
+    sound: params.get('sound') === '1',
+    soundVolume: 0.3,
+    version: '1.0.0-preview',
+    logoUrls: await logoUrls()
+  }
+
+  /* 主题装饰：把 UEG / BSC 的 blob 地址设成遮罩，颜色交给 theme.css 的 --dsc-logo */
+  ;(async function () {
+    try {
+      const ueg = await import('../lib/logos/ueg.js')
+      const bsc = await import('../lib/logos/bsc.js')
+      const model = await import('../lib/logos/550c.js')
+      const mk = (svg) => 'url(' + URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })) + ')'
+      if (ueg.UEG_SVG) setVar('--dsc-deco-ueg', mk(ueg.UEG_SVG))
+      if (bsc.BSC_SVG) setVar('--dsc-deco-bsc', mk(bsc.BSC_SVG))
+      if (model.MODEL_SVG) setVar('--dsc-deco-550c', mk(model.MODEL_SVG))
+    } catch (err) { /* 缺模块就不显示装饰 */ }
+  })()
+
+  /* 加载真实运行时（同一个文件）。?splash=0 时不加载，直接看主题后的界面 */
+  if (params.get('splash') !== '0') {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script')
+      s.src = '../lib/splash.js'
+      s.onload = resolve
+      s.onerror = reject
+      document.head.appendChild(s)
+    })
+  }
+
+  /* 控制条 */
+  if (!chrome) {
+    document.querySelectorAll('.bar').forEach((el) => el.remove())
+  } else {
+    const bar = document.createElement('div')
+    bar.className = 'bar'
+    bar.innerHTML =
+      '<button data-act="replay">重播</button>' +
+      '<button data-act="skip">跳过</button>' +
+      '<span class="bar__hint">配色</span>' +
+      '<select data-act="preset">' +
+        Object.keys(PRESETS).map((id) => '<option value="' + id + '"' + (id === presetId ? ' selected' : '') + '>' + PRESETS[id].label + '</option>').join('') +
+      '</select>' +
+      '<span class="bar__hint">速度</span>' +
+      '<select data-act="speed">' +
+        [0.5, 1, 1.5, 2].map((v) => '<option value="' + v + '"' + (v === speed ? ' selected' : '') + '>' + v + '×</option>').join('') +
+      '</select>'
+    document.body.appendChild(bar)
+    bar.addEventListener('click', (e) => {
+      const act = e.target && e.target.getAttribute('data-act')
+      if (act === 'replay') { window.__DSC_SPLASH__.replay() }
+      if (act === 'skip') { window.__DSC_SPLASH__.finish('skip') }
+    })
+    bar.addEventListener('change', (e) => {
+      const act = e.target && e.target.getAttribute('data-act')
+      if (act === 'preset') location.search = '?preset=' + e.target.value + '&speed=' + speed + '&chrome=' + (chrome ? 1 : 0)
+      if (act === 'speed') location.search = '?preset=' + presetId + '&speed=' + e.target.value + '&chrome=' + (chrome ? 1 : 0)
+    })
+  }
+
+  /* ?probe=1：把关键节点的计算样式写进 <script type="text/plain">，便于 --dump-dom 抓取排查 */
+  if (params.get('probe') === '1') {
+    const wait = Number(params.get('probeAt') || 2600)
+    setTimeout(() => {
+      const pick = ['.dsc-title', '.dsc-title__part', '.dsc-ch', '.dsc-seal', '.dsc-seal__slot', '.dsc-sub', '.dsc-core', '.dsc-watermark']
+      const rows = pick.map((sel) => {
+        const el = document.querySelector(sel)
+        if (!el) return { sel, missing: true }
+        const cs = getComputedStyle(el)
+        const r = el.getBoundingClientRect()
+        return {
+          sel,
+          opacity: cs.opacity,
+          display: cs.display,
+          visibility: cs.visibility,
+          color: cs.color,
+          fontSize: cs.fontSize,
+          transform: cs.transform,
+          filter: cs.filter,
+          animation: cs.animationName + ' ' + cs.animationDuration + ' ' + cs.animationDelay + ' ' + cs.animationFillMode,
+          box: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)],
+          kids: el.children.length
+        }
+      })
+      const pre = document.createElement('script')
+      pre.type = 'text/plain'
+      pre.id = 'probe-out'
+      pre.textContent = JSON.stringify(rows, null, 1)
+      document.body.appendChild(pre)
+    }, wait)
+  }
+</script>
+</body>
+</html>

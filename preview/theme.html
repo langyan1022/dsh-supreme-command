@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="zh-CN" data-dsh-command="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>dsh-supreme-command · theme.css 样张</title>
+
+<!-- ==========================================================================
+  这个页面是三件事的验证台（纯静态，不依赖 DSH）：
+    1) 宿主真实 token 真身：下面两段 body / body[data-ds-dark-theme] 是从
+       @deepseek-ai/dsh-client-ui-theme 的 design-platform.css 抄下来的原值（子集）。
+       皮肤必须把这两态都盖成同一套暗色 —— 这正是 preview 要证明的。
+    2) lib/theme.css：真实交付物，用 <link> 引入，不复制一份。
+    3) 仿真外壳：侧栏 / 标题栏 / 会话 / composer / 按钮组 / 菜单 / 设置卡 / 滚动条。
+       外壳只消费 --dsw-* 语义 token（不碰 --dsc-*）→ token 覆盖漏一个就露馅。
+  查询参数（都是验证工具，不是契约）：
+    ?skin=red|amber|cyan|green|violet|mono   选预设（?p= 是同一参数的旧别名）
+    ?host=dark|light                          模拟宿主深/浅色 token（皮肤都要压成同一套暗色 HUD）
+    ?frames=0                                 关 HUD 四角框（--dsc-hud-frames=0）
+    ?deco=0                                   装饰全关（glow/scanlines/grain/vignette/frames 一起归零）
+    ?glow= / ?scanlines= / ?grain= / ?vignette=   单项强度覆盖
+    ?focus=1                                  聚焦 composer，演示聚焦扫描线（真实 DSH 里是打字时）
+    ?scan=<0-100>                             把扫描线钉在卡片高度的百分比位置（截图取证用）
+    ?noth=1                                   关掉皮肤，做「宿主原貌」对照
+========================================================================== -->
+
+<!-- ---------- 宿主原语（--dsw-static-*），取自真实 ui-theme ---------- -->
+<style id="host-static">
+  :root {
+    --dsw-static-neutral-00: #fff;
+    --dsw-static-neutral-50: #fafafa;
+    --dsw-static-neutral-200: #e5e5e5;
+    --dsw-static-neutral-300: #d4d4d4;
+    --dsw-static-neutral-400: #a2a4a6;
+    --dsw-static-neutral-600: #545557;
+    --dsw-static-neutral-700: #3c3c3d;
+    --dsw-static-neutral-800: #292929;
+    --dsw-static-neutral-850: #212123;
+    --dsw-static-neutral-bluish-00: #fff;
+    --dsw-static-neutral-bluish-50: #f9fafb;
+    --dsw-static-neutral-bluish-55: #f5f7fa;
+    --dsw-static-neutral-bluish-60: #f5f6f7;
+    --dsw-static-neutral-bluish-75: #f1f3f5;
+    --dsw-static-neutral-bluish-90: #edf0f4;
+    --dsw-static-neutral-bluish-100: #ebeef2;
+    --dsw-static-neutral-bluish-150: #e9ecf2;
+    --dsw-static-neutral-bluish-200: #e1e5ee;
+    --dsw-static-neutral-bluish-300: #cfd3d6;
+    --dsw-static-neutral-bluish-400: #adb2b8;
+    --dsw-static-neutral-bluish-600: #81858c;
+    --dsw-static-neutral-bluish-700: #61666b;
+    --dsw-static-neutral-bluish-750: #43454a;
+    --dsw-static-neutral-bluish-800: #353638;
+    --dsw-static-neutral-bluish-850: #2c2c2e;
+    --dsw-static-neutral-bluish-875: #232324;
+    --dsw-static-neutral-bluish-900: #1b1b1c;
+    --dsw-static-neutral-bluish-950: #151517;
+    --dsw-static-neutral-bluish-1000: #0f1115;
+    --dsw-static-deepseek-50: #edf3fe;
+    --dsw-static-deepseek-100: #e4edfd;
+    --dsw-static-deepseek-200: #d3e2ff;
+    --dsw-static-deepseek-400: #7aaaff;
+    --dsw-static-deepseek-450: #5686fe;
+    --dsw-static-deepseek-500: #4176e6;
+    --dsw-static-deepseek-800: #34415b;
+    --dsw-static-deepseek-900: #283142;
+    --dsw-static-green-500: #22c55e;
+    --dsw-static-green-400: #4ed17e;
+    --dsw-static-amber-500: #f59e0b;
+    --dsw-static-amber-400: #f7ad31;
+    --dsw-static-red-400: #f25a5a;
+    --dsw-static-red-600: #ec1313;
+    --dsw-static-violet-400: #b197fc;
+    --dsw-radius-sm: 8px;
+    --dsw-radius-md: 12px;
+    --dsw-radius-lg: 16px;
+    --dsw-radius-xl: 20px;
+    --dsw-radius-panel: 28px;
+    --dsw-focus-ring-width: 2px;
+    --dsw-menu-backdrop-filter: blur(40px) saturate(150%);
+    --dsh-scrollbar-width: 5px;
+  }
+</style>
+
+<!-- ---------- 宿主浅色 token（body，真实值） ---------- -->
+<style id="host-dark-or-light" data-host="light">
+  body {
+    --dsw-alias-bg-base: var(--dsw-static-neutral-bluish-00);
+    --dsw-alias-bg-layer-1: var(--dsw-static-neutral-bluish-00);
+    --dsw-alias-bg-layer-2: var(--dsw-static-neutral-bluish-00);
+    --dsw-alias-bg-layer-3: var(--dsw-static-neutral-bluish-00);
+    --dsw-alias-bg-overlay: var(--dsw-static-neutral-bluish-150);
+    --dsw-alias-bg-skeleton: #0000000a;
+    --dsw-alias-bg-module-platform: var(--dsw-static-neutral-bluish-60);
+    --dsw-alias-label-primary: var(--dsw-static-neutral-bluish-1000);
+    --dsw-alias-label-secondary: var(--dsw-static-neutral-bluish-700);
+    --dsw-alias-label-tertiary: var(--dsw-static-neutral-bluish-600);
+    --dsw-alias-label-caption: var(--dsw-static-neutral-bluish-400);
+    --dsw-alias-label-dimmed: var(--dsw-static-neutral-bluish-200);
+    --dsw-alias-label-primary-foreground: var(--dsw-static-neutral-bluish-00);
+    --dsw-alias-border-l1: #0000000a;
+    --dsw-alias-border-l2: #0000001a;
+    --dsw-alias-border-l3: #0000001f;
+    --dsw-alias-border-l4: #00000029;
+    --dsw-alias-border-inverted: #0000;
+    --dsw-alias-brand-primary: var(--dsw-static-neutral-bluish-1000);
+    --dsw-alias-brand-text: var(--dsw-static-neutral-bluish-1000);
+    --dsw-alias-button-primary-fill: var(--dsw-alias-brand-primary);
+    --dsw-alias-button-primary-hover: var(--dsw-static-neutral-bluish-750);
+    --dsw-alias-button-ghost-active-fill: var(--dsw-static-neutral-bluish-100);
+    --dsw-alias-state-business-primary: var(--dsw-static-deepseek-500);
+    --dsw-alias-state-business-tertiary: var(--dsw-static-deepseek-100);
+    --dsw-alias-state-success-primary: var(--dsw-static-green-500);
+    --dsw-alias-state-warn-primary: var(--dsw-static-amber-500);
+    --dsw-alias-state-error-primary: var(--dsw-static-red-600);
+    --dsw-alias-interactive-bg-hover: #2631480f;
+    --dsw-alias-interactive-bg-active: #2631481a;
+    --dsw-alias-interactive-bg-hover-solid: var(--dsw-static-neutral-bluish-75);
+    --dsw-alias-markdown-code-block: var(--dsw-static-neutral-bluish-50);
+    --dsw-alias-markdown-code-block-banner: var(--dsw-static-neutral-bluish-50);
+    --dsw-alias-markdown-inline-code: var(--dsw-static-neutral-50);
+    --dsw-alias-markdown-tag: var(--dsw-static-neutral-bluish-75);
+    --dsw-alias-markdown-placeholder: var(--dsw-static-neutral-bluish-60);
+    --dsw-alias-scrollbar-bg-l1: var(--dsw-static-neutral-200);
+    --dsw-alias-scrollbar-hover-l1: var(--dsw-static-neutral-300);
+    --dsw-specific-sidebar-fill: var(--dsw-static-neutral-bluish-50);
+    --dsw-specific-sidebar-nav-item-active: var(--dsw-static-neutral-bluish-100);
+    --dsw-specific-sidebar-nav-item-active-accent: var(--dsw-static-deepseek-100);
+    --dsw-specific-bubble: var(--dsw-static-deepseek-50);
+    --dsw-specific-bubble-highlight: var(--dsw-static-deepseek-200);
+    --dsw-specific-input-major: var(--dsw-static-neutral-bluish-00);
+    --dsw-specific-selector: var(--dsw-static-neutral-bluish-60);
+    --dsw-specific-tip: var(--dsw-static-neutral-bluish-60);
+    --dsw-menu-surface-fill: #fcfdfeb3;
+    --dsw-alias-menu-group-header-fill: #f8f9faf0;
+    --dsw-specific-menu: var(--dsw-menu-surface-fill);
+    --dsw-alias-menu-icon: var(--dsw-static-neutral-bluish-800);
+    --dsw-alias-toast-bg: var(--dsw-static-neutral-bluish-800);
+    --dsw-alias-toast-label: var(--dsw-static-neutral-bluish-00);
+    --dsw-alias-tooltip-bg: var(--dsw-static-neutral-bluish-850);
+    --dsw-alias-switch-thumb: var(--dsw-static-neutral-bluish-00);
+    --dsw-alias-link: var(--dsw-static-deepseek-500);
+    --dsw-alias-turn-trigger-bg: var(--dsw-alias-markdown-code-block);
+    --dsw-alias-turn-trigger-bg-hover: var(--dsw-alias-interactive-bg-hover);
+    --shiki-token-constant: #1c7ed6;
+    --shiki-token-string: #2f9e44;
+    --shiki-token-comment: #868e96;
+    --shiki-token-keyword: #d6336c;
+    --shiki-token-parameter: #e8590c;
+    --shiki-token-function: #6741d9;
+    --shiki-token-string-expression: #2b8a3e;
+    --shiki-token-punctuation: #495057;
+    --shiki-token-link: #1971c2;
+  }
+</style>
+
+<!-- ---------- 宿主深色 token（body[data-ds-dark-theme]，真实值） ---------- -->
+<style id="host-dark" data-host="dark">
+  body[data-ds-dark-theme] {
+    --dsw-alias-bg-base: var(--dsw-static-neutral-bluish-950);
+    --dsw-alias-bg-layer-1: var(--dsw-static-neutral-bluish-875);
+    --dsw-alias-bg-layer-2: var(--dsw-static-neutral-bluish-850);
+    --dsw-alias-bg-layer-3: var(--dsw-static-neutral-bluish-800);
+    --dsw-alias-bg-overlay: var(--dsw-static-neutral-bluish-700);
+    --dsw-alias-bg-skeleton: #ffffff14;
+    --dsw-alias-bg-module-platform: var(--dsw-static-neutral-bluish-800);
+    --dsw-alias-label-primary: var(--dsw-static-neutral-bluish-50);
+    --dsw-alias-label-secondary: var(--dsw-static-neutral-bluish-300);
+    --dsw-alias-label-tertiary: var(--dsw-static-neutral-bluish-400);
+    --dsw-alias-label-caption: var(--dsw-static-neutral-bluish-600);
+    --dsw-alias-label-dimmed: var(--dsw-static-neutral-bluish-750);
+    --dsw-alias-label-primary-foreground: var(--dsw-static-neutral-bluish-1000);
+    --dsw-alias-border-l1: #ffffff0f;
+    --dsw-alias-border-l2: #ffffff1f;
+    --dsw-alias-border-l3: #ffffff29;
+    --dsw-alias-border-l4: #fff3;
+    --dsw-alias-border-inverted: #ffffff0f;
+    --dsw-alias-brand-primary: var(--dsw-static-neutral-bluish-50);
+    --dsw-alias-brand-text: var(--dsw-static-neutral-bluish-50);
+    --dsw-alias-button-primary-fill: var(--dsw-alias-brand-primary);
+    --dsw-alias-button-primary-hover: var(--dsw-static-neutral-bluish-100);
+    --dsw-alias-button-ghost-active-fill: var(--dsw-static-neutral-bluish-750);
+    --dsw-alias-state-business-primary: var(--dsw-static-deepseek-400);
+    --dsw-alias-state-business-tertiary: var(--dsw-static-deepseek-800);
+    --dsw-alias-state-success-primary: var(--dsw-static-green-500);
+    --dsw-alias-state-warn-primary: var(--dsw-static-amber-500);
+    --dsw-alias-state-error-primary: var(--dsw-static-red-400);
+    --dsw-alias-interactive-bg-hover: #ffffff14;
+    --dsw-alias-interactive-bg-active: #ffffff24;
+    --dsw-alias-interactive-bg-hover-solid: var(--dsw-static-neutral-bluish-800);
+    --dsw-alias-markdown-code-block: var(--dsw-static-neutral-bluish-900);
+    --dsw-alias-markdown-code-block-banner: var(--dsw-static-neutral-bluish-850);
+    --dsw-alias-markdown-inline-code: var(--dsw-static-neutral-800);
+    --dsw-alias-markdown-tag: var(--dsw-static-neutral-bluish-850);
+    --dsw-alias-markdown-placeholder: var(--dsw-static-neutral-bluish-850);
+    --dsw-alias-scrollbar-bg-l1: var(--dsw-static-neutral-700);
+    --dsw-alias-scrollbar-hover-l1: var(--dsw-static-neutral-600);
+    --dsw-specific-sidebar-fill: var(--dsw-static-neutral-bluish-900);
+    --dsw-specific-sidebar-nav-item-active: var(--dsw-static-neutral-bluish-750);
+    --dsw-specific-sidebar-nav-item-active-accent: var(--dsw-static-neutral-bluish-800);
+    --dsw-specific-bubble: var(--dsw-static-neutral-bluish-850);
+    --dsw-specific-bubble-highlight: var(--dsw-static-neutral-bluish-750);
+    --dsw-specific-input-major: var(--dsw-static-neutral-bluish-850);
+    --dsw-specific-selector: var(--dsw-static-neutral-bluish-800);
+    --dsw-specific-tip: var(--dsw-static-neutral-bluish-800);
+    --dsw-menu-surface-fill: #303136a3;
+    --dsw-alias-menu-group-header-fill: #303136f0;
+    --dsw-specific-menu: var(--dsw-menu-surface-fill);
+    --dsw-alias-menu-icon: var(--dsw-alias-label-primary-dimmed);
+    --dsw-alias-toast-bg: var(--dsw-static-neutral-bluish-750);
+    --dsw-alias-toast-label: var(--dsw-static-neutral-bluish-00);
+    --dsw-alias-tooltip-bg: var(--dsw-static-neutral-bluish-750);
+    --dsw-alias-switch-thumb: var(--dsw-static-neutral-bluish-400);
+    --dsw-alias-link: var(--dsw-static-deepseek-400);
+    --dsw-alias-turn-trigger-bg: var(--dsw-alias-interactive-bg-hover);
+    --dsw-alias-turn-trigger-bg-hover: var(--dsw-alias-interactive-bg-active);
+    --shiki-token-constant: #4dabf7;
+    --shiki-token-string: #69db7c;
+    --shiki-token-comment: #adb5bd;
+    --shiki-token-keyword: #faa2c1;
+    --shiki-token-parameter: #ffa94d;
+    --shiki-token-function: #b197fc;
+    --shiki-token-string-expression: #8ce99a;
+    --shiki-token-punctuation: #ced4da;
+    --shiki-token-link: #74c0fc;
+  }
+</style>
+
+<!-- ---------- 宿主首帧样式：color-scheme 由 head CSS 在脚本前定下 ---------- -->
+<style id="host-scheme">:root { color-scheme: dark }</style>
+<style id="host-base">
+  html, body { height: 100%; margin: 0 }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: var(--dsw-alias-label-primary, #0f1115);
+    background: var(--dsw-alias-bg-base, #fff);
+  }
+  /* 宿主 scrollbar.css 的真实约定：WebKit 路径读 --dsw-alias-scrollbar-* */
+  *::-webkit-scrollbar { width: 5px; height: 5px }
+  *::-webkit-scrollbar-track { background: transparent }
+  *::-webkit-scrollbar-thumb {
+    background: var(--dsw-alias-scrollbar-bg-l1);
+    border-radius: 3px;
+  }
+  *::-webkit-scrollbar-thumb:hover { background: var(--dsw-alias-scrollbar-hover-l1) }
+</style>
+
+<!-- ================= 交付物本体：皮肤 ================= -->
+<link id="theme-link" rel="stylesheet" href="../lib/theme.css">
+
+<!-- 模拟 Host 注入的 <style id="dsh-command-vars">（8 个可配置变量） -->
+<style id="dsh-command-vars">
+  :root {
+    --dsc-accent: #ff3b30;
+    --dsc-accent-2: #ff8a5c;
+    --dsc-bg: #080305;
+    --dsc-text: #f3e7e4;
+    --dsc-glow: 1;
+    --dsc-scanlines: 0.5;
+    --dsc-grain: 0.35;
+    --dsc-vignette: 0.6;
+    --dsc-hud-frames: 1;   /* 设置面板「HUD 四角框」开关：1|0（0 = 强度归零，不改布局） */
+    --dsc-logo: var(--dsc-accent);
+  }
+</style>
+
+<!-- ================= 仿真 DSH 外壳（只消费 --dsw-* token） ================= -->
+<style id="shell">
+  :root {
+    --dscp-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --dscp-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box }
+  body { overflow: hidden }
+
+  /* ---------- 骨架 ---------- */
+  .shell {
+    position: relative;
+    display: grid;
+    grid-template-columns: 268px minmax(0, 1fr) 344px;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--dsw-alias-bg-base);
+    color: var(--dsw-alias-label-primary);
+    font-family: var(--dscp-ui);
+    font-size: 13px;
+  }
+
+  /* ---------- 左侧栏 ---------- */
+  .sb {
+    display: flex; flex-direction: column; min-height: 0;
+    background-color: var(--dsw-specific-sidebar-fill);
+    border-right: 1px solid var(--dsw-alias-border-l1);
+  }
+  .sb-brand {
+    display: flex; align-items: center; gap: 10px;
+    height: 46px; padding: 0 16px;
+    border-bottom: 1px solid var(--dsw-alias-border-l1);
+  }
+  .sb-mark {
+    width: 15px; height: 15px; flex: 0 0 auto;
+    background-color: var(--dsw-alias-brand-primary);
+    box-shadow: 0 0 10px var(--dsw-alias-brand-primary);
+  }
+  .sb-brand-name {
+    font-family: var(--dscp-mono); font-size: 10.5px; letter-spacing: .18em;
+    color: var(--dsw-alias-brand-text);
+  }
+  .sb-brand-sub {
+    margin-left: auto; font-family: var(--dscp-mono); font-size: 8.5px;
+    letter-spacing: .12em; color: var(--dsw-alias-label-caption);
+  }
+  .sb-nav { padding: 10px 10px 4px; display: flex; flex-direction: column; gap: 2px }
+  .sb-nav-item {
+    display: flex; align-items: center; gap: 9px;
+    height: 30px; padding: 0 10px; border-radius: 8px;
+    color: var(--dsw-alias-label-secondary);
+    text-decoration: none;
+  }
+  .sb-nav-item:hover { background-color: var(--dsw-alias-interactive-bg-hover) }
+  .sb-nav-item[aria-current="page"] {
+    background-color: var(--dsw-specific-sidebar-nav-item-active);
+    color: var(--dsw-alias-label-primary);
+    box-shadow: inset 2px 0 0 var(--dsw-alias-state-business-primary);
+  }
+  .sb-icon {
+    width: 12px; height: 12px; flex: 0 0 auto;
+    border: 1px solid currentColor; border-radius: 2px; opacity: .85;
+  }
+  .sb-label {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 14px 16px 6px;
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .16em;
+    color: var(--dsw-alias-label-caption);
+  }
+  .sb-label b { font-weight: 400; color: var(--dsw-alias-label-tertiary) }
+  .sb-list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 8px 8px }
+  .sb-session {
+    padding: 8px 10px; border-radius: 8px; margin-bottom: 2px;
+    border: 1px solid transparent; cursor: default;
+  }
+  .sb-session:hover { background-color: var(--dsw-alias-interactive-bg-hover) }
+  .sb-session[aria-selected="true"] {
+    background-color: var(--dsw-specific-sidebar-nav-item-active-accent);
+    border-color: var(--dsw-alias-border-l3);
+  }
+  .sb-session-title {
+    display: block; font-size: 12px; color: var(--dsw-alias-label-primary);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .sb-session-meta {
+    display: flex; justify-content: space-between; margin-top: 3px;
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .08em;
+    color: var(--dsw-alias-label-caption);
+  }
+  .sb-foot {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 14px; border-top: 1px solid var(--dsw-alias-border-l1);
+  }
+  .sb-avatar {
+    width: 24px; height: 24px; border-radius: 50%; flex: 0 0 auto;
+    display: grid; place-items: center;
+    border: 1px solid var(--dsw-alias-border-l3);
+    color: var(--dsw-alias-label-secondary);
+    font-family: var(--dscp-mono); font-size: 9px;
+  }
+  .sb-operator { font-size: 11.5px; color: var(--dsw-alias-label-secondary) }
+  .sb-operator small {
+    display: block; font-family: var(--dscp-mono); font-size: 8.5px;
+    letter-spacing: .1em; color: var(--dsw-alias-label-caption);
+  }
+
+  /* ---------- 主列 ---------- */
+  .main {
+    display: grid; grid-template-rows: 46px minmax(0, 1fr) auto;
+    min-width: 0; min-height: 0;
+    background-color: var(--dsw-alias-bg-base);
+  }
+  .tb {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 16px;
+    background-color: var(--dsw-alias-bg-layer-1);
+    border-bottom: 1px solid var(--dsw-alias-border-l2);
+  }
+  .tb-crumb {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--dscp-mono); font-size: 9.5px; letter-spacing: .1em;
+    color: var(--dsw-alias-label-caption);
+  }
+  .tb-crumb i { font-style: normal; color: var(--dsw-alias-border-l4) }
+  .tb-title { font-size: 13px; font-weight: 600; color: var(--dsw-alias-label-primary) }
+  .tb-right { margin-left: auto; display: flex; align-items: center; gap: 8px }
+  .tb-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 8px; border-radius: 4px;
+    background-color: var(--dsw-alias-bg-overlay);
+    border: 1px solid var(--dsw-alias-border-inverted);
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .12em;
+    color: var(--dsw-alias-label-secondary);
+  }
+  .tb-chip b { font-weight: 500; color: var(--dsw-alias-label-primary) }
+  .led {
+    width: 5px; height: 5px; border-radius: 50%; flex: 0 0 auto;
+  }
+  /* data-dsc-led：皮肤的可选增强钩子。真实 DSH 的状态点没有稳定 data 钩子，
+     皮肤按 [data-dsc-led] 做 LED 呼吸；宿主里由 [role="status"] 承担同一套曲线。 */
+  .led--ok { background-color: var(--dsw-alias-state-success-primary); box-shadow: 0 0 6px var(--dsw-alias-state-success-primary) }
+  .led--warn { background-color: var(--dsw-alias-state-warn-primary); box-shadow: 0 0 6px var(--dsw-alias-state-warn-primary) }
+  .led--err { background-color: var(--dsw-alias-state-error-primary); box-shadow: 0 0 6px var(--dsw-alias-state-error-primary) }
+  .tb-icon {
+    width: 24px; height: 24px; border-radius: 6px;
+    display: grid; place-items: center; cursor: default;
+    border: 1px solid var(--dsw-alias-border-l2);
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 11px;
+  }
+  .tb-icon:hover { background-color: var(--dsw-alias-interactive-bg-hover) }
+
+  /* ---------- 会话区 ---------- */
+  .convo { position: relative; min-height: 0; overflow-y: auto; padding: 16px 24px 6px }
+  .convo-inner { max-width: 660px; margin: 0 auto; padding-bottom: 10px }
+  .msg { margin-bottom: 14px }
+  .msg--user { display: flex; flex-direction: column; align-items: flex-end }
+  .role {
+    display: flex; align-items: center; gap: 7px; margin-bottom: 5px;
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .16em;
+    color: var(--dsw-alias-label-caption);
+  }
+  .role::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--dsw-alias-border-l2), transparent);
+  }
+  .bubble {
+    max-width: 78%; padding: 10px 15px; border-radius: 14px;
+    background-color: var(--dsw-specific-bubble);
+    border: 1px solid var(--dsw-alias-border-l2);
+    color: var(--dsw-alias-label-primary);
+    line-height: 1.65;
+  }
+  .asst { line-height: 1.7 }
+  .asst h2 {
+    margin: 2px 0 8px; font-size: 15px; font-weight: 600;
+    color: var(--dsw-alias-label-primary);
+  }
+  .asst p { margin: 0 0 9px; color: var(--dsw-alias-label-primary) }
+  .asst p.dim { color: var(--dsw-alias-label-secondary) }
+  .asst ul { margin: 0 0 10px; padding-left: 18px; color: var(--dsw-alias-label-secondary) }
+  .asst li { margin: 3px 0 }
+  .asst strong { color: var(--dsw-alias-label-primary); font-weight: 600 }
+  .asst a { color: var(--dsw-alias-link); text-decoration: none; border-bottom: 1px solid var(--dsw-alias-border-l3) }
+  code.inline {
+    padding: 1px 5px; border-radius: 4px;
+    background-color: var(--dsw-alias-markdown-inline-code);
+    color: var(--dsw-alias-label-primary);
+    font-family: var(--dscp-mono); font-size: 11px;
+  }
+  .tag {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    background-color: var(--dsw-alias-markdown-tag);
+    color: var(--dsw-alias-label-secondary);
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .1em;
+  }
+
+  /* 代码块（data-dsc-hud → 皮肤给四角框 + 光晕） */
+  .code {
+    margin: 10px 0 12px; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--dsw-alias-border-l2);
+    background-color: var(--dsw-alias-markdown-code-block);
+  }
+  .code-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px;
+    background-color: var(--dsw-alias-markdown-code-block-banner);
+    border-bottom: 1px solid var(--dsw-alias-border-l1);
+    font-family: var(--dscp-mono); font-size: 9px; letter-spacing: .12em;
+    color: var(--dsw-alias-label-tertiary);
+  }
+  .code pre {
+    margin: 0; padding: 12px 14px; overflow: hidden;
+    font-family: var(--dscp-mono); font-size: 11px; line-height: 1.75;
+    color: var(--dsw-alias-label-primary);
+  }
+  .c-key { color: var(--shiki-token-keyword) }
+  .c-fn { color: var(--shiki-token-function) }
+  .c-str { color: var(--shiki-token-string) }
+  .c-num { color: var(--shiki-token-constant) }
+  .c-cmt { color: var(--shiki-token-comment) }
+  .c-prm { color: var(--shiki-token-parameter) }
+  .c-pct { color: var(--shiki-token-string-expression) }
+  .c-pun { color: var(--shiki-token-punctuation) }
+
+  /* 表格 */
+  .tbl { width: 100%; border-collapse: collapse; margin: 4px 0 12px; font-size: 11.5px }
+  .tbl th {
+    text-align: left; font-weight: 500; padding: 6px 10px;
+    background-color: var(--dsw-alias-bg-layer-2);
+    border: 1px solid var(--dsw-alias-border-l2);
+    color: var(--dsw-alias-label-tertiary);
+    font-family: var(--dscp-mono); font-size: 9px; letter-spacing: .1em;
+  }
+  .tbl td {
+    padding: 6px 10px; border: 1px solid var(--dsw-alias-border-l1);
+    color: var(--dsw-alias-label-secondary);
+  }
+  .tbl td code { font-family: var(--dscp-mono); font-size: 10.5px; color: var(--dsw-alias-label-primary) }
+  .tbl td.num { font-family: var(--dscp-mono); color: var(--dsw-alias-state-success-primary) }
+
+  /* 工具调用卡 */
+  .tool {
+    margin: 0 0 12px; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--dsw-alias-border-l2);
+    background-color: var(--dsw-alias-bg-layer-2);
+  }
+  .tool-head {
+    display: flex; align-items: center; gap: 8px; padding: 7px 12px;
+    background-color: var(--dsw-alias-bg-layer-3);
+    border-bottom: 1px solid var(--dsw-alias-border-l1);
+    font-family: var(--dscp-mono); font-size: 9.5px; letter-spacing: .1em;
+    color: var(--dsw-alias-label-secondary);
+  }
+  .tool-head b { font-weight: 500; color: var(--dsw-alias-label-primary) }
+  .tool-head .spacer { margin-left: auto; color: var(--dsw-alias-label-caption) }
+  .tool-body {
+    padding: 9px 12px; font-family: var(--dscp-mono); font-size: 10.5px; line-height: 1.7;
+    color: var(--dsw-alias-label-secondary);
+  }
+  .tool-body .ok { color: var(--dsw-alias-state-success-primary) }
+  .tool-body .warn { color: var(--dsw-alias-state-warn-primary) }
+  .turn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 10px; border-radius: 999px;
+    background-color: var(--dsw-alias-turn-trigger-bg);
+    border: 1px solid var(--dsw-alias-border-l1);
+    font-family: var(--dscp-mono); font-size: 9px; letter-spacing: .1em;
+    color: var(--dsw-alias-label-tertiary);
+  }
+  /* 伪滚动条：无头浏览器默认隐藏滚动条，这里画一根证明 token 生效 */
+  .convo::-webkit-scrollbar { width: 5px }
+  .fake-sb {
+    position: absolute; top: 8px; right: 5px; bottom: 8px; width: 5px;
+    border-radius: 3px; pointer-events: none;
+    background-color: var(--dsw-alias-bg-skeleton);
+  }
+  .fake-sb::before, .fake-sb::after {
+    content: ""; position: absolute; left: 0; right: 0; border-radius: 3px;
+  }
+  .fake-sb::before { top: 6%; height: 22%; background-color: var(--dsw-alias-scrollbar-bg-l1) }
+  .fake-sb::after { top: 30%; height: 9%; background-color: var(--dsw-alias-scrollbar-hover-l1) }
+
+  /* ---------- composer ---------- */
+  .composer-wrap { padding: 0 30px 14px; position: relative }
+  /* 浮动 dock：竖排工具条，浮在 composer 上方右侧 */
+  .dock {
+    position: absolute; right: 8px; bottom: 100%; margin-bottom: 12px;
+    display: flex; flex-direction: column; gap: 3px; padding: 5px;
+    border-radius: 11px;
+    background-color: var(--dsw-alias-bg-layer-3);
+    box-shadow: 0 12px 30px rgb(0 0 0 / 50%);
+  }
+  .dock-btn {
+    width: 22px; height: 22px; display: grid; place-items: center;
+    border-radius: 6px; border: 0; background-color: transparent;
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 11px; cursor: default;
+  }
+  .dock-btn[aria-pressed="true"] {
+    background-color: var(--dsw-alias-button-ghost-active-fill);
+    color: var(--dsw-alias-label-primary);
+  }
+  .dock-sep { height: 1px; margin: 2px 2px; background-color: var(--dsw-alias-border-l2) }
+  .composer {
+    max-width: 660px; margin: 0 auto; padding: 10px 12px 8px;
+    border-radius: 16px;
+    background-color: var(--dsw-specific-input-major);
+    border: 1px solid var(--dsw-alias-border-l3);
+    box-shadow: 0 12px 34px rgb(0 0 0 / 55%);
+  }
+  .composer-text {
+    min-height: 32px; padding: 2px 2px 6px;
+    color: var(--dsw-alias-label-caption);
+    line-height: 1.6;
+  }
+  /* 会话区底部的软收口，免得滚动内容硬切在 composer 上沿 */
+  .convo::after {
+    content: ""; position: sticky; display: block; bottom: 0; left: 0; right: 0;
+    height: 44px; margin: 0 -30px -6px; pointer-events: none;
+    background: linear-gradient(180deg, transparent, var(--dsw-alias-bg-base));
+  }
+  .composer-bar { display: flex; align-items: center; gap: 8px }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 9px; border-radius: 7px;
+    background-color: var(--dsw-specific-selector);
+    border: 1px solid var(--dsw-alias-border-l2);
+    color: var(--dsw-alias-label-secondary);
+    font-family: var(--dscp-mono); font-size: 9px; letter-spacing: .08em;
+  }
+  .chip:hover { background-color: var(--dsw-alias-interactive-bg-hover) }
+  .chip i { font-style: normal; color: var(--dsw-alias-label-caption) }
+  .composer-bar .spacer { margin-left: auto }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 6px 13px; border-radius: 9px; cursor: default;
+    border: 1px solid transparent;
+    font-family: var(--dscp-mono); font-size: 9.5px; letter-spacing: .1em;
+  }
+  .btn--primary {
+    background-color: var(--dsw-alias-button-primary-fill);
+    color: var(--dsw-alias-label-primary-foreground);
+    border-color: var(--dsw-alias-button-primary-fill);
+    box-shadow: 0 0 0 1px var(--dsw-alias-button-primary-fill),
+      0 0 14px var(--dsw-alias-state-business-primary);
+  }
+  .btn--ghost {
+    background-color: transparent;
+    border-color: var(--dsw-alias-border-l3);
+    color: var(--dsw-alias-label-secondary);
+  }
+  .btn--ghost[aria-pressed="true"] {
+    background-color: var(--dsw-alias-button-ghost-active-fill);
+    color: var(--dsw-alias-label-primary);
+  }
+  .btn--danger {
+    background-color: var(--dsw-alias-state-error-tertiary);
+    border-color: var(--dsw-alias-state-error-primary);
+    color: var(--dsw-alias-state-error-primary);
+  }
+  .btn--disabled {
+    background-color: var(--dsw-alias-button-primary-dimmed);
+    color: var(--dsw-alias-label-dimmed);
+    border-color: var(--dsw-alias-border-l1);
+  }
+  .composer-hint {
+    max-width: 660px; margin: 6px auto 0; text-align: center;
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .12em;
+    color: var(--dsw-alias-label-caption);
+  }
+
+  /* ---------- 右侧栏 ---------- */
+  .rail {
+    display: flex; flex-direction: column; gap: 10px; min-height: 0;
+    padding: 12px; overflow: hidden;
+    background-color: var(--dsw-alias-bg-layer-1);
+    border-left: 1px solid var(--dsw-alias-border-l1);
+  }
+  .card {
+    border-radius: 14px; padding: 11px 12px;
+    background-color: var(--dsw-alias-bg-layer-2);
+    border: 1px solid var(--dsw-alias-border-l2);
+  }
+  .card-head {
+    display: flex; align-items: center; gap: 7px;
+    padding-bottom: 8px; margin-bottom: 4px;
+    border-bottom: 1px solid var(--dsw-alias-border-l1);
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .16em;
+    color: var(--dsw-alias-label-caption);
+  }
+  .card-head b { margin-left: auto; font-weight: 400; color: var(--dsw-alias-label-tertiary) }
+  .row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 0; border-bottom: 1px solid var(--dsw-alias-border-l1);
+  }
+  .row:last-child { border-bottom: 0 }
+  .row-label { flex: 1; font-size: 12px; color: var(--dsw-alias-label-secondary) }
+  .row-value {
+    font-family: var(--dscp-mono); font-size: 9.5px; letter-spacing: .06em;
+    color: var(--dsw-alias-label-tertiary);
+  }
+  .segmented {
+    display: inline-grid; grid-auto-flow: column; gap: 2px; padding: 3px;
+    border-radius: 9px; background-color: var(--dsw-alias-bg-module-platform);
+  }
+  .segmented span {
+    padding: 3px 9px; border-radius: 7px;
+    font-family: var(--dscp-mono); font-size: 9px; letter-spacing: .08em;
+    color: var(--dsw-alias-label-tertiary);
+  }
+  .segmented span[aria-selected="true"] {
+    background-color: var(--dsw-alias-interactive-bg-hover-solid);
+    color: var(--dsw-alias-label-primary);
+    box-shadow: inset 0 0 0 1px var(--dsw-alias-border-l3);
+  }
+  .switch {
+    position: relative; width: 32px; height: 18px; border-radius: 999px; flex: 0 0 auto;
+    background-color: var(--dsw-alias-border-l3);
+    border: 0;
+  }
+  .switch[aria-checked="true"] { background-color: var(--dsw-alias-brand-primary) }
+  .switch::after {
+    content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px;
+    border-radius: 50%; background-color: var(--dsw-alias-switch-thumb);
+  }
+  .switch[aria-checked="true"]::after {
+    left: 17px; background-color: var(--dsw-alias-label-primary-foreground);
+  }
+  /* 迷你进度条：role=progressbar 是宿主真实语义（皮肤给它轨道刻度 + 走马灯）；
+     这里的内层 .prog-fill 只是样张的填充块，真实 DSH 里对应进度条的填充层。 */
+  .prog {
+    flex: 0 0 84px; height: 9px; border-radius: 2px; overflow: hidden;
+    background-color: var(--dsw-alias-bg-3);
+  }
+  .prog-fill {
+    display: block; height: 100%;
+    background-color: var(--dsw-alias-state-business-primary);
+  }
+  .tip {
+    padding: 7px 9px; border-radius: 8px; margin-top: 8px;
+    background-color: var(--dsw-specific-tip);
+    color: var(--dsw-alias-label-secondary);
+    font-size: 11.5px; line-height: 1.6;
+  }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 6px }
+  .toast {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 11px; border-radius: 10px;
+    background-color: var(--dsw-alias-toast-bg);
+    color: var(--dsw-alias-toast-label);
+    font-size: 11.5px;
+    box-shadow: 0 10px 26px rgb(0 0 0 / 45%);
+  }
+  .toast small {
+    margin-left: auto; font-family: var(--dscp-mono); font-size: 8.5px;
+    letter-spacing: .1em; opacity: .8;
+  }
+  .tooltip {
+    position: relative; align-self: flex-start;
+    padding: 5px 9px; border-radius: 7px;
+    background-color: var(--dsw-alias-tooltip-bg);
+    color: var(--dsw-alias-label-primary);
+    font-size: 11px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 45%);
+  }
+  .tooltip::after {
+    content: ""; position: absolute; left: 16px; bottom: -4px;
+    width: 8px; height: 8px; transform: rotate(45deg);
+    background-color: var(--dsw-alias-tooltip-bg);
+  }
+  .kbd {
+    padding: 0 4px; border-radius: 4px;
+    background-color: var(--dsw-alias-border-inverted);
+    color: var(--dsw-alias-label-secondary);
+    font-family: var(--dscp-mono); font-size: 9px;
+  }
+  .mini-note {
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .1em;
+    color: var(--dsw-alias-label-caption);
+  }
+
+  /* ---------- 浮动菜单（半透明，压住滚动内容） ---------- */
+  .menu {
+    position: absolute; top: 214px; right: 362px; width: 236px; z-index: 40;
+    border-radius: 12px; overflow: hidden;
+    background-color: var(--dsw-menu-surface-fill);
+    backdrop-filter: var(--dsw-menu-backdrop-filter);
+    -webkit-backdrop-filter: var(--dsw-menu-backdrop-filter);
+    border: 1px solid var(--dsw-alias-border-l3);
+    box-shadow: 0 18px 44px rgb(0 0 0 / 55%);
+  }
+  .menu-group {
+    padding: 5px 10px;
+    background-color: var(--dsw-alias-menu-group-header-fill);
+    font-family: var(--dscp-mono); font-size: 8.5px; letter-spacing: .16em;
+    color: var(--dsw-alias-label-caption);
+  }
+  .menu-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 10px; font-size: 12.5px;
+    color: var(--dsw-alias-label-primary);
+  }
+  .menu-item:hover, .menu-item[aria-selected="true"] {
+    background-color: var(--dsw-alias-interactive-bg-hover);
+  }
+  .menu-item .m-icon {
+    width: 13px; height: 13px; flex: 0 0 auto;
+    border: 1px solid var(--dsw-alias-menu-icon); border-radius: 3px;
+    color: var(--dsw-alias-menu-icon);
+  }
+  .menu-item kbd {
+    margin-left: auto; font-family: var(--dscp-mono); font-size: 8.5px;
+    letter-spacing: .08em; color: var(--dsw-alias-label-caption);
+  }
+  .menu-item--danger { color: var(--dsw-alias-state-error-primary) }
+  .menu-item--danger .m-icon { border-color: var(--dsw-alias-state-error-primary) }
+  .menu-sep { height: 1px; background-color: var(--dsw-alias-border-l1) }
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- ================= 左侧栏 ================= -->
+  <aside class="sb">
+    <div class="sb-brand">
+      <div class="sb-mark" aria-hidden="true"></div>
+      <div>
+        <div class="sb-brand-name">IQC LAB</div>
+      </div>
+      <div class="sb-brand-sub">v0.1</div>
+    </div>
+
+    <nav class="sb-nav" aria-label="主导航">
+      <a class="sb-nav-item" href="#" aria-current="page">
+        <span class="sb-icon" aria-hidden="true"></span>会话
+      </a>
+      <a class="sb-nav-item" href="#">
+        <span class="sb-icon" aria-hidden="true"></span>工作区
+      </a>
+      <a class="sb-nav-item" href="#">
+        <span class="sb-icon" aria-hidden="true"></span>技能库
+      </a>
+      <a class="sb-nav-item" href="#">
+        <span class="sb-icon" aria-hidden="true"></span>设置
+      </a>
+    </nav>
+
+    <div class="sb-label"><span>会话 / SESSIONS</span><b>04</b></div>
+    <div class="sb-list">
+      <div class="sb-session" aria-selected="true">
+        <span class="sb-session-title">主题 token 迁移 · theme.css</span>
+        <span class="sb-session-meta"><span>刚刚</span><span>12 条</span></span>
+      </div>
+      <div class="sb-session">
+        <span class="sb-session-title">启动屏时间线校准</span>
+        <span class="sb-session-meta"><span>14:02</span><span>31 条</span></span>
+      </div>
+      <div class="sb-session">
+        <span class="sb-session-title">UEG 徽标描边对齐</span>
+        <span class="sb-session-meta"><span>昨天</span><span>8 条</span></span>
+      </div>
+      <div class="sb-session">
+        <span class="sb-session-title">无头截图回归</span>
+        <span class="sb-session-meta"><span>昨天</span><span>19 条</span></span>
+      </div>
+      <div class="sb-session">
+        <span class="sb-session-title">配置文件读写边界</span>
+        <span class="sb-session-meta"><span>周一</span><span>6 条</span></span>
+      </div>
+    </div>
+
+    <div class="sb-foot">
+      <div class="sb-avatar" aria-hidden="true">0912</div>
+      <div class="sb-operator">丁兵兵<small>OPERATOR · CLEARANCE 绝密</small></div>
+      <div class="led led--ok" aria-hidden="true"></div>
+    </div>
+  </aside>
+
+  <!-- ================= 主列 ================= -->
+  <section class="main">
+    <header class="tb">
+      <div class="tb-crumb">
+        <span>COMMAND</span><i>/</i><span>THEME</span><i>/</i>
+      </div>
+      <div class="tb-title">主题 token 迁移 · theme.css</div>
+      <div class="tb-right">
+        <span class="tb-chip"><span data-dsc-led class="led led--ok"></span>HOST <b id="spec-host">DARK</b></span>
+        <span class="tb-chip">PALETTE <b id="spec-palette">RED</b></span>
+        <span class="tb-chip">SL <b id="spec-sl">0.5</b></span>
+        <span class="tb-chip">FRAMES <b id="spec-frames">ON</b></span>
+        <span class="tb-chip">DECO <b id="spec-deco">ON</b></span>
+        <span class="tb-icon" title="搜索">⌕</span>
+        <span class="tb-icon" title="更多">⋯</span>
+      </div>
+    </header>
+
+    <div class="convo" data-conversation-scroll>
+      <div class="fake-sb" aria-hidden="true"></div>
+      <div class="convo-inner">
+        <!-- 用户气泡 -->
+        <div class="msg msg--user">
+          <div class="role">OPERATOR · 0912</div>
+          <div class="bubble">
+            把 DSH 的语义 token 全套映射到插件色板上，宿主深浅两态都要压住；
+            正文保持近白，主色只留在强调和描边。顺手把 <code class="inline">--dsc-glow</code> 调成 0 验证发光能关掉。
+          </div>
+        </div>
+
+        <!-- 助手消息 -->
+        <div class="msg">
+          <div class="role">ASSISTANT · 北京航天中心</div>
+          <div class="asst">
+            <h2>迁移完成 / TOKEN MAPPING</h2>
+            <p>
+              9 个 Host 注入变量 → 125 枚 <code class="inline">--dsw-*</code> 语义 token，全部声明在
+              <code class="inline">html[data-dsh-command="on"] body</code> 上（0,1,2），稳压宿主的
+              <code class="inline">body[data-ds-dark-theme]</code>（0,1,1）。零 <code class="inline">!important</code>。
+            </p>
+            <ul>
+              <li>背景层级 <strong>bg-base → layer-4</strong> 用暖灰阶梯压出金属面板的层次</li>
+              <li>边框全部由 accent 派生成<strong>发丝红</strong>，强调层级只靠 alpha</li>
+              <li>语义状态（成功/警告/危险）保留固定色相，不跟预设走</li>
+            </ul>
+
+            <div class="code" data-dsc-hud>
+              <div class="code-bar"><span>theme.css · CSS</span><span>L118–L132</span></div>
+<pre><span class="c-cmt">/* 颜色只从 Host 注入的变量派生，其余 color-mix */</span>
+<span class="c-key">html</span><span class="c-pun">[</span><span class="c-prm">data-dsh-command</span><span class="c-pun">=</span><span class="c-str">"on"</span><span class="c-pun">]</span> <span class="c-key">body</span> <span class="c-pun">{</span>
+  <span class="c-fn">--dsw-alias-bg-base</span><span class="c-pun">:</span> <span class="c-fn">var</span>(<span class="c-prm">--dsc-bg</span><span class="c-pun">,</span> <span class="c-num">#080305</span>)<span class="c-pun">;</span>
+  <span class="c-fn">--dsw-alias-border-l2</span><span class="c-pun">:</span> <span class="c-fn">color-mix</span>(in srgb<span class="c-pun">,</span> <span class="c-fn">var</span>(<span class="c-prm">--dsc-accent</span>) <span class="c-num">16%</span><span class="c-pun">,</span> transparent)<span class="c-pun">;</span>
+  <span class="c-fn">--dsw-alias-label-primary</span><span class="c-pun">:</span> <span class="c-fn">var</span>(<span class="c-prm">--dsc-text</span><span class="c-pun">,</span> <span class="c-num">#f3e7e4</span>)<span class="c-pun">;</span>
+  <span class="c-fn">--dsw-focus-ring-color</span><span class="c-pun">:</span> <span class="c-fn">var</span>(<span class="c-prm">--dsc-accent</span>)<span class="c-pun">;</span>
+<span class="c-pun">}</span></pre>
+            </div>
+
+            <table class="tbl">
+              <thead>
+                <tr><th>TOKEN</th><th>宿主深色</th><th>皮肤</th><th>对比度</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>label-primary / bg-base</code></td><td>#f9fafb / #151517</td><td>#f3e7e4 / #080305</td><td class="num">16.9:1</td></tr>
+                <tr><td><code>label-secondary / layer-1</code></td><td>#cfd3d6 / #232324</td><td>#bfb5b3 / #201a1b</td><td class="num">8.6:1</td></tr>
+                <tr><td><code>label-tertiary / layer-2</code></td><td>#adb2b8 / #2c2c2e</td><td>#a39a99 / #292324</td><td class="num">5.4:1</td></tr>
+                <tr><td><code>primary-foreground / accent</code></td><td>#0f1115 / #f9fafb</td><td>#0f0a0c / #ff3b30</td><td class="num">5.0:1</td></tr>
+              </tbody>
+            </table>
+            <p class="dim">
+              对比度 = WCAG 2.1 相对亮度比（表内取默认预设「统帅红」）；底色先按
+              <code class="inline">color-mix</code> 合成再算，数值来自
+              <code class="inline">_tool/theme-scratch/check.mjs</code>（六套预设 + 深/浅两种宿主态）。
+            </p>
+
+            <div class="tool" data-dsc-hud>
+              <div class="tool-head">
+                <span data-dsc-led class="led led--ok"></span><b>bash</b><span>node _tool/theme-scratch/check.mjs</span>
+                <span class="spacer">0.4s · exit 0</span>
+              </div>
+              <div class="tool-body">
+                <div><span class="ok">ok</span> 规则块 18 · token 声明 125 · !important 0</div>
+                <div><span class="ok">ok</span> 9 变量 fallback 齐全 · 面板框挂真实钩子 · 全部规则在 data-dsh-command 下</div>
+                <div><span class="warn">warn</span> 装饰层全部 pointer-events:none · 四角框受 --dsc-hud-frames 控制</div>
+              </div>
+            </div>
+
+            <span class="turn"><span data-dsc-led class="led led--ok"></span>本轮 4 个工具调用 · 12.4s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="composer-wrap">
+      <!-- 浮动 dock：[data-dockkit-float] 是宿主真实钩子，皮肤给它套四角框 + 发丝描边 -->
+      <div class="dock" data-dockkit-float aria-label="浮动工具条">
+        <button class="dock-btn" type="button" aria-pressed="true">◧</button>
+        <button class="dock-btn" type="button">▤</button>
+        <button class="dock-btn" type="button">⌗</button>
+        <span class="dock-sep" aria-hidden="true"></span>
+        <button class="dock-btn" type="button">⌘</button>
+      </div>
+      <div class="composer" data-composer-card>
+        <!-- 真实 DSH 的 composer 是可聚焦的富文本编辑器；这里用 contenteditable 模拟，
+             ?focus=1 时聚焦它，皮肤的 :focus-within 扫描线就会跑起来。 -->
+        <div class="composer-text" contenteditable="true" spellcheck="false" aria-label="输入指令">输入指令，或按 <span class="kbd">/</span> 唤起命令面板…</div>
+        <div class="composer-bar">
+          <span class="chip">MODEL <i>deepseek-flash</i></span>
+          <span class="chip">自动批准 <i>on</i></span>
+          <span class="chip">token 预算 <i>64k</i></span>
+          <span class="spacer"></span>
+          <button class="btn btn--primary" type="button">发送 ↳</button>
+        </div>
+      </div>
+      <div class="composer-hint">SHIFT + ENTER 换行 · ESC 中断本轮 · 输入即发送到北京航天中心</div>
+    </div>
+  </section>
+
+  <!-- ================= 右侧栏 ================= -->
+  <aside class="rail">
+    <div class="card" data-dsc-hud>
+      <div class="card-head"><span>皮肤参数 / SKIN</span><b>theme.css</b></div>
+      <div class="row">
+        <span class="row-label">主题预设</span>
+        <span class="segmented">
+          <span aria-selected="true">红</span><span>青</span><span>琥珀</span>
+        </span>
+      </div>
+      <div class="row">
+        <span class="row-label">宿主配色覆盖</span>
+        <span class="switch" role="switch" aria-checked="true"></span>
+      </div>
+      <div class="row">
+        <span class="row-label">面板四角 HUD</span>
+        <span class="switch" role="switch" aria-checked="true"></span>
+      </div>
+      <div class="row">
+        <span class="row-label">扫描线强度</span>
+        <span class="row-value">0.50</span>
+      </div>
+      <div class="row">
+        <span class="row-label">暗角 / 颗粒</span>
+        <span class="row-value">0.60 / 0.35</span>
+      </div>
+      <div class="tip">正文对比度 16.9:1；主色只出现在描边、选中与主按钮。</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span>按钮组 / ACTIONS</span></div>
+      <div class="btn-row">
+        <button class="btn btn--primary" type="button">执行指令</button>
+        <button class="btn btn--ghost" type="button" aria-pressed="true">强制深色</button>
+        <button class="btn btn--ghost" type="button">附加文件</button>
+        <button class="btn btn--danger" type="button">终止会话</button>
+        <button class="btn btn--disabled" type="button" disabled>等待批准</button>
+      </div>
+    </div>
+
+    <div class="card" data-dockkit-pane>
+      <div class="card-head"><span>运行状态 / STATUS</span><b>实时</b></div>
+      <div class="row"><span data-dsc-led class="led led--ok"></span><span class="row-label">主题注入</span><span class="row-value">OK</span></div>
+      <div class="row"><span data-dsc-led class="led led--ok"></span><span class="row-label">启动屏</span><span class="row-value">session</span></div>
+      <div class="row"><span data-dsc-led class="led led--warn"></span><span class="row-label">扫描线</span><span class="row-value">0.50</span></div>
+      <div class="row"><span data-dsc-led class="led led--err"></span><span class="row-label">构建缓存</span><span class="row-value">off</span></div>
+      <div class="row">
+        <span class="row-label">本轮预算</span>
+        <div class="prog" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="本轮 token 预算">
+          <i class="prog-fill" style="width:62%"></i>
+        </div>
+      </div>
+      <div class="mini-note" style="margin-top:6px">AUTO-REFRESH · 1s</div>
+    </div>
+
+    <div class="tooltip">皮肤只在 html[data-dsh-command="on"] 下生效</div>
+
+    <div class="toast" role="status">
+      <span data-dsc-led class="led led--ok"></span>
+      <span>config 已写入</span>
+      <small>dsh-supreme-command.json</small>
+    </div>
+
+    <div class="mini-note" id="host-note" style="margin-top:auto">
+      PREVIEW · 仿真外壳 · 宿主 token 为真实值
+    </div>
+  </aside>
+
+  <!-- ================= 浮动菜单（半透明，压住会话内容） ================= -->
+  <div class="menu" role="menu" aria-label="会话操作">
+    <div class="menu-group">SESSION</div>
+    <div class="menu-item" role="menuitem" aria-selected="true"><span class="m-icon"></span>重命名会话<kbd>⌘R</kbd></div>
+    <div class="menu-item" role="menuitem"><span class="m-icon"></span>复制分享链接<kbd>⌘L</kbd></div>
+    <div class="menu-item" role="menuitem"><span class="m-icon"></span>导出为 Markdown</div>
+    <div class="menu-sep"></div>
+    <div class="menu-group">DANGER ZONE</div>
+    <div class="menu-item menu-item--danger" role="menuitem"><span class="m-icon"></span>删除会话<kbd>⌘⌫</kbd></div>
+  </div>
+</div>
+
+<script>
+  /* 预览页的「Host 模拟器」：只做 Host 真正会做的事 ——
+     注入 --dsc-*（含 --dsc-hud-frames）+ 切 body[data-ds-dark-theme] */
+  ;(() => {
+    const q = new URLSearchParams(location.search)
+    const PRESETS = {
+      'command-red': { accent: '#ff3b30', accent2: '#ff8a5c', bg: '#080305', text: '#f3e7e4' },
+      amber: { accent: '#ffb020', accent2: '#ffd76a', bg: '#0a0703', text: '#f5eddf' },
+      cyan: { accent: '#22d3ee', accent2: '#7dd3fc', bg: '#03080a', text: '#e2f6fa' },
+      green: { accent: '#35e07a', accent2: '#a3e635', bg: '#040a06', text: '#e3f7ea' },
+      violet: { accent: '#a855f7', accent2: '#e879f9', bg: '#08040e', text: '#f0e8fb' },
+      mono: { accent: '#e5e7eb', accent2: '#9ca3af', bg: '#09090b', text: '#f4f4f5' }
+    }
+    const ALIAS = { red: 'command-red', 'command-red': 'command-red' }
+    const skin = q.get('skin') || q.get('p')          /* ?skin= 为主，?p= 是旧别名 */
+    const key = ALIAS[skin] || (PRESETS[skin] ? skin : 'command-red')
+    const pal = PRESETS[key]
+    const root = document.documentElement
+    root.style.setProperty('--dsc-accent', q.get('accent') || pal.accent)
+    root.style.setProperty('--dsc-accent-2', q.get('accent2') || pal.accent2)
+    root.style.setProperty('--dsc-bg', q.get('bg') || pal.bg)
+    root.style.setProperty('--dsc-text', q.get('text') || pal.text)
+    /* 装饰全关：?deco=0 = glow / scanlines / grain / vignette / frames 一起归零，
+       用来验证「新增的框/刻度/标签带」不会留下半套。 */
+    const decoOff = q.get('deco') === '0'
+    for (const k of ['glow', 'scanlines', 'grain', 'vignette']) {
+      if (decoOff) root.style.setProperty('--dsc-' + k, '0')
+      else if (q.has(k)) root.style.setProperty('--dsc-' + k, q.get(k))
+    }
+    /* HUD 四角框开关：Host 注入 --dsc-hud-frames: 1|0
+       （0 = 角框 / 刻度带 / 顶部标签带 / 面板框强度一起归零） */
+    const frames = decoOff || q.get('frames') === '0' ? '0' : '1'
+    root.style.setProperty('--dsc-hud-frames', frames)
+
+    /* 宿主状态：有 data-ds-dark-theme 属性 = 深色宿主；没有 = 浅色宿主 */
+    const host = q.get('host') === 'light' ? 'light' : 'dark'
+    if (host === 'dark') document.body.setAttribute('data-ds-dark-theme', '')
+    document.getElementById('host-scheme').textContent =
+      ':root { color-scheme: ' + host + ' }'
+
+    /* 对照实验：?noth=1 关掉皮肤，露出宿主原貌 */
+    if (q.get('noth') === '1') document.getElementById('theme-link').disabled = true
+
+    /* 标题栏里的规格小标签 */
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v }
+    set('spec-host', host.toUpperCase())
+    set('spec-palette', key.replace('command-', '').toUpperCase())
+    set('spec-sl', decoOff ? '0' : q.has('scanlines') ? q.get('scanlines') : '0.5')
+    set('spec-frames', frames === '1' ? 'ON' : 'OFF')
+    set('spec-deco', decoOff ? 'OFF' : 'ON')
+    /* 浅色宿主时把「被覆盖」这件事写进页脚，截图自带证据 */
+    const note = document.getElementById('host-note')
+    if (note) {
+      note.textContent = host === 'light'
+        ? 'HOST LIGHT · 浅色 token 已被覆盖'
+        : 'HOST DARK · 深色 token 已被覆盖'
+    }
+
+    /* ?focus=1：聚焦 composer，演示 :focus-within 的聚焦内发光 + 扫描线 */
+    if (q.get('focus') === '1') {
+      const editor = document.querySelector('.composer-text')
+      if (editor) editor.focus()
+    }
+    /* ?scan=<0-100>：把 composer 扫描线钉在卡片高度的百分比位置（截图取证用；
+       扫描动画本身是 2.6s 无限循环，真实界面里不需要这个参数）。 */
+    if (q.has('scan')) {
+      const card = document.querySelector('[data-composer-card]')
+      if (card) {
+        card.style.animation = 'none'
+        card.style.setProperty('--dsc-scan-y', (Number(q.get('scan')) || 0) + '%')
+      }
+    }
+  })()
+</script>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>徽标检验台 · dsh-supreme-command</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../lib/logos/logos.css">
+<style>
+  /* ===== 检验页自身样式（页面范围，不参与插件注入） ===== */
+
+  .dsc-demo {
+    --ink: #f3e7e4;
+    --dim: #f3e7e4a8;
+    --faint: #f3e7e45c;
+    --line: #ff3b3030;
+    --line-strong: #ff3b3066;
+    --accent: #ff3b30;
+    --accent-2: #ff8a5c;
+    --panel: #0d0508;
+    --panel-2: #14070b;
+    --dsc-logo: #ff3b30;
+    position: relative;
+    min-height: 100vh;
+    padding: 44px 48px 72px;
+    box-sizing: border-box;
+    background:
+      radial-gradient(1200px 520px at 50% -12%, #ff3b3014, transparent 62%),
+      radial-gradient(900px 700px at 8% 110%, #ff8a5c0d, transparent 60%),
+      linear-gradient(180deg, #080305, #060204 62%, #080305);
+    color: var(--ink);
+    font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+
+  .dsc-demo__grid,
+  .dsc-demo__scan,
+  .dsc-demo__vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .dsc-demo__grid {
+    background-image:
+      linear-gradient(#ff3b300a 1px, transparent 1px),
+      linear-gradient(90deg, #ff3b300a 1px, transparent 1px);
+    background-size: 56px 56px, 56px 56px;
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 82%);
+  }
+  .dsc-demo__scan {
+    background: repeating-linear-gradient(180deg, #0000 0 2px, #00000042 2px 3px);
+    opacity: 0.5;
+  }
+  .dsc-demo__vignette {
+    background: radial-gradient(115% 80% at 50% 42%, transparent 52%, #000000b8 100%);
+  }
+
+  .dsc-demo__inner { position: relative; z-index: 2; max-width: 1360px; margin: 0 auto; }
+
+  .dsc-mono {
+    font-family: "Cascadia Mono", "Cascadia Code", Consolas, "SFMono-Regular", monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---- 顶部 ---- */
+  .dsc-head { margin-bottom: 34px; }
+  .dsc-head__row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--line);
+  }
+  .dsc-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .dsc-tag--dim { color: var(--faint); }
+  .dsc-tag__dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 8px var(--accent);
+    animation: dsc-demo-blink 2.4s ease-in-out infinite;
+  }
+  @keyframes dsc-demo-blink { 0%, 100% { opacity: 1 } 50% { opacity: 0.25 } }
+
+  .dsc-head__title {
+    margin: 22px 0 6px;
+    font-size: clamp(30px, 3.4vw, 46px);
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    line-height: 1.12;
+    text-shadow: 0 0 26px #ff3b3052, 0 0 2px #ff3b3080;
+  }
+  .dsc-head__title em { font-style: normal; color: var(--accent); }
+  .dsc-head__slash { color: var(--accent); opacity: 0.55; font-weight: 300; margin: 0 4px; }
+  .dsc-head__sub { margin: 0; color: var(--dim); max-width: 76ch; }
+  .dsc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .dsc-chip {
+    padding: 4px 10px; border: 1px solid var(--line);
+    background: #ff3b3008; color: var(--dim);
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .dsc-chip b { color: var(--ink); font-weight: 600; }
+
+  /* ---- 区块 ---- */
+  .dsc-sec { margin: 0 0 46px; }
+  .dsc-sec[hidden] { display: none; }
+  .dsc-sec__head {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 20px;
+    margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+  }
+  .dsc-sec__idx {
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 11px;
+    color: var(--accent); letter-spacing: 0.2em; display: block; margin-bottom: 2px;
+  }
+  .dsc-sec__title { margin: 0; font-size: 19px; font-weight: 620; letter-spacing: 0.03em; }
+  .dsc-sec__title small {
+    color: var(--faint); font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 11px; letter-spacing: 0.14em; margin-left: 10px; text-transform: uppercase;
+  }
+  .dsc-sec__note { margin: 0; color: var(--faint); font-size: 12.5px; text-align: right; max-width: 52ch; }
+
+  /* ---- 舞台（HUD 框） ---- */
+  .dsc-frame {
+    position: relative;
+    padding: 30px 34px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(75% 130% at 50% 50%, #1a0910 0%, #0b0407 58%, #080305 100%);
+    box-shadow: inset 0 0 80px #ff3b3010, 0 24px 60px #00000080;
+    overflow: hidden;
+  }
+  .dsc-frame::before,
+  .dsc-frame::after {
+    content: ""; position: absolute; width: 16px; height: 16px;
+    border: 1px solid var(--line-strong); pointer-events: none;
+  }
+  .dsc-frame::before { top: 7px; left: 7px; border-right: 0; border-bottom: 0; }
+  .dsc-frame::after { bottom: 7px; right: 7px; border-left: 0; border-top: 0; }
+  .dsc-frame__glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      repeating-linear-gradient(180deg, #0000 0 2px, #00000030 2px 3px),
+      radial-gradient(60% 100% at 50% 50%, #ff3b300c, transparent 70%);
+  }
+  .dsc-frame__meta {
+    position: absolute; top: 9px; right: 14px;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 9.5px; letter-spacing: 0.16em; color: #ff3b3099;
+  }
+
+  .dsc-grid-2 { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+  .dsc-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+
+  /* ---- 控制条 ---- */
+  .dsc-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .dsc-btn {
+    appearance: none; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border: 1px solid var(--line-strong);
+    background: linear-gradient(180deg, #ff3b3018, #ff3b3008);
+    color: var(--ink); font: inherit; font-size: 12.5px; letter-spacing: 0.03em;
+    clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+    transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+  }
+  .dsc-btn:hover { border-color: #ff3b30aa; background: linear-gradient(180deg, #ff3b3028, #ff3b3010); box-shadow: 0 0 22px #ff3b3033; }
+  .dsc-btn:active { transform: translateY(1px); }
+  .dsc-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+  .dsc-btn--primary { border-color: #ff3b30b3; color: #ffe9e6; }
+  .dsc-btn__key {
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 10px;
+    padding: 1px 5px; border: 1px solid var(--line-strong); color: var(--faint);
+  }
+  .dsc-status {
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 11px;
+    color: var(--faint); letter-spacing: 0.05em;
+  }
+  .dsc-status b { color: var(--accent); font-weight: 600; }
+
+  /* ---- 时序条 ---- */
+  .dsc-timeline { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .dsc-timeline__title {
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 10.5px;
+    letter-spacing: 0.16em; color: var(--faint); margin-bottom: 10px; text-transform: uppercase;
+  }
+  .dsc-tl-row {
+    display: grid; grid-template-columns: 168px minmax(0, 1fr) 92px;
+    gap: 12px; align-items: center; padding: 3px 0; font-size: 12px;
+  }
+  .dsc-tl-row__label { color: var(--dim); }
+  .dsc-tl-row__track { position: relative; height: 8px; background: #ff3b3012; border: 1px solid #ff3b301f; }
+  .dsc-tl-row__bar {
+    position: absolute; top: 0; bottom: 0;
+    background: linear-gradient(90deg, #ff3b30b3, #ff8a5c66);
+    box-shadow: 0 0 12px #ff3b3040;
+  }
+  .dsc-tl-row__t {
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 10.5px;
+    color: var(--faint); text-align: right;
+  }
+
+  /* ---- 说明卡 / 代码 ---- */
+  .dsc-note-card {
+    padding: 20px 22px; border: 1px solid var(--line);
+    background: linear-gradient(180deg, #ff3b3009, #0000 70%);
+  }
+  .dsc-note-card h3 {
+    margin: 0 0 8px; font-size: 13px; letter-spacing: 0.08em;
+    font-family: "Cascadia Mono", Consolas, monospace; color: var(--accent);
+  }
+  .dsc-note-card p { margin: 0 0 10px; color: var(--dim); font-size: 12.5px; }
+  .dsc-note-card p:last-child { margin-bottom: 0; }
+  .dsc-code {
+    margin: 10px 0 0; padding: 12px 14px; overflow-x: auto;
+    background: #06020399; border: 1px solid #ff3b301f;
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 11.5px; line-height: 1.7;
+    color: #f3e7e4d0;
+  }
+  .dsc-code .c { color: #ff3b3099; }
+  .dsc-code .k { color: #ff8a5c; }
+
+  /* ---- UEG ---- */
+  .dsc-ueg-stage { display: flex; align-items: center; justify-content: center; min-height: 300px; }
+  .dsc-ueg-size { width: 232px; }
+  .dsc-ueg-cap { text-align: center; margin-top: 10px; color: var(--faint); font-size: 11px; }
+
+  /* ---- 配色卡 ---- */
+  .dsc-pal {
+    position: relative; padding: 18px 18px 16px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #ff3b3008, #00000000);
+  }
+  .dsc-pal::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--swatch);
+    box-shadow: 0 0 18px var(--swatch);
+  }
+  .dsc-pal__head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+  .dsc-pal__name { font-size: 13px; letter-spacing: 0.04em; }
+  .dsc-pal__hex {
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 11px;
+    color: var(--dim); letter-spacing: 0.06em;
+  }
+  .dsc-pal__body { display: flex; align-items: center; gap: 18px; }
+  .dsc-pal__bsc { flex: 1 1 auto; min-width: 0; }
+  .dsc-pal__ueg { flex: 0 0 62px; width: 62px; }
+  .dsc-pal__foot {
+    margin-top: 12px; padding-top: 10px; border-top: 1px dashed #ff3b3026;
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 10.5px; color: var(--faint);
+    letter-spacing: 0.06em; display: flex; justify-content: space-between;
+  }
+
+  /* ---- 自检 ---- */
+  .dsc-selftest { margin-top: 8px; }
+  .dsc-selftest[hidden] { display: none; }
+  .dsc-selftest__out {
+    margin: 12px 0 0; padding: 16px 18px; min-height: 60px;
+    background: #050203e6; border: 1px solid #22c55e3d;
+    font-family: "Cascadia Mono", Consolas, monospace; font-size: 11.5px; line-height: 1.85;
+    color: #c9f5d9; white-space: pre-wrap; word-break: break-word;
+  }
+  .dsc-selftest__out .pass { color: #4ade80; }
+  .dsc-selftest__out .fail { color: #ff3b30; }
+  .dsc-selftest__out .muted { color: #f3e7e45c; }
+
+  /* ---- 页脚 ---- */
+  .dsc-foot {
+    margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px;
+    color: var(--faint); font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 10.5px; letter-spacing: 0.08em;
+  }
+
+  .dsc-demo[data-only] .dsc-head { display: none; }
+  .dsc-demo[data-only] { padding-top: 26px; }
+
+  @media (max-width: 1080px) {
+    .dsc-demo { padding: 26px 20px 52px; }
+    .dsc-grid-2, .dsc-grid-3 { grid-template-columns: minmax(0, 1fr); }
+    .dsc-tl-row { grid-template-columns: 128px minmax(0, 1fr) 78px; }
+  }
+</style>
+</head>
+<body style="margin:0;background:#080305">
+<div class="dsc-demo" id="demo">
+  <div class="dsc-demo__grid" aria-hidden="true"></div>
+  <div class="dsc-demo__scan" aria-hidden="true"></div>
+  <div class="dsc-demo__vignette" aria-hidden="true"></div>
+
+  <div class="dsc-demo__inner">
+    <header class="dsc-head">
+      <div class="dsc-head__row">
+        <span class="dsc-tag"><i class="dsc-tag__dot"></i>DSC-PLUGIN / dsh-supreme-command</span>
+        <span class="dsc-tag dsc-tag--dim">SECTOR 07 · 北京航天中心 · LOGO MODULE</span>
+      </div>
+      <h1 class="dsc-head__title">徽标检验台<em>.</em><span class="dsc-head__slash">/</span>LOGO VERIFY</h1>
+      <p class="dsc-head__sub">
+        UEG 徽标（静态 3000×3500）与 BSC 橄榄枝动画徽标（3000×705）。
+        几何路径零改动，只做作用域化 + currentColor 换色 + id→class；
+        颜色全部跟随 <span class="dsc-mono">--dsc-logo</span>，动画语义与源 SVG 逐条对齐。
+      </p>
+      <div class="dsc-chips">
+        <span class="dsc-chip">BSC <b>26 path</b> / 20 叶</span>
+        <span class="dsc-chip">UEG <b>4 path</b></span>
+        <span class="dsc-chip">keyframes <b>6</b></span>
+        <span class="dsc-chip">颜色来源 <b>currentColor</b></span>
+        <span class="dsc-chip">全局 id <b>0</b></span>
+      </div>
+    </header>
+
+    <main>
+      <!-- 01 播放态 -->
+      <section class="dsc-sec dsc-sec--play" data-sec="play">
+        <div class="dsc-sec__head">
+          <div>
+            <span class="dsc-sec__idx">01 / PLAY</span>
+            <h2 class="dsc-sec__title">播放态<small>full animation · 0–6s</small></h2>
+          </div>
+          <div class="dsc-controls">
+            <button class="dsc-btn dsc-btn--primary" id="btn-replay" type="button">⟳ 重播动画 <span class="dsc-btn__key">replayBsc()</span></button>
+            <button class="dsc-btn" id="btn-toggle" type="button">暂停</button>
+            <span class="dsc-status" id="play-status" role="status" aria-live="polite">动画进行中 …</span>
+          </div>
+        </div>
+        <div class="dsc-frame">
+          <div class="dsc-frame__glow" aria-hidden="true"></div>
+          <span class="dsc-frame__meta">BSC · 3000 × 705 · data-mode="play"</span>
+          <div id="stage-play">
+            <div class="dsc-bsc" data-mode="play" data-logo="bsc" style="--olive-leaf-display-time:100ms"></div>
+          </div>
+        </div>
+
+        <div class="dsc-timeline">
+          <div class="dsc-timeline__title">动画时序（源文件语义）· 总长 6s</div>
+          <div class="dsc-tl-row"><span class="dsc-tl-row__label">橄榄叶 ×20 逐片浮现</span><span class="dsc-tl-row__track"><i class="dsc-tl-row__bar" style="left:1.7%;width:16.7%"></i></span><span class="dsc-tl-row__t">0.1–1.1s</span></div>
+          <div class="dsc-tl-row"><span class="dsc-tl-row__label">外环 描边→填充</span><span class="dsc-tl-row__track"><i class="dsc-tl-row__bar" style="left:16.7%;width:66.7%"></i></span><span class="dsc-tl-row__t">1.0–5.0s</span></div>
+          <div class="dsc-tl-row"><span class="dsc-tl-row__label">三角 自下揭示</span><span class="dsc-tl-row__track"><i class="dsc-tl-row__bar" style="left:0%;width:33.3%"></i></span><span class="dsc-tl-row__t">0.0–2.0s</span></div>
+          <div class="dsc-tl-row"><span class="dsc-tl-row__label">内环 描边→填充</span><span class="dsc-tl-row__track"><i class="dsc-tl-row__bar" style="left:33.3%;width:50%"></i></span><span class="dsc-tl-row__t">2.0–5.0s</span></div>
+          <div class="dsc-tl-row"><span class="dsc-tl-row__label">上下两行文字 擦除揭示</span><span class="dsc-tl-row__track"><i class="dsc-tl-row__bar" style="left:33.3%;width:33.3%"></i></span><span class="dsc-tl-row__t">2.0–4.0s</span></div>
+          <div class="dsc-tl-row"><span class="dsc-tl-row__label">中央 BSC 字标 中线展开</span><span class="dsc-tl-row__track"><i class="dsc-tl-row__bar" style="left:50%;width:50%"></i></span><span class="dsc-tl-row__t">3.0–6.0s</span></div>
+        </div>
+      </section>
+
+      <!-- 02 终态 -->
+      <section class="dsc-sec dsc-sec--still" data-sec="still">
+        <div class="dsc-sec__head">
+          <div>
+            <span class="dsc-sec__idx">02 / STILL</span>
+            <h2 class="dsc-sec__title">静态终态<small>data-mode="still"</small></h2>
+          </div>
+          <p class="dsc-sec__note">动画全部落到终态：<span class="dsc-mono">animation:none</span>，叶子 opacity 1、clip-path ins(0)、描边 offset 0、填充实心。</p>
+        </div>
+        <div class="dsc-grid-2">
+          <div class="dsc-frame">
+            <div class="dsc-frame__glow" aria-hidden="true"></div>
+            <span class="dsc-frame__meta">BSC · data-mode="still"</span>
+            <div class="dsc-bsc" data-mode="still" data-logo="bsc"></div>
+          </div>
+          <div class="dsc-note-card">
+            <h3>STATIC MODE</h3>
+            <p>终态在 CSS 里显式声明，不依赖动画的 <span class="dsc-mono">forwards</span> 填充，首屏/Print/缩略图都不会出现半截。</p>
+            <pre class="dsc-code"><span class="c">&lt;!-- 容器上加 data-mode --&gt;</span>
+&lt;div class=<span class="k">"dsc-bsc"</span> data-mode=<span class="k">"still"</span>&gt;…
+<span class="c">/* 系统减少动态效果时，媒体查询自动等同 still */</span>
+@media (prefers-reduced-motion: reduce) { … }</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 UEG -->
+      <section class="dsc-sec dsc-sec--ueg" data-sec="ueg">
+        <div class="dsc-sec__head">
+          <div>
+            <span class="dsc-sec__idx">03 / UEG</span>
+            <h2 class="dsc-sec__title">UEG 徽标<small>static · 3000 × 3500</small></h2>
+          </div>
+          <p class="dsc-sec__note">纯静态，无动画；路径带 <span class="dsc-mono">dsc-ueg-earth / -olive / -gov / -united</span> 分层类，后续要分层调色直接加规则。</p>
+        </div>
+        <div class="dsc-grid-2">
+          <div class="dsc-frame">
+            <div class="dsc-frame__glow" aria-hidden="true"></div>
+            <span class="dsc-frame__meta">UEG · 3000 × 3500</span>
+            <div class="dsc-ueg-stage">
+              <div class="dsc-ueg" data-logo="ueg" style="width:232px"></div>
+            </div>
+            <div class="dsc-ueg-cap">@2024 · UNITED EARTH GOVERNMENT</div>
+          </div>
+          <div class="dsc-note-card">
+            <h3>SCOPE + COLOR</h3>
+            <p>根节点带内联 <span class="dsc-mono">color:var(--dsc-logo, currentColor)</span>，所有 fill 都是 <span class="dsc-mono">currentColor</span>，所以宿主改 <span class="dsc-mono">--dsc-logo</span> 或 <span class="dsc-mono">color</span> 即可换色。</p>
+            <pre class="dsc-code"><span class="c">/* 全局主题变量供 Host 注入（本模块只消费，不定义） */</span>
+--dsc-logo: #ff3b30;
+<span class="c">/* 单个实例改色：在容器上写变量或 color */</span>
+&lt;div class=<span class="k">"dsc-ueg"</span> style=<span class="k">"--dsc-logo:#22d3ee"</span>&gt;…</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 配色 -->
+      <section class="dsc-sec dsc-sec--palettes" data-sec="palettes">
+        <div class="dsc-sec__head">
+          <div>
+            <span class="dsc-sec__idx">04 / PALETTES</span>
+            <h2 class="dsc-sec__title">三套配色<small>--dsc-logo</small></h2>
+          </div>
+          <p class="dsc-sec__note">同一份 SVG，仅靠 <span class="dsc-mono">--dsc-logo</span> 换色；BSC 用 still 终态、UEG 静态，便于肉眼比对填充与描边是否一起跟色。</p>
+        </div>
+        <div class="dsc-grid-3">
+          <article class="dsc-pal" style="--swatch:#ff3b30;--dsc-logo:#ff3b30">
+            <div class="dsc-pal__head"><span class="dsc-pal__name">统帅红</span><span class="dsc-pal__hex">#ff3b30</span></div>
+            <div class="dsc-pal__body">
+              <div class="dsc-pal__bsc dsc-bsc" data-mode="still" data-logo="bsc"></div>
+              <div class="dsc-pal__ueg dsc-ueg" data-logo="ueg"></div>
+            </div>
+            <div class="dsc-pal__foot"><span>command-red</span><span>accent</span></div>
+          </article>
+          <article class="dsc-pal" style="--swatch:#22d3ee;--dsc-logo:#22d3ee">
+            <div class="dsc-pal__head"><span class="dsc-pal__name">全息青</span><span class="dsc-pal__hex">#22d3ee</span></div>
+            <div class="dsc-pal__body">
+              <div class="dsc-pal__bsc dsc-bsc" data-mode="still" data-logo="bsc"></div>
+              <div class="dsc-pal__ueg dsc-ueg" data-logo="ueg"></div>
+            </div>
+            <div class="dsc-pal__foot"><span>cyan</span><span>accent</span></div>
+          </article>
+          <article class="dsc-pal" style="--swatch:#ffb020;--dsc-logo:#ffb020">
+            <div class="dsc-pal__head"><span class="dsc-pal__name">琥珀终端</span><span class="dsc-pal__hex">#ffb020</span></div>
+            <div class="dsc-pal__body">
+              <div class="dsc-pal__bsc dsc-bsc" data-mode="still" data-logo="bsc"></div>
+              <div class="dsc-pal__ueg dsc-ueg" data-logo="ueg"></div>
+            </div>
+            <div class="dsc-pal__foot"><span>amber</span><span>accent</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 自检（?selftest=1 时出现） -->
+      <section class="dsc-sec dsc-selftest" id="selftest" hidden data-sec="selftest">
+        <div class="dsc-sec__head">
+          <div>
+            <span class="dsc-sec__idx">SELF TEST</span>
+            <h2 class="dsc-sec__title">运行时自检<small>DOM / animation / replay / color</small></h2>
+          </div>
+          <p class="dsc-sec__note">页面自动运行：几何点数、动画实例数、重播是否真的重新计时、currentColor 是否落到三套配色。</p>
+        </div>
+        <pre class="dsc-selftest__out" id="selftest-out">running …</pre>
+      </section>
+
+      <footer class="dsc-foot">
+        <span>dsh-supreme-command · lib/logos/{ueg,bsc}.js + logos.css</span>
+        <span>shot: node scripts/shot.mjs "http://127.0.0.1:8791/preview/logos.html?only=play" shots/logos-1.png 1440 900 300</span>
+      </footer>
+    </main>
+  </div>
+</div>
+
+<script type="module">
+  import { BSC_SVG, replayBsc } from '../lib/logos/bsc.js';
+  import { UEG_SVG } from '../lib/logos/ueg.js';
+
+  const demo = document.getElementById('demo');
+  const params = new URLSearchParams(location.search);
+  const only = params.get('only');
+  const status = document.getElementById('play-status');
+  const toggleBtn = document.getElementById('btn-toggle');
+  const replayBtn = document.getElementById('btn-replay');
+
+  // 逐个注入（同一份字符串，重复注入也不会串 id：模块里根本没有 id）
+  for (const host of document.querySelectorAll('[data-logo="bsc"]')) host.innerHTML = BSC_SVG;
+  for (const host of document.querySelectorAll('[data-logo="ueg"]')) host.innerHTML = UEG_SVG;
+
+  // ?only=play|still|ueg|palettes|all 只留一块，方便截图取证
+  if (only && only !== 'all') {
+    demo.dataset.only = only;
+    for (const sec of document.querySelectorAll('.dsc-sec')) {
+      if (sec.dataset.sec !== only) sec.hidden = true;
+    }
+  }
+
+  const playStage = document.getElementById('stage-play');
+
+  // 播放 / 暂停（Element.getAnimations 需要显式 subtree:true 才会含子孙动画）
+  let paused = false;
+  toggleBtn?.addEventListener('click', () => {
+    paused = !paused;
+    for (const a of playStage.getAnimations({ subtree: true })) paused ? a.pause() : a.play();
+    toggleBtn.textContent = paused ? '继续' : '暂停';
+    status.innerHTML = paused ? '已暂停' : '动画进行中 …';
+  });
+
+  // ---- 重播：移除并重新插入 <svg>，新节点上的 CSS 动画从 0 重新计时 ----
+  let replayCount = 0;
+  function replay() {
+    const t0 = performance.now();
+    const fresh = replayBsc(playStage.querySelector('.dsc-bsc'));
+    replayCount += 1;
+    paused = false;
+    if (toggleBtn) toggleBtn.textContent = '暂停';
+    status.innerHTML = '已重播 <b>#' + replayCount + '</b> · ' + (fresh ? '新 SVG 节点已就位' : '未找到宿主');
+    return fresh;
+  }
+  replayBtn?.addEventListener('click', replay);
+
+  // ---- ?t=毫秒：把 BSC 动画冻结在指定时刻（截图取证用，比虚拟时间更精确） ----
+  const tRaw = params.get('t');
+  if (tRaw !== null) {
+    const freeze = () => {
+      for (const a of playStage.getAnimations({ subtree: true })) {
+        try { a.pause(); a.currentTime = Number(tRaw); } catch { /* 忽略 */ }
+      }
+      if (status) status.innerHTML = '冻结帧 <b>t=' + Number(tRaw) + 'ms</b>';
+    };
+    requestAnimationFrame(() => requestAnimationFrame(freeze));
+  }
+
+  // ---- ?selftest=1：运行时自检，把结论渲染成可见文本（截图可读） ----
+  if (params.get('selftest') === '1') runSelftest();
+
+  async function runSelftest() {
+    const panel = document.getElementById('selftest');
+    const out = document.getElementById('selftest-out');
+    // 先让各区块保持可见再测：display:none 会把 CSS 动画实例一起干掉，
+    // 测完最后一步才收起其它区块，把结论移到首屏。
+    panel.hidden = false;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const lines = [];
+    const ok = (cond, msg, extra = '') =>
+      lines.push(`<span class="${cond ? 'pass' : 'fail'}">${cond ? 'PASS' : 'FAIL'}</span>  ${msg}${extra ? '  <span class="muted">' + extra + '</span>' : ''}`);
+    try {
+      await sleep(120);
+      const playHost = document.querySelector('#stage-play .dsc-bsc');
+      const stillHost = document.querySelector('.dsc-bsc[data-mode="still"]');
+      const svg = playHost.querySelector('svg');
+
+      // 1. 结构 / 几何
+      const paths = svg.querySelectorAll('path').length;
+      const leaves = svg.querySelectorAll('.dsc-bsc-leaf').length;
+      ok(paths === 26, 'BSC 路径数 26', `实际 ${paths}`);
+      ok(leaves === 20, '橄榄叶 20 片', `实际 ${leaves}`);
+      ok(svg.querySelectorAll('[id]').length === 0, 'BSC 无任何裸 id');
+      ok(document.querySelectorAll('[data-logo] [id]').length === 0, '页面注入后重复 id = 0');
+
+      // 2. 动画实例
+      const anims = playHost.getAnimations({ subtree: true });
+      ok(anims.length === 26, '播放态动画实例 26 个（20 叶 + 2 环 + 4 clip）', `实际 ${anims.length}`);
+      const stillAnims = stillHost.getAnimations({ subtree: true });
+      ok(stillAnims.length === 0, 'still 容器无动画', `实际 ${stillAnims.length}`);
+
+      // 3. 重播可靠性：新节点 + 从 0 计时
+      const oldSvg = playHost.querySelector('svg');
+      const t0 = performance.now();
+      const fresh = replayBsc(playHost);
+      ok(!!fresh && fresh !== oldSvg, 'replayBsc 替换为新 SVG 节点');
+      await sleep(160);
+      const freshAnims = fresh ? fresh.getAnimations({ subtree: true }) : [];
+      const maxT = freshAnims.reduce((m, a) => Math.max(m, Number(a.currentTime) || 0), 0);
+      const elapsed = performance.now() - t0;
+      ok(freshAnims.length === 26, '重播后动画重新建立 26 个', `实际 ${freshAnims.length}`);
+      ok(maxT < elapsed + 80, '重播后动画时间轴从 0 重新计时', `max currentTime=${Math.round(maxT)}ms < 经过 ${Math.round(elapsed)}ms`);
+      ok(freshAnims.every((a) => a.playState !== 'finished'), '重播后没有停在 finished 的动画');
+
+      // 4. currentColor → 三套配色
+      const colorOf = (root) => getComputedStyle(root.querySelector('.dsc-bsc-leaf')).fill;
+      const red = colorOf(document.querySelector('.dsc-pal[style*="ff3b30"] .dsc-bsc'));
+      const cyan = colorOf(document.querySelector('.dsc-pal[style*="22d3ee"] .dsc-bsc'));
+      const amber = colorOf(document.querySelector('.dsc-pal[style*="ffb020"] .dsc-bsc'));
+      ok(red === 'rgb(255, 59, 48)', '叶子 fill 跟随 --dsc-logo 红', red);
+      ok(cyan === 'rgb(34, 211, 238)', '叶子 fill 跟随 --dsc-logo 青', cyan);
+      ok(amber === 'rgb(255, 176, 32)', '叶子 fill 跟随 --dsc-logo 琥珀', amber);
+      const ringStroke = getComputedStyle(document.querySelector('.dsc-bsc[data-mode="still"] .dsc-bsc-inner-circle')).stroke;
+      ok(ringStroke !== 'none' && ringStroke !== 'rgba(0, 0, 0, 0)', 'still 终态描边仍在', ringStroke);
+
+      // 5. 终态数值
+      const leaf = document.querySelector('.dsc-bsc[data-mode="still"] .dsc-bsc-leaf');
+      const ring = document.querySelector('.dsc-bsc[data-mode="still"] .dsc-bsc-inner-circle');
+      const tri = document.querySelector('.dsc-bsc[data-mode="still"] .dsc-bsc-triangle');
+      ok(getComputedStyle(leaf).opacity === '1', 'still 叶子 opacity=1');
+      ok(getComputedStyle(ring).strokeDashoffset === '0px', 'still 圆环 dashoffset=0');
+      ok(getComputedStyle(tri).clipPath.includes('inset(0'), 'still 三角 clip-path=inset(0)', getComputedStyle(tri).clipPath);
+
+      // 6. 动画语义抽样（时长 / 延迟）
+      const byClass = (c) => playHost.getAnimations({ subtree: true }).find((a) => a.effect.target.classList?.contains(c));
+      const inner = byClass('dsc-bsc-inner-circle');
+      const outer = byClass('dsc-bsc-outer-circle');
+      const l01 = byClass('dsc-bsc-l01');
+      const timing = (a) => a && a.effect.getComputedTiming();
+      const td = (a) => timing(a) && timing(a).duration;
+      ok(td(inner) === 3000 && td(outer) === 4000, '圆环时长 内 3s / 外 4s');
+      ok(timing(inner)?.delay === 2000 && timing(outer)?.delay === 1000, '圆环延迟 内 2s / 外 1s');
+      ok(td(l01) === 100 && Math.abs((timing(l01)?.delay || 0) - 1000) < 1, 'l01 叶：100ms 时长 / 1000ms 延迟');
+
+      lines.unshift('<span class="pass">SELF TEST COMPLETE</span>  <span class="muted">' + new Date().toISOString() + ' · ' + location.search + '</span>');
+    } catch (err) {
+      lines.push('<span class="fail">FAIL  ' + (err && err.message ? err.message : String(err)) + '</span>');
+    }
+    out.innerHTML = lines.join('\n');
+    // 结论就位后再收起其它区块
+    demo.dataset.only = 'selftest';
+    for (const sec of document.querySelectorAll('.dsc-sec')) if (sec !== panel) sec.hidden = true;
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>

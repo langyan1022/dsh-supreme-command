@@ -1,0 +1,10 @@
+# dsh-supreme-command — DSH bundle patch
+#
+# 把 Host 半侧挂进当前 profile 的配置树；浏览器半侧由 package.json 的
+# dsh.client 声明，宿主按它自动组装 bundle，这里不用写。
+#
+# 安装（本地开发）：
+#   dsh plugin --profile desktop add link:F:\dsh-startup-theme
+- insert:
+    - id: supreme-command
+      name: dsh-supreme-command

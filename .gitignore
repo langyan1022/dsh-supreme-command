@@ -1,0 +1,22 @@
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+
+# 私有/来源不明的素材：真声语音不发布
+lib/assets/voice/
+
+# 开发期临时目录（不参与发布，也不进 git）
+_tool/
+_ref2/
+_ref3/
+_ref4/
+_fe/
+_pre/
+_pm/
+_cat/
+_css/
+_dshdoc/
+*.log
+*.png~
+.DS_Store
+Thumbs.db
