@@ -61,14 +61,14 @@
 
 ```text
 dsh-supreme-command                  # npm 包名
-github:<用户名>/dsh-supreme-command   # GitHub 仓库直装
+github:langyan1022/dsh-supreme-command   # GitHub 仓库直装
 ```
 
 或命令行：
 
 ```powershell
 dsh plugin --profile desktop add dsh-supreme-command
-dsh plugin --profile desktop add github:<用户名>/dsh-supreme-command
+dsh plugin --profile desktop add github:langyan1022/dsh-supreme-command
 ```
 
 > 发布/维护细节见 [docs/PUBLISH.md](docs/PUBLISH.md)：
