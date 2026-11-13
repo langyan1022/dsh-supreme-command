@@ -17,6 +17,22 @@
    启动屏标题、工牌 IQC/CS/姓名用它：笔画方、字面大、重心沉，最接近电影标题字。
    本机装了就直接用系统字体，没装就回落到随插件下发的 ttf。 */
 @font-face {
+  font-family: 'DSC Condensed';
+  src: url('/dsh-command/font/Anton-Regular.ttf') format('truetype'),
+       url('../lib/assets/fonts/Anton-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DSC HeavyWide';
+  src: url('/dsh-command/font/ArchivoBlack-Regular.ttf') format('truetype'),
+       url('../lib/assets/fonts/ArchivoBlack-Regular.ttf') format('truetype');
+  font-weight: 900;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'DSC Display';
   /* 三种取法：系统已装 → 插件路由（真机）→ 相对路径（预览服务器） */
   src: local('YouSheBiaoTiHei'), local('优设标题黑'),
@@ -854,8 +870,8 @@
    ─────────────────────────────────────────────────────────────────────── */
 
 .dsc-badge {
-  --bd-lav: #d3d1df;
-  --bd-lav-2: #c6c3d4;
+  --bd-lav: #d1cfdd;
+  --bd-lav-2: #c4c1d2;
   --bd-red: #9a0208;
   --bd-red-2: #a8030a;
   --bd-red-text: #7c1a21;
@@ -919,7 +935,7 @@
   overflow: hidden;
   border-radius: 2.6cqh;
   background:
-    linear-gradient(102deg, rgba(255, 255, 255, .3) 0%, rgba(255, 255, 255, 0) 24%),
+    linear-gradient(102deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, 0) 24%),
     linear-gradient(168deg, #dad8e2 0%, var(--bd-lav) 46%, var(--bd-lav-2) 100%);
   color: var(--bd-ink);
   box-shadow:
@@ -955,26 +971,26 @@
   justify-content: flex-start;
   gap: 6.5%;
   color: var(--bd-red-text);
-  font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", sans-serif;
-  font-weight: 600;
-  font-size: 4.8cqh;
-  letter-spacing: .07em;
+  font-family: "Bahnschrift", "Arial", sans-serif;
+  font-weight: 700;
+  font-size: 4.4cqh;
+  letter-spacing: .26em;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
-  -webkit-text-stroke: .06cqh var(--bd-red-text);
+  -webkit-text-stroke: .03cqh var(--bd-red-text);
 }
 
 .dsc-badge__wm {
   left: 50%;
-  top: 40%;
-  width: 64%;
+  top: 42%;
+  width: 72%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   overflow: hidden;
   --dsc-logo: #ffffff;
   color: #ffffff;
-  opacity: .5;
+  opacity: .55;
 }
 
 .dsc-badge__wm svg {
@@ -990,28 +1006,29 @@
 .dsc-badge__iqc {
   left: 0;
   right: 0;
-  top: 16%;
+  top: 25.4%;
   text-align: center;
-  font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", sans-serif;
+  font-family: "Bahnschrift", "Bahnschrift SemiBold", sans-serif;
   font-weight: 700;
-  font-size: 36cqh;
+  font-size: 33.7cqh;
   line-height: .82;
-  letter-spacing: 0;
-  transform: scaleX(.8);
-  transform-origin: 50% 60%;
+  letter-spacing: .02em;
+  transform: translateX(1.35%) scaleX(.62);
+  transform-origin: 50% 50%;
   color: var(--bd-ink);
 }
 
 .dsc-badge__lab {
   left: 0;
   right: 0;
-  top: 49.5%;
+  top: 52.4%;
   text-align: center;
   font-family: var(--dsc-font-cjk);
-  font-weight: 700;
-  font-size: 7cqh;
-  letter-spacing: .01em;
+  font-weight: 400;
+  font-size: 6.6cqh;
+  letter-spacing: .035em;
   color: var(--bd-ink);
+  transform: translateX(0.9%);
 }
 
 .dsc-badge__labEn {
@@ -1019,11 +1036,10 @@
   right: 0;
   top: 61%;
   text-align: center;
-  font-family: "Bahnschrift", sans-serif;
-  font-stretch: 75%;
-  font-size: 3cqh;
-  font-weight: 500;
-  letter-spacing: .1em;
+  font-family: "DSC Condensed", "Anton", "Bahnschrift Condensed", sans-serif;
+  font-size: 3.4cqh;
+  font-weight: 400;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: #2f343c;
 }
@@ -1031,29 +1047,28 @@
 .dsc-badge__band {
   left: 0;
   right: 0;
-  top: 79.4%;
-  height: 6.6%;
+  top: 78.3%;
+  height: 5.7%;
   background: var(--bd-red);
   display: flex;
   align-items: center;
   padding-left: 2.8%;
   color: #f7eeea;
-  font-family: "Bahnschrift", sans-serif;
-  font-stretch: 75%;
-  font-weight: 700;
-  font-size: 7cqh;
-  letter-spacing: .015em;
+  font-family: "DSC Condensed", "Anton", "Bahnschrift Condensed", sans-serif;
+  font-weight: 400;
+  font-size: 5cqh;
+  letter-spacing: .04em;
 }
 
 .dsc-badge__barcodeWrap--front {
-  left: 2.6%;
-  right: 2.6%;
-  top: 86.4%;
-  bottom: 2%;
+  left: 6.6%;
+  right: 4.9%;
+  top: 86.6%;
+  bottom: 2.8%;
   background: var(--bd-white);
   display: flex;
   align-items: center;
-  padding: 0 1.2%;
+  padding: 0 0.6%;
 }
 
 .dsc-badge__barcode {
@@ -1061,7 +1076,7 @@
   align-items: stretch;
   justify-content: space-between;
   width: 100%;
-  height: 72%;
+  height: 100%;
 }
 
 .dsc-badge__barcode i { background: #06060a; display: block; flex: none; }
@@ -1136,20 +1151,20 @@
   background: var(--bd-red-2);
   color: #ffffff;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-start;
-  padding: 0 0 0 1%;
+  padding: 0 0 0 1.5%;
   overflow: hidden;
 }
 
 .dsc-badge__cs span {
   display: block;
-  font-family: "Impact", "Arial Black", sans-serif;
+  font-family: "DSC Condensed", "Anton", "Impact", sans-serif;
   font-weight: 400;
-  font-size: 70cqh;
-  line-height: .78;
-  letter-spacing: -.01em;
-  transform: scaleX(.48) translateY(4%);
+  font-size: 41.5cqh;
+  line-height: 1;
+  letter-spacing: 0;
+  transform: translateY(4.3%) scaleX(1.12);
   transform-origin: left bottom;
   white-space: nowrap;
 }
@@ -1165,34 +1180,33 @@
 .dsc-badge__idrow {
   position: absolute;
   left: 6.4%;
-  top: 14%;
-  font-family: "Bahnschrift", sans-serif;
-  font-stretch: 75%;
+  top: 41%;
+  font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift Condensed", "Bahnschrift", sans-serif;
   color: var(--bd-ink);
   line-height: 1.06;
 }
 
 .dsc-badge__idpre {
   display: block;
-  font-size: 4.6cqh;
-  font-weight: 500;
-  letter-spacing: .1em;
+  font-size: 4.2cqh;
+  font-weight: 400;
+  letter-spacing: .12em;
 }
 
 .dsc-badge__idcode {
   display: block;
-  font-size: 8.8cqh;
-  font-weight: 700;
-  letter-spacing: .01em;
+  font-size: 8cqh;
+  font-weight: 600;
+  letter-spacing: .04em;
 }
 
 .dsc-badge__name {
   position: absolute;
-  right: 5%;
-  top: 4%;
-  font-family: var(--dsc-font-cjk);
+  right: 8%;
+  top: 27%;
+  font-family: "Yu Gothic", "Yu Gothic Medium", var(--dsc-font-cjk);
   font-weight: 400;
-  font-size: 16cqh;
+  font-size: 15cqh;
   line-height: 1;
   letter-spacing: 0;
   color: var(--bd-ink);
@@ -1201,7 +1215,7 @@
 
 .dsc-badge__white {
   background: var(--bd-white);
-  padding: 4.6% 6% 2.6%;
+  padding: 4.6% 1.6% 2.2% 5.7%;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -1210,30 +1224,29 @@
 .dsc-badge__labBack {
   font-family: var(--dsc-font-cjk);
   font-weight: 700;
-  font-size: 7.6cqh;
-  letter-spacing: 0;
+  font-size: 8cqh;
+  letter-spacing: .06em;
   color: var(--bd-ink);
   white-space: nowrap;
 }
 
 .dsc-badge__role {
-  margin-top: 1.4%;
+  margin-top: 3.4%;
   text-align: right;
   font-family: var(--dsc-font-cjk);
   font-weight: 700;
-  font-size: 7.2cqh;
-  letter-spacing: .01em;
+  font-size: 7.6cqh;
+  letter-spacing: .04em;
   color: var(--bd-ink);
   white-space: nowrap;
 }
 
 .dsc-badge__code {
   margin-top: auto;
-  font-family: "Bahnschrift", sans-serif;
-  font-stretch: 75%;
-  font-size: 5cqh;
-  font-weight: 600;
-  letter-spacing: .1em;
+  font-family: "DSC Condensed", "Anton", "Bahnschrift Condensed", sans-serif;
+  font-size: 5.2cqh;
+  font-weight: 400;
+  letter-spacing: .2em;
   text-transform: uppercase;
   color: #171b21;
   white-space: nowrap;
@@ -1242,9 +1255,9 @@
 }
 
 .dsc-badge__barcodeWrap--back {
-  height: 16%;
+  height: 18%;
   margin-top: 2%;
-  margin-bottom: 2.5%;
+  margin-bottom: 1.5%;
   display: flex;
   align-items: center;
 }
