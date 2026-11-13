@@ -18,6 +18,16 @@ DSH 用 **cordis loader** 加载插件：一个包要被加载，必须同时满
 > 会动到用户已有的依赖树。patch 层 insert 是 DSH 官方支持的本地安装路径
 > （`dsh-startup-screen` 的 INSTALL 里也这么写），更轻、更好回退。
 
+## 从 GitHub 安装（推荐）
+
+```powershell
+irm https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/install.ps1 | iex
+```
+
+需要 `git` 与 `node ≥ 20`。脚本会克隆到 `~/.dsh/local-plugins/dsh-supreme-command`，
+再调用仓库里的 `scripts/install.mjs`（目录联接 + cordis.patch.yml 托管块）。
+更新时重跑同一条命令即可；卸载用 `install.ps1 -Uninstall`。
+
 ## PowerShell 安装
 
 ```powershell

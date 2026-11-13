@@ -55,25 +55,45 @@
 
 **要求**：Node.js ≥ 20（DSH 自带运行时，一般不用另装）；DSH 版本 ≥ `0.2.2-rc.1`（见[已知边界](#已知边界)）。
 
-### 从 npm / GitHub 安装
+### 从 GitHub 安装（推荐，不需要 npm 账号）
 
-插件发布在 npm 后，可以直接在 **设置 → 插件 → 安装插件** 里填：
-
-```text
-dsh-supreme-command                  # npm 包名
-github:langyan1022/dsh-supreme-command   # GitHub 仓库直装
-```
-
-或命令行：
+一条命令（PowerShell）——克隆到 `~/.dsh/local-plugins/` 再装进 desktop profile：
 
 ```powershell
-dsh plugin --profile desktop add dsh-supreme-command
-dsh plugin --profile desktop add github:langyan1022/dsh-supreme-command
+irm https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/install.ps1 | iex
+```
+
+需要 `git` 和 `node ≥ 20`（DSH 用户一般都有 Node；没有就先装 Git for Windows + Node.js）。
+
+脚本参数（本地执行时用）：
+
+```powershell
+.\install.ps1                   # desktop profile
+.\install.ps1 -Profile web      # web profile
+.\install.ps1 -ReplaceStartup   # 顺带停用其它启动屏插件
+.\install.ps1 -Uninstall        # 卸载
+```
+
+> 以后更新：再跑一次同一条命令（会 `git reset --hard origin/main` 到最新版，然后重装/刷新联接）。
+
+也可以在 **设置 → 插件 → 安装插件** 里直接填：
+
+```text
+github:langyan1022/dsh-supreme-command
+```
+
+或命令行：`dsh plugin --profile desktop add github:langyan1022/dsh-supreme-command`
+（走 DSH 内置 pnpm；如果本机 pnpm 对 git 源有限制，用上面的 `install.ps1` 更稳）。
+
+### 从 npm 安装（待发布）
+
+```text
+dsh-supreme-command
 ```
 
 > 发布/维护细节见 [docs/PUBLISH.md](docs/PUBLISH.md)：
 > DSH 的"插件市场"目前只收**官方**组合包（随安装提供 + 官方可选包），
-> 第三方插件的分发方式是 npm 包或 GitHub 仓库，不经过市场目录。
+> 第三方插件的分发方式是 **GitHub 仓库或 npm 包**，不经过市场目录。
 
 ### 一键安装
 

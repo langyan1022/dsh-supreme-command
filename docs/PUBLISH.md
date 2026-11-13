@@ -60,6 +60,20 @@ dsh plugin --profile desktop add github:langyan1022/dsh-supreme-command
 
 DSH Desktop 的插件页也支持粘贴同样的 spec。
 
+## 没有 npm 账号怎么办
+
+不需要 npm：**GitHub 直装就是完整的分发方式**。仓库里带了一键安装脚本：
+
+```powershell
+irm https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/install.ps1 | iex
+```
+
+它把仓库克隆到 `~/.dsh/local-plugins/dsh-supreme-command`，再调用
+`scripts/install.mjs` 建目录联接 + 写 patch 托管块。更新时重跑即可。
+
+如果以后有了 npm 账号，再按上面第二节发布，插件页就能按包名安装；
+没有账号也不影响别人从 GitHub 装。
+
 ## 四、发布前必须注意的三件事
 
 1. **语音素材不发布**：`lib/assets/voice/*.mp3` 来自本机已安装的第三方插件，来源与授权不明，

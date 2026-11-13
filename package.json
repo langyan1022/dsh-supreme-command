@@ -36,7 +36,8 @@
     "卸载.cmd",
     "README.md",
     "LICENSE",
-    "NOTICE"
+    "NOTICE",
+    "install.ps1"
   ],
   "scripts": {
     "test": "node test/smoke-host.mjs && node test/smoke-splash.mjs && node test/smoke-client.mjs",
