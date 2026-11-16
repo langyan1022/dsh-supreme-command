@@ -11,8 +11,8 @@
 配色不是写死的：**6 套预设 + 全量自定义**，所有派生色（面板、线条、文字阶梯、发光）
 都由 4 个基色用 `color-mix()` 现算 —— 改一只主色，整屏整界面一起变。
 
-![启动屏](shots/splash-hero.jpg)
-![流浪地球主题界面](shots/ui-red-dark.jpg)
+![启动屏](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/splash-hero.jpg)
+![流浪地球主题界面](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/ui-red-dark.jpg)
 
 ---
 
@@ -35,19 +35,19 @@
 
 | 启动屏（进度 / 日志阶段） | 启动屏（授权通过） |
 |---|---|
-| ![进度](shots/splash-progress.jpg) | ![授权](shots/splash-grant.jpg) |
+| ![进度](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/splash-progress.jpg) | ![授权](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/splash-grant.jpg) |
 
 | 界面主题：统帅红 | 界面主题：全息青 |
 |---|---|
-| ![红](shots/ui-red-dark.jpg) | ![青](shots/ui-cyan.jpg) |
+| ![红](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/ui-red-dark.jpg) | ![青](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/ui-cyan.jpg) |
 
 | BSC 徽标动画中段 | 徽标终态 |
 |---|---|
-| ![t=3.5s](shots/logos-3-play-t3500.jpg) | ![终态](shots/logos-4-play-t6000.jpg) |
+| ![t=3.5s](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/logos-3-play-t3500.jpg) | ![终态](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/logos-4-play-t6000.jpg) |
 
 | 工牌准入（背面 · 姓名/编号/职务） | 工牌正面（IQC + 条码） |
 |---|---|
-| ![工牌背面](shots/badge-back.jpg) | ![工牌正面](shots/badge-front.jpg) |
+| ![工牌背面](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/badge-back.jpg) | ![工牌正面](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/badge-front.jpg) |
 
 ---
 
@@ -284,7 +284,7 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 启动序列中间那一屏，按《流浪地球2》里北京航天中心（BSC）的**实物胸卡**复刻，正反两面、**没有照片**。
 比例是照着你给的实物图量的（卡面 1.586，ID-1 卡），尺寸全部用容器查询单位（`cqh/cqw`），放大缩小都同比例：
 
-![参考图 vs 本插件](shots/badge-vs-reference.jpg)
+![参考图 vs 本插件](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/badge-vs-reference.jpg)
 
 - **正面**：顶部「BEIJING SPACE CENTER」重复红字 → 白色真实 BSC 徽标水印（不是画的假章，就是插件自带的那枚 BSC SVG）→
   巨大 `IQC`（优设标题黑，笔画加粗到参考图的重量）→ 实验室中英文名 → 深红编号带 `IDL.IQC-001` → 白底条码区。
@@ -386,7 +386,7 @@ DSH Desktop 的主窗口页面是 `dsh-app://app/index.html`，Electron 主进�
 - 设置面板是客户端 bundle，照常加载 → 「流浪地球主题」分区看得见；
 - 但主题 CSS、装饰层、启动屏根节点都是 Host 注入的 → 桌面端全都不出现。
 
-![桌面端自举后的界面](shots/desktop-selfboot.jpg)
+![桌面端自举后的界面](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/desktop-selfboot.jpg)
 
 修复方式（和 `dsh-startup-screen` 的 selfBoot 思路一致）：
 

@@ -37,7 +37,8 @@
     "README.md",
     "LICENSE",
     "NOTICE",
-    "install.ps1"
+    "install.ps1",
+    "assets"
   ],
   "scripts": {
     "test": "node test/smoke-host.mjs && node test/smoke-splash.mjs && node test/smoke-client.mjs",
