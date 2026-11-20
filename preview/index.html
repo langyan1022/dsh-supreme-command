@@ -110,6 +110,7 @@
     <div class="dsc-deco__sig"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dsc-deco__ops">OPS // 0x1F</div>
     <div class="dsc-deco__clock"><b>MIS</b><span data-dsc-live="uptime">T+0000:00:00</span></div>
+    <div class="dsc-deco__cursor"><span data-dsc-live="cx">X 0842</span><span data-dsc-live="cy">Y 0361</span></div>
     <div class="dsc-deco__panel">
       <span class="dsc-deco__ctag">PANEL-01 // INSTRUCTION INPUT</span>
       <span class="dsc-deco__cid">C-01 · LIVE</span>
@@ -154,10 +155,10 @@
   <main class="mock__main">
     <header class="mock__top"><span>SESSION · 0912</span><span>LINK OK · ENC AES-256</span></header>
     <div class="mock__chat">
-      <div class="mock__bubble mock__bubble--user" data-message-bubble>帮我做一个启动屏 + 同风格主题。</div>
-      <div class="mock__bubble mock__bubble--ai">收到。先落盘契约，再并行铺开：启动屏、主题皮肤、两个 SVG 徽标管线。详见 <a class="mock__link" href="#">docs/CONFIG.md</a>。</div>
-      <div class="mock__code">dsh plugin --profile desktop add link:F:\dsh-startup-theme</div>
-      <div class="mock__bubble mock__bubble--ai">主题层已就位：125 枚 --dsw-* token 换成统帅红色板，扫描线/暗角/四角框都可关。</div>
+      <div data-chat-turn="1" class="mock__bubble mock__bubble--user" data-message-bubble>帮我做一个启动屏 + 同风格主题。</div>
+      <div data-chat-turn="2" data-chat-flow-kind="turn-assistant" class="mock__bubble mock__bubble--ai">收到。先落盘契约，再并行铺开：启动屏、主题皮肤、两个 SVG 徽标管线。详见 <a class="mock__link" href="#">docs/CONFIG.md</a>。</div>
+      <div data-chat-turn="3" data-chat-flow-kind="turn-assistant" class="mock__code">dsh plugin --profile desktop add link:F:\dsh-startup-theme</div>
+      <div data-chat-turn="4" data-chat-flow-kind="turn-assistant" class="mock__bubble mock__bubble--ai">主题层已就位：125 枚 --dsw-* token 换成统帅红色板，扫描线/暗角/四角框都可关。</div>
     </div>
     <div class="mock__composer" data-composer-card>向 DeepSeek Harness 发送消息…</div>
   </main>
@@ -381,5 +382,25 @@
     var s=(Date.now()-t0)/1000;
     document.querySelectorAll('[data-dsc-live="uptime"]').forEach(function(n){n.textContent='T+'+pad(s/3600)+':'+pad((s%3600)/60)+':'+pad(s%60)});
   },1000);
+})()</script><script>(function(){
+  var deco = document.getElementById('dsh-command-deco');
+  if(!deco) return;
+  function layer(cls){ var el=document.createElement('div'); el.className='dsc-deco__rows '+cls; deco.appendChild(el); return el; }
+  var gutter = layer('dsc-deco__gutter');
+  var rail = layer('dsc-deco__outrail');
+  function paint(){
+    var turns = document.querySelectorAll('[data-chat-turn]');
+    var shown=[];
+    for(var i=0;i<turns.length;i++){ var r=turns[i].getBoundingClientRect(); if(r.height>0) shown.push({r:r,label:'T'+String(turns[i].getAttribute('data-chat-turn')).padStart(2,'0')}); }
+    while(gutter.children.length<shown.length){ var g=document.createElement('span'); g.className='dsc-deco__turnno'; gutter.appendChild(g); }
+    while(gutter.children.length>shown.length) gutter.removeChild(gutter.lastChild);
+    shown.forEach(function(x,i){ gutter.children[i].textContent=x.label; gutter.children[i].style.transform='translate('+Math.round(x.r.left-44)+'px,'+Math.round(x.r.top)+'px)'; });
+    var outs = document.querySelectorAll('[data-chat-flow-kind="turn-assistant"]');
+    var bars=[]; for(var j=0;j<outs.length;j++){ var br=outs[j].getBoundingClientRect(); if(br.height>12) bars.push(br); }
+    while(rail.children.length<bars.length){ var b=document.createElement('i'); b.className='dsc-deco__outline'; rail.appendChild(b); }
+    while(rail.children.length>bars.length) rail.removeChild(rail.lastChild);
+    bars.forEach(function(bb,i){ rail.children[i].style.transform='translate('+Math.round(bb.left-10)+'px,'+Math.round(bb.top+4)+'px)'; rail.children[i].style.height=Math.max(12,Math.round(bb.height-8))+'px'; });
+  }
+  paint(); window.addEventListener('resize',paint); setInterval(paint,1200);
 })()</script></body>
 </html>

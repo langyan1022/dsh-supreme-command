@@ -1656,3 +1656,76 @@ html[data-dsh-command="on"] [data-message-bubble] {
 html[data-dsh-command="on"] [data-message-bubble]:hover {
   outline-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 46%, transparent);
 }
+
+
+/* ── 轮次编号 gutter（T01…）与助手输出轨道 ── */
+.dsc-deco__rows {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147482001;
+}
+
+.dsc-deco__turnno {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font: 600 9px/1 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .1em;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 48%, transparent);
+  will-change: transform;
+}
+
+.dsc-deco__outline {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--dsc-accent, #ff3b30) 46%, transparent), color-mix(in srgb, var(--dsc-accent, #ff3b30) 12%, transparent));
+}
+
+/* ── 菜单/列表：分隔线点刻 + hover 左缘主色条（不影响布局） ── */
+html[data-dsh-command="on"] [role="menu"] [role="menuitem"]:hover,
+html[data-dsh-command="on"] [role="listbox"] [role="option"]:hover:not([aria-selected="true"]) {
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--dsc-accent, #ff3b30) 22%, transparent), transparent 40%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+html[data-dsh-command="on"] [role="menu"] [role="separator"] {
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--dsc-hud-tick-soft) 0 4px, transparent 4px 8px);
+  opacity: .8;
+}
+
+
+/* ── 光标坐标读数（内容区左下，composer 上方） ── */
+.dsc-deco__cursor {
+  position: absolute;
+  left: calc(50% + var(--dsc-content-shift, 134px) - var(--dsc-content-w, 100vw) / 2 + 26px);
+  bottom: 118px;
+  display: flex;
+  gap: 10px;
+  font: 500 9.5px/1 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .18em;
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 32%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 网格缓慢呼吸：给静态 HUD 一点"活着"的感觉（14s 一轮，幅度很小） ── */
+@keyframes dsc-grid-breathe {
+  0%, 100% { opacity: .92; }
+  50% { opacity: 1; }
+}
+
+html[data-dsh-command="on"] body::before {
+  animation: dsc-grid-breathe 14s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-dsh-command="on"] body::before { animation: none; }
+}
+
+@media (max-width: 1100px) {
+  .dsc-deco__cursor { display: none; }
+}
