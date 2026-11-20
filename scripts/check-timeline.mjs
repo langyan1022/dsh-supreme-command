@@ -29,22 +29,24 @@ function dump(budget) {
 
 const checks = [
   { at: 400, name: '开机：机壳/屏已点亮', test: (h) => /dsc-splash[^"]*is-power/.test(h) },
-  { at: 500, name: '未到时间不提前出标题', test: (h) => !/is-title/.test(h) },
-  { at: 1200, name: '导轨点亮（is-rails）', test: (h) => /is-rails/.test(h) },
-  { at: 1400, name: '标题砸下（is-title）', test: (h) => /is-title/.test(h) },
-  { at: 1900, name: '副标出现（is-sub）', test: (h) => /is-sub/.test(h) },
-  { at: 2400, name: '进度条与日志启动（is-meter）', test: (h) => /is-meter/.test(h) },
-  { at: 2600, name: '日志至少 1 行', test: (h) => (h.match(/dsc-log__line/g) || []).length >= 1 },
-  { at: 3400, name: '日志至少 2 行', test: (h) => (h.match(/dsc-log__line/g) || []).length >= 2 },
-  { at: 2400, name: '右栏数据流有内容', test: (h) => (h.match(/dsc-data__line/g) || []).length >= 8 },
-  { at: 3000, name: '进度百分比在上涨（非 000%）', test: (h) => { const m = h.match(/data-dsc="pct">(\d+)%/); return m && Number(m[1]) > 0 } },
-  { at: 5000, name: '进度条点亮多数分段', test: (h) => (h.match(/dsc-meter__seg is-on/g) || []).length >= 12 },
-  { at: 3400, name: '工牌上台（is-badge）', test: (h) => /is-badge/.test(h) },
-  { at: 5400, name: '工牌核验通过（is-verified）', test: (h) => /is-verified/.test(h) },
-  { at: 6000, name: '日志已打出全部 4 行', test: (h) => (h.match(/dsc-log__line/g) || []).length >= 4 },
-  { at: 8200, name: '工牌退场后授权画面还在（is-grant）', test: (h) => /is-grant/.test(h) },
-  { at: 9600, name: '授权画面仍在停留（未提前收尾）', test: (h) => /id="dsh-command-splash"/.test(h) },
-  { at: 14500, name: '收尾：遮罩已被移除', test: (h) => !/id="dsh-command-splash"/.test(h) }
+  { at: 900, name: 'MOSS 式开屏出现（is-open）', test: (h) => /is-open\b/.test(h) },
+  { at: 900, name: '开屏 550W 标识已内联（dsc-550w-svg）', test: (h) => /dsc-550w-svg/.test(h) },
+  { at: 1500, name: '未到时间不提前出标题', test: (h) => !/is-title/.test(h) },
+  { at: 2500, name: '导轨点亮（is-rails）', test: (h) => /is-rails/.test(h) },
+  { at: 3100, name: '标题砸下（is-title）', test: (h) => /is-title/.test(h) },
+  { at: 3700, name: '副标出现（is-sub）', test: (h) => /is-sub/.test(h) },
+  { at: 4000, name: '进度条与日志启动（is-meter）', test: (h) => /is-meter/.test(h) },
+  { at: 4400, name: '日志至少 1 行', test: (h) => (h.match(/dsc-log__line/g) || []).length >= 1 },
+  { at: 5400, name: '日志至少 2 行', test: (h) => (h.match(/dsc-log__line/g) || []).length >= 2 },
+  { at: 2500, name: '右栏数据流有内容', test: (h) => (h.match(/dsc-data__line/g) || []).length >= 8 },
+  { at: 5000, name: '进度百分比在上涨（非 000%）', test: (h) => { const m = h.match(/data-dsc="pct">(\d+)%/); return m && Number(m[1]) > 0 } },
+  { at: 7000, name: '进度条点亮多数分段', test: (h) => (h.match(/dsc-meter__seg is-on/g) || []).length >= 12 },
+  { at: 5600, name: '工牌上台（is-badge）', test: (h) => /is-badge/.test(h) },
+  { at: 7600, name: '工牌核验通过（is-verified）', test: (h) => /is-verified/.test(h) },
+  { at: 8000, name: '日志已打出全部 4 行', test: (h) => (h.match(/dsc-log__line/g) || []).length >= 4 },
+  { at: 10200, name: '工牌退场后授权画面还在（is-grant）', test: (h) => /is-grant/.test(h) },
+  { at: 11500, name: '授权画面仍在停留（未提前收尾）', test: (h) => /id="dsh-command-splash"/.test(h) },
+  { at: 17000, name: '收尾：遮罩已被移除', test: (h) => !/id="dsh-command-splash"/.test(h) }
 ]
 
 let failed = 0

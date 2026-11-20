@@ -48,9 +48,9 @@ function hostConfig() {
 
 const logoCache = {}
 async function logoSvg(name) {
-  if (!logoCache[name]) logoCache[name] = await import('../lib/logos/' + (name === '550c' ? '550c' : name) + '.js')
+  if (!logoCache[name]) logoCache[name] = await import('../lib/logos/' + (name === '550w' ? '550w' : name) + '.js')
   const m = logoCache[name]
-  return name === 'ueg' ? m.UEG_SVG : (name === 'bsc' ? m.BSC_SVG : m.MODEL_SVG)
+  return name === 'ueg' ? m.UEG_SVG : (name === 'bsc' ? m.BSC_SVG : m.MODEL_W_SVG)
 }
 
 async function serveHostRoutes(pathname, query, res) {
@@ -68,7 +68,7 @@ async function serveHostRoutes(pathname, query, res) {
       fs.readFileSync(path.join(ROOT, 'lib/logos/logos.css'), 'utf8'))
     return true
   }
-  if (sub === 'splash.js') { send('application/javascript; charset=utf-8', fs.readFileSync(path.join(ROOT, 'lib/splash.js'), 'utf8')); return true }
+  if (sub === 'splash.js') { let js = fs.readFileSync(path.join(ROOT, 'lib/splash.js'), 'utf8'); try { const logo = await logoSvg('550w'); const flat = String(logo || '').replace(/\s*\n\s*/g, '').replace(/'/g, "\\'"); js = js.replace('/*__DSC_OPEN_LOGO__*/', flat) } catch (e) { /* 缺模块就留占位符 */ } send('application/javascript; charset=utf-8', js); return true }
   if (sub === 'selfboot.js') { send('application/javascript; charset=utf-8', host.buildSelfBootJs(cfg)); return true }
   if (sub === 'vars.css') { send('text/css; charset=utf-8', host.buildVarsCss(cfg)); return true }
   if (sub === 'preview') { send('text/html; charset=utf-8', host.buildPreviewHtml(cfg)); return true }
@@ -87,10 +87,10 @@ async function serveHostRoutes(pathname, query, res) {
     send('image/svg+xml; charset=utf-8', masked)
     return true
   }
-  const voice = sub.match(/^voice\/([a-z]+)\.mp3$/)
+  const voice = sub.match(/^voice\/([a-z]+)\.(mp3|wav)$/)
   if (voice) {
-    const f = path.join(ROOT, 'lib/assets/voice/' + voice[1] + '.mp3')
-    if (fs.existsSync(f)) { send('audio/mpeg', fs.readFileSync(f)); return true }
+    const f = path.join(ROOT, 'lib/assets/voice/' + voice[1] + '.' + voice[2])
+    if (fs.existsSync(f)) { send(voice[2] === 'wav' ? 'audio/wav' : 'audio/mpeg', fs.readFileSync(f)); return true }
     res.writeHead(404); res.end(); return true
   }
   return false

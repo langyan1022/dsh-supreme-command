@@ -49,7 +49,7 @@
 | `vignette` | number | `0.6` | `0 ~ 1` | 暗角强度 |
 | `watermark` | bool | `true` | 主题中央的 UEG 大徽标模糊水印 |
 | `cornerLogo` | bool | `true` | 主题右上角的北京航天中心（BSC）机构徽标 |
-| `modelLogo` | bool | `true` | 主题左侧导航栏底部的 550C 主机型号标识 |
+| `modelLogo` | bool | `true` | 主题左侧导航栏底部的 550W 主机型号标识 |
 | `autoFullscreen` | bool | `true` | 桌面端启动时把主窗口最大化（只发 SW_MAXIMIZE，不改 DSH 本体） |
 
 ### 启动屏文案
@@ -103,7 +103,7 @@
 | `voiceVolume` | number | `0.9` | 音量 `0 ~ 1` |
 | `voiceCue` | bool | `true` | 念之前的提示音（1046.5 + 1568 Hz） |
 | `voiceLead` | number | `240` | 提示音后留白（ms，`0 ~ 1200`） |
-| `voiceSource` | enum | `'tts'` | `tts` 系统合成 / `asset` 优先用 `lib/assets/voice/*.mp3` |
+| `voiceSource` | enum | `'asset'` | `asset` 优先用随包素材（`lib/assets/voice/*.wav`，MOSS 音色）/ `tts` 系统合成 |
 | `voiceLine1/2/3` | text | 见下 | 三段中文台词（标题 / 操作员 / 授权） |
 | `voiceLine1En/2En/3En` | text | 见下 | 对应的英文台词（`voiceLang=en/both` 时用） |
 
@@ -124,7 +124,7 @@ voiceLine3En = Authorization granted. Entering system.
 |------|------|------|------|
 | `showUeg` | bool | `true` | 显示 UEG 徽标 |
 | `showBsc` | bool | `true` | 显示 BSC 动画徽标（橄榄枝逐叶浮现动画保留） |
-| `showModel` | bool | `true` | 启动屏左上角显示 550C 主机型号标识 |
+| `showModel` | bool | `true` | 启动屏左上角显示 550W 主机型号标识 |
 | `logoColor` | enum | `'accent'` | Logo 着色：`accent` / `accent2` / `text` / `custom` |
 | `logoCustom` | color | `'#ff3b30'` | `logoColor=custom` 时使用 |
 | `sound` | bool | `true` | 界面音效（WebAudio 合成，无素材文件） |

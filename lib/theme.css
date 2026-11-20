@@ -1179,8 +1179,8 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
   .dsc-deco__mark { width: min(30vmin, 180px); opacity: .26; }
 }
 
-/* 550C 主机型号标识（左上角，与右上角 BSC 徽标对称） */
-/* 550C：左侧导航栏底部——水平居中于导航栏（导航宽 = 2 × 内容偏移），垂直再往下一点 */
+/* 550W 主机型号标识（左导航栏底部） */
+/* 550W：左侧导航栏底部——水平居中于导航栏（导航宽 = 2 × 内容偏移），垂直再往下一点 */
 .dsc-deco__model {
   position: absolute;
   top: auto;
@@ -1191,8 +1191,8 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
   width: min(7.2vmin, 84px);
   aspect-ratio: 3000 / 1029;
   background-color: var(--dsc-logo, var(--dsc-accent, #ff3b30));
-  -webkit-mask-image: var(--dsc-deco-550c, url('/dsh-command/logo/550c.svg?mask=1'));
-  mask-image: var(--dsc-deco-550c, url('/dsh-command/logo/550c.svg?mask=1'));
+  -webkit-mask-image: var(--dsc-deco-550w, url('/dsh-command/logo/550w.svg?mask=1'));
+  mask-image: var(--dsc-deco-550w, url('/dsh-command/logo/550w.svg?mask=1'));
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-position: left top;

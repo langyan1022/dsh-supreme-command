@@ -284,7 +284,7 @@ ok('注入启动屏根节点、配置与运行时', () => {
   assert.ok(injected.includes('window.__DSC_CFG__='))
 })
 
-ok('注入里带装饰层容器与 550C 节点（开着才注入）', () => {
+ok('注入里带装饰层容器与 550W 节点（开着才注入）', () => {
   assert.ok(injected.includes('id="dsh-command-deco"'))
   assert.ok(injected.includes('dsc-deco__wm'))
   assert.ok(injected.includes('dsc-deco__mark'))
@@ -320,7 +320,7 @@ ok('语音默认值对齐参考插件（rate .88 / pitch .85 / lead 240）', () 
   assert.equal(DEFAULTS.voiceRate, 0.88)
   assert.equal(DEFAULTS.voicePitch, 0.85)
   assert.equal(DEFAULTS.voiceLead, 240)
-  assert.equal(DEFAULTS.voiceSource, 'tts')
+  assert.equal(DEFAULTS.voiceSource, 'asset')
   assert.equal(DEFAULTS.voiceLang, 'zh')
 })
 
@@ -336,7 +336,7 @@ ok('语音台词进入注入配置（含中英两组与素材路由）', () => {
   const cfg = buildSplashConfig(normalize({ voiceLine2: '操作员 {operator} 验证通过。' }))
   assert.ok(Array.isArray(cfg.voiceLines.zh) && cfg.voiceLines.zh.length === 3)
   assert.ok(Array.isArray(cfg.voiceLines.en) && cfg.voiceLines.en.length === 3)
-  assert.equal(cfg.voiceUrls.grant, '/dsh-command/voice/grant.mp3')
+  assert.ok(['.wav', '.mp3'].some((ext) => cfg.voiceUrls.grant === '/dsh-command/voice/grant' + ext))
   assert.equal(cfg.voiceRate, 0.88)
 })
 
@@ -361,7 +361,7 @@ ok('工牌配置进注入包（正反面字段齐全）', () => {
   assert.equal(cfg.badgeNo, '222179')
 })
 
-/* 550C 主机型号标识：logo 白名单 + 两个开关 */
+/* 550W 主机型号标识：logo 白名单 + 两个开关 */
 const selfBootRoute = routes.find((r) => r.kind === 'exact' && r.path === '/dsh-command/selfboot.js')
 ok('selfboot 路由已注册（桌面端没有 Host 注入时靠它）', () => {
   assert.ok(selfBootRoute, '缺 selfboot 路由')
@@ -385,23 +385,23 @@ ok('vars.css 路由下发主题变量', () => {
 const modelRes = await (async () => {
   const route = routes.find((r) => r.kind === 'prefix' && r.path === '/dsh-command/logo')
   const res = fakeRes()
-  await route.handler(fakeReq('GET', '/dsh-command/logo/550c.svg'), res)
+  await route.handler(fakeReq('GET', '/dsh-command/logo/550w.svg'), res)
   return res
 })()
-ok('logo/550c.svg 能下发（主机型号标识）', () => {
+ok('logo/550w.svg 能下发（主机型号标识）', () => {
   assert.equal(modelRes.statusCode, 200)
   assert.ok(modelRes.body.includes('<svg'))
-  assert.ok(modelRes.body.includes('currentColor'))
+  assert.ok(modelRes.body.includes('dsc-550w'))
 })
 
 const modelMask = await (async () => {
   const route = routes.find((r) => r.kind === 'prefix' && r.path === '/dsh-command/logo')
   const res = fakeRes()
-  await route.handler(fakeReq('GET', '/dsh-command/logo/550c.svg?mask=1'), res)
+  await route.handler(fakeReq('GET', '/dsh-command/logo/550w.svg?mask=1'), res)
   return res
 })()
 ok('?mask=1 把 logo 刷成全白（给 CSS mask 用）', () => {
-  assert.ok(modelMask.body.includes('#fff'))
+  assert.ok(modelMask.body.includes('#ffffff'))
   assert.ok(!modelMask.body.includes('currentColor'))
 })
 
@@ -479,3 +479,4 @@ ok('无 webServer 的载体下 apply 不抛错', () => {
 
 fs.rmSync(TMP, { recursive: true, force: true })
 console.log('\nHost 自检：' + passed + ' 项通过' + (process.exitCode ? '（有失败）' : ''))
+

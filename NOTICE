@@ -7,10 +7,13 @@
 
 - 插件内**不包含任何电影剧照、海报、音频片段或影片中的字体文件**；
 - 工牌为纯 CSS 绘制（浅色卡片 + 红色编号带 + 进度条码），徽标为矢量 SVG 重绘；
-- 「550C」「UEG」「北京航天中心」等名称与标识归原权利人所有，本插件仅作风格化演绎。
+- 「550W」「UEG」「北京航天中心」等名称与标识归原权利人所有，本插件仅作风格化演绎；
+- 550W 标识由本机 MOSS 服务的 `550w.svg` 只读参考、转换为 scoped 模块（几何未改）。
 
 ## 字体
 
+- `lib/assets/fonts/Anton-Regular.ttf`、`lib/assets/fonts/ArchivoBlack-Regular.ttf`
+  来自 Google Fonts，SIL Open Font License 1.1，随包分发表意；
 - `lib/assets/fonts/YouSheBiaoTiHei.ttf`（优设标题黑）由优设网免费商用发布，
   版权归优设网络科技（YouShe Network Technology Co., Ltd）所有；本插件仅做分发与嵌入使用。
   商用前请自行核对优设官网授权条款。
@@ -19,9 +22,12 @@
 
 ## 语音素材
 
-`lib/assets/voice/*.mp3` **不随仓库或 npm 包分发**（来源与授权不明确）。
-需要真声播报的用户，请在本机已安装相应素材的前提下用
-`node scripts/import-voice.mjs` 自行导入；否则使用系统 TTS。
+- `lib/assets/voice/*.wav`：三句播报由**本机 OmniVoice 模型合成**（音色参考同人作品里的
+  MOSS/550W 语气），随仓库与 npm 包分发，仅用于本插件的启动屏播报；
+- `lib/assets/voice/*.mp3`：参考插件的真声素材，**不随仓库或 npm 包分发**；需要的用户可用
+  `node scripts/import-voice.mjs` 自行导入；
+- 想换成自己的声音/文案：`node scripts/moss-voice.mjs --text title=... --text grant=...`
+  （调用本机 MOSS 服务的 `/api/speak`，只读，不改对方服务）。
 
 ## 图标与代码
 

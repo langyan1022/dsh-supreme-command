@@ -13,7 +13,7 @@ const CHROME = process.env.DSC_CHROME || [
 ].find((p) => fs.existsSync(p))
 if (!CHROME) { console.error('no chrome'); process.exit(2) }
 
-function dump(url, budget = 4200) {
+function dump(url, budget = 11000) {
   return new Promise((resolve) => {
     const child = spawn(CHROME, [
       '--headless=new', '--disable-gpu', '--window-size=1200,800',

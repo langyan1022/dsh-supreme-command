@@ -166,10 +166,10 @@
   /* Logo 走 ES module → Blob URL，模拟 Host 的 /dsh-command/logo/*.svg 路由 */
   async function logoUrls() {
     const urls = {}
-    for (const [key, file] of [['ueg', '../lib/logos/ueg.js'], ['bsc', '../lib/logos/bsc.js'], ['model', '../lib/logos/550c.js']]) {
+    for (const [key, file] of [['ueg', '../lib/logos/ueg.js'], ['bsc', '../lib/logos/bsc.js'], ['model', '../lib/logos/550w.js']]) {
       try {
         const mod = await import(file)
-        const svg = key === 'ueg' ? mod.UEG_SVG : (key === 'model' ? mod.MODEL_SVG : mod.BSC_SVG)
+        const svg = key === 'ueg' ? mod.UEG_SVG : (key === 'model' ? mod.MODEL_W_SVG : mod.BSC_SVG)
         if (typeof svg === 'string' && svg) {
           urls[key] = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }))
         }
@@ -226,11 +226,11 @@
     try {
       const ueg = await import('../lib/logos/ueg.js')
       const bsc = await import('../lib/logos/bsc.js')
-      const model = await import('../lib/logos/550c.js')
+      const model = await import('../lib/logos/550w.js')
       const mk = (svg) => 'url(' + URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })) + ')'
       if (ueg.UEG_SVG) setVar('--dsc-deco-ueg', mk(ueg.UEG_SVG))
       if (bsc.BSC_SVG) setVar('--dsc-deco-bsc', mk(bsc.BSC_SVG))
-      if (model.MODEL_SVG) setVar('--dsc-deco-550c', mk(model.MODEL_SVG))
+      if (model.MODEL_W_SVG) setVar('--dsc-deco-550w', mk(model.MODEL_W_SVG))
     } catch (err) { /* 缺模块就不显示装饰 */ }
   })()
 

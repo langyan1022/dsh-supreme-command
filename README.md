@@ -5,7 +5,8 @@
 > BSC 橄榄枝徽标（**原动画完整保留**、颜色跟随主题、可换任意配色）。
 >
 > 启动序列里还有：**BSC 实验室工牌准入**（《流浪地球2》北京航天中心的 IQC 胸卡，正反两面扫描翻面，
-> 姓名/编号/实验室/职务都能在设置里改，默认图恒宇）、**三段语音播报**（音色与节奏参照
+> 姓名/编号/实验室/职务都能在设置里改，默认图恒宇）、**MOSS 式开屏**（中央 550W 描边→填充 +
+> 底部中英两行）、**发光粒子背景**、**三段 MOSS 音色语音**（本机 OmniVoice 合成；音色与节奏参照
 > `dsh-startup-screen`：神经网络女声优先、0.88 语速、0.85 音调、念前提示音）。
 
 配色不是写死的：**6 套预设 + 全量自定义**，所有派生色（面板、线条、文字阶梯、发光）
@@ -250,6 +251,30 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 
 ---
 
+## MOSS 式开屏（0–2s）
+
+参考本机 MOSS 服务（`http://127.0.0.1:18221`，只读参考，不改它）的 identity 开场，做成主题自己的版本：
+
+- **中央 550W 标识**：沿用电影里的 550W 字形（由 MOSS 的 `550w.svg` 转换的 scoped 模块），
+  先描边画出（1s）、再填充（0.52s，延迟 0.64s），红色 "0" 保持 #f51b19；
+- **底部两行**：中文 `智能量子计算机 550W` + 英文 `INTELLIGENT QUANTUM COMPUTER MOSS`，
+  居中、字距拉开，像 MOSS 的开场字幕；
+- 结束后整层淡出（0.45s），主序列整体延后 2s 开始（`later()` 统一缩放，`speed` 也一样生效）；
+- **静态帧 / 减少动态**时不播开屏（`?static=1` 截图、prefers-reduced-motion 都直接跳过）。
+
+补帧：开屏那枚 550W 是**服务端内联**进 `splash.js` 的（`/*__DSC_OPEN_LOGO__*/` 占位符），
+所以首帧就有 logo，不会因为拉取素材把描边动画拖晚。
+
+![开屏](https://raw.githubusercontent.com/langyan1022/dsh-supreme-command/main/shots/splash-open.jpg)
+
+## 发光粒子背景
+
+启动屏底层加了一层 canvas 粒子：主题色（`accent`/`accent2`）的细碎光点，`lighter` 混合、
+缓慢上浮 + 呼吸闪烁，数量按视口面积自适应（26–88 个）。
+
+- `prefers-reduced-motion` / 静态帧：只画一帧，不动；
+- 粒子失败不影响启动屏（整段 try/catch，失败就跳过）。
+
 ## 启动屏编排（时间线）
 
 全屏 HUD：机壳 → 屏体 → 顶栏 / 左右信息栏 / 中央核心 / **工牌准入** / 底部遥测 / 授权横幅。
@@ -271,6 +296,8 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 | 5.05s + `badgeHold`（默认 2.4s） | 工牌停留在这里，足够看清姓名 / 编号 / 条码 |
 | 退场后 ~0.4s | 工牌退场、核心内容恢复；「授权通过 / AUTHORIZATION GRANTED」横幅 + 第 3 句播报 |
 | 授权后 ~2.4s（终幕语音没念完就等它念完） | 收尾：720ms 淡出，再移除遮罩、解锁页面 |
+
+> 以上时间点从**开屏结束后**开始算：整条时间线在 `later()` 里统一 `+OPEN(2000ms)`，所以实际落地时刻比表里晚 2s。
 
 - **跳过**：Esc / Enter / Space / 点击任意处（`allowSkip=false` 时禁用；跳过会同时掐掉语音）。
 - **只播一次**：`mode=session` 用 `sessionStorage`，`mode=daily` 用 `localStorage` 记日期；
@@ -320,7 +347,25 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 
 ---
 
-## 语音播报
+## 语音播报（MOSS 音色）
+
+三段播报默认走**随包素材**（`voiceSource: "asset"`），素材是**本机 OmniVoice 模型**合成的 MOSS 音色：
+
+| 槽位 | 台词 | 文件 |
+|---|---|---|
+| `title` | 智能量子计算机 550W，已上线。 | `lib/assets/voice/title.wav` |
+| `operator` | 身份核验通过，北京航天中心。 | `lib/assets/voice/operator.wav` |
+| `grant` | 授权通过，欢迎进入系统。 | `lib/assets/voice/grant.wav` |
+
+- 文件是 24kHz 单声道 wav（立体声源自动降混），浏览器 `Audio` 直接播；
+- 想换自己的文案/语气：`node scripts/moss-voice.mjs --text title=… --text operator=… --text grant=…`
+  （只读调用本机 MOSS 服务的 `/api/speak`，会覆盖上面三个文件；`--category` 可选 reply/media/notice/warm）；
+- 没有 MOSS 服务时：把 `voiceSource` 设回 `tts`，走系统 `speechSynthesis`（语速 0.88 / 音调 0.85 /
+  神经网络女声优先，和参考插件一致），或放自己的 `lib/assets/voice/<槽位>.mp3`。
+
+> 参考插件里的真声 mp3 仍然不随包发布；MOSS 音色 wav 是本地合成、随包分发（见 `NOTICE`）。
+
+## 采样率与时长备注
 
 音色与节奏按 `dsh-startup-screen` 的做法适配：**先按分数挑音色，而不是"第一个能用的"**。
 
@@ -367,13 +412,13 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 |---|---|---|---|
 | **UEG 大徽标水印** | 视口中央偏上 | 真实的 UEG 徽标 SVG 当遮罩、`--dsc-logo` 上色，约 6% 不透明度 + 2.2px 模糊，只在空白处透出来 | `watermark` |
 | **北京航天中心（BSC）徽标** | 会话标题栏中间 | 真实 BSC 徽标（同一枚动画徽标的静态件）当遮罩，约 52% 不透明度 + 主题色光晕 | `cornerLogo` |
-| **550C 主机型号标识** | 左侧导航栏底部、水平居中 | 由 `550C.svg` 转换来的 scoped 模块，同样 mask + 主题色上色；位置按导航栏宽度算，拖宽/收起都居中 | `modelLogo`（主题）/ `showModel`（启动屏） |
+| **550W 主机型号标识** | 左侧导航栏底部、水平居中 | 由本机 MOSS 服务的 `550w.svg` 转换来的 scoped 模块（5 条路径，红/黑分组），mask + 主题色上色 | `modelLogo`（主题）/ `showModel`（启动屏） |
 
 - 装饰层是 Host 注入的 `<div id="dsh-command-deco">`，固定定位 + `pointer-events:none`，不吃点击、不改布局；
   强度跟 `--dsc-hud-ui-alpha` 联动，`hudFrames=0` 时和别的 HUD 装饰一起归零。
-- 徽标遮罩走 `/dsh-command/logo/{ueg,bsc,550c}.svg?mask=1`（Host 会把 SVG 刷成全白，取 alpha 上色），
+- 徽标遮罩走 `/dsh-command/logo/{ueg,bsc,550w}.svg?mask=1`（Host 会把 SVG 刷成全白，取 alpha 上色），
   所以它们永远跟主题色一致，不会出现"红色界面里压着一枚蓝色旧 logo"。
-- 启动屏左上角也有 550C 型号标识（`MAINFRAME 550C` 小字标签），和主题左上角那枚是同一个文件。
+- 启动屏左上角也有 550W 型号标识（`MAINFRAME 550W` 小字标签），和主题左上角那枚是同一个文件。
 
 ---
 
@@ -421,8 +466,8 @@ DSH Desktop 的主窗口是固定 `1280×820` 创建的，也不保存窗口尺�
 - 本插件是**非官方同人主题**，视觉语言参考《流浪地球 2》北京航天中心的控制台与工牌，
   与电影版权方、DeepSeek 官方均无隶属关系；
 - 插件内**不含任何电影剧照、海报、影片音频或影片字体**：工牌是纯 CSS 绘制，徽标是 SVG 重绘；
-- 「UEG」「550C」「北京航天中心」等名称与标识归原权利人；
-- 语音素材（`lib/assets/voice/*.mp3`）**不随包发布**，需自行导入；
+- 「UEG」「550W」「北京航天中心」等名称与标识归原权利人；
+- 参考插件的真声 `lib/assets/voice/*.mp3` **不随包发布**；随包的 `*.wav` 是本机 OmniVoice 合成的 MOSS 音色；
 - 第三方材料与字体授权见 [NOTICE](NOTICE)，代码部分为 MIT。
 
 ---
@@ -489,6 +534,7 @@ node scripts/check-injection.mjs    # 用真实 DSH index.html 验证注入（8 
 node scripts/check-timeline.mjs     # 启动屏时间线（需预览服务器，14 项）
 node scripts/check-guards.mjs       # 护栏：跳过不黑屏 / 与其它启动屏互斥 / 减少动态（8 项）
 node scripts/check-voice.mjs        # 语音接线：三句台词 / 音色打分 / 双语 / 占位符（9 项）
+node scripts/moss-voice.mjs         # 用本机 MOSS 服务重新合成三句 MOSS 音色语音（可选）
 node scripts/import-voice.mjs --list # 看看本机有没有可复用的真声素材
 npm run preview                 # http://127.0.0.1:8791/preview/index.html
 node scripts/shot.mjs <url> <out.png> [宽 高 虚拟时间ms]

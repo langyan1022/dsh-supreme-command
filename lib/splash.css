@@ -1414,9 +1414,11 @@
 
 
 
-/* ── 550C 主机型号标识（启动屏左上角） ───────────────────────────────────── */
+/* ── 550W 主机型号标识（启动屏左上角） ───────────────────────────────────── */
 
-.dsc-550c { display: block; line-height: 0; }
+.dsc-550w { display: block; line-height: 0; }
+.dsc-550w .dsc-550w-red { fill: #f51b19; }
+.dsc-550w .dsc-550w-ink { fill: #e8eeed; }
 
 .dsc-model {
   position: absolute;
@@ -1627,3 +1629,105 @@
   .dsc-chev { border-color: var(--dsc-accent, #ff3b30); background-color: transparent; }
   .dsc-pill { border-color: var(--dsc-accent, #ff3b30); color: var(--dsc-accent, #ff3b30); }
 }
+/* ── MOSS 式开屏 + 发光粒子（只参考本机 MOSS 服务的观感，素材全部自绘） ──────
+   开屏：中央 550W 标识描边→填充（红/白两组路径），底部一行中文一行英文；
+   粒子：canvas 绘制主题色发光光点，缓慢上浮（reduced-motion 只画一帧）。 */
+
+.dsc-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .9;
+  mix-blend-mode: screen;
+}
+
+.dsc-open {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(62% 52% at 50% 46%, #0a1414 0%, #060a0a 58%, #030505 100%);
+  transition: opacity .5s ease-out;
+}
+
+.dsc-splash.is-open .dsc-open { opacity: 1; }
+
+.dsc-splash.is-open-out .dsc-open {
+  opacity: 0;
+  transition: opacity .45s ease-in;
+}
+
+.dsc-open__logo {
+  position: absolute;
+  left: 50%;
+  top: 47.5%;
+  width: min(42vmin, 480px);
+  transform: translate(-50%, -50%);
+  color: #e8efee;
+}
+
+.dsc-open__logo svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.dsc-open__logo path {
+  fill: currentColor;
+  fill-opacity: .04;
+  stroke: currentColor;
+  stroke-width: 10;
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+}
+.dsc-open__logo.is-drawn path {
+  animation:
+    dsc-open-trace 1000ms linear both,
+    dsc-open-fill 520ms 640ms ease-out forwards;
+}
+
+.dsc-open__logo .dsc-550w-red { color: #f51b19; }
+.dsc-open__logo .dsc-550w-ink { color: #e8efee; }
+
+.dsc-open__cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(7vh, 52px);
+  display: grid;
+  justify-items: center;
+  row-gap: 8px;
+  text-align: center;
+  color: #b8c7c5;
+  opacity: 0;
+  animation: dsc-open-cap 700ms 220ms ease-out forwards;
+}
+
+.dsc-open__cap [lang="zh-CN"] {
+  font: 600 clamp(15px, 1.9vmin, 26px)/1.25 var(--dsc-font-cjk, "Noto Sans SC", sans-serif);
+  letter-spacing: .04em;
+}
+
+.dsc-open__cap [lang="en"] {
+  font: 600 clamp(11px, 1.3vmin, 17px)/1.15 var(--dsc-font-display, "Bahnschrift", sans-serif);
+  letter-spacing: .09em;
+  color: #a3b4b2;
+}
+
+@keyframes dsc-open-trace { to { stroke-dashoffset: 0; } }
+@keyframes dsc-open-fill { to { fill-opacity: 1; stroke-width: 0; } }
+@keyframes dsc-open-cap { to { opacity: 1; } }
+
+/* 静态帧 / 减少动态：直接出终态，开屏整层不参与截图 */
+.dsc-splash.is-static .dsc-open { display: none; }
+.dsc-splash.is-static .dsc-open__logo path { fill-opacity: 1; stroke: none; animation: none; }
+.dsc-splash.is-static .dsc-open__cap { opacity: 1; animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-open { display: none; }
+  .dsc-particles { opacity: .55; }
+}
+
