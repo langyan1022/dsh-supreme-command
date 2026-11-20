@@ -360,9 +360,23 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 | **primary 双切角** | 主按钮从「右下单切角」升级成**左上 + 右下双切角**，更像 FUI 的机加工面板 |
 | **danger 警示斜纹** | hover 时出现 45° 警示斜条 + 左侧 LED，对应 FUI 的危险色块 |
 | **面板焦点反馈** | composer / dock 面板 hover 或 focus-within 时，HUD 描边提亮一档（只改 outline-color，零布局位移） |
-| **开屏 FUI 细节** | 550W 标识加机加工角框、下方加刻度尺、左上角加 `SYS // 550W · UEG` 微标签 |
+| **开屏 FUI 细节** | 550W 标识加机加工角框、刻度尺、`SYS // 550W · UEG` 微标签，外加雷达环 + 旋扫锥 + 左右两列读数（PWR/SIG/TMP/SEC 与 LAT/LON/ALT/ROT） |
+| **主题 FUI 增强层** | 固定的 .dsc-deco 里加了：右下遥测块（坐标 / 温度 / 功率条）、右缘校准刻度（000–100）、底部滚动的十六进制数据条、左下序列号 `FUI-9393 // UEG-02`、内容区缓慢下扫的扫描线 |
+| **桌面端外观重测** | ping 放在 **selfboot 自举脚本**里（桌面端真正会执行的路径），触发 body style 变化让 Electron preload 重新取色，把 Windows 原生标题栏 overlay 刷成主题色（并把侧栏 token 调成 88% 不透明，让 HUD 纹理能微微透上来） |
 
 > 这些全部是 CSS 变量 / 背景层 / 伪元素级别的小改动，不新增 DOM 钩子、不改宿主布局；宿主要是把对应结构改掉，规则只是不生效，不会把界面弄坏。
+
+## FUI 增强层（§16）
+
+主题装饰层（`.dsc-deco`，固定层 + `pointer-events:none`）里加了一组纯装饰的 FUI 元素，不依赖宿主 DOM：
+
+- **遥测块**（内容区右侧）：`UEG · 550W / SYS-CTL`、`LAT/LON`、`ALT/TMP`、功率条；
+- **校准刻度**（右缘）：000–100 的竖排刻度 + 长短两档 tick；
+- **数据条**（内容区底部）：缓慢横向滚动的十六进制读数，两侧用 mask 淡出；
+- **序列号**（内容区左下）：`FUI-9393 // UEG-02`；
+- **扫描线**：内容区一条 1px 主线每 11s 从上往下扫一次（`prefers-reduced-motion` 时停）。
+
+这些都受 `--dsc-hud-ui-alpha` 闸门控制，HUD 关掉时一起消失；窄屏（<1100px）自动隐藏。开屏那边则是雷达环 + 旋扫锥 + 左右读数，同样是纯 CSS。
 
 ## 语音播报（MOSS 音色）
 

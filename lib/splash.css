@@ -1771,3 +1771,67 @@
   color: rgba(255, 120, 100, .55);
   pointer-events: none;
 }
+
+
+/* ── 开屏 FUI：雷达环 / 旋扫 / 左右读数（纯 CSS，不依赖外部素材） ───────────── */
+.dsc-open__fui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.dsc-open__rings {
+  position: absolute;
+  left: 50%;
+  top: 47.5%;
+  width: min(58vmin, 620px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  opacity: .5;
+}
+
+.dsc-open__rings i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 96, 76, .22);
+  border-radius: 50%;
+}
+
+.dsc-open__rings i:nth-child(1) { inset: 0; border-style: dashed; animation: dsc-ring-spin 54s linear infinite; }
+.dsc-open__rings i:nth-child(2) { inset: 12%; border-color: rgba(255, 96, 76, .16); }
+.dsc-open__rings i:nth-child(3) { inset: 26%; border-color: rgba(255, 96, 76, .12); border-style: dashed; animation: dsc-ring-spin 40s linear infinite reverse; }
+
+.dsc-open__rings b {
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(255, 110, 90, .22), transparent 18%, transparent 100%);
+  mask-image: radial-gradient(circle, transparent 30%, #000 31%);
+  -webkit-mask-image: radial-gradient(circle, transparent 30%, #000 31%);
+  animation: dsc-ring-spin 7.5s linear infinite;
+}
+
+@keyframes dsc-ring-spin { to { transform: rotate(360deg); } }
+
+.dsc-open__read {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 10px;
+  font: 500 clamp(9px, .86vmin, 11px)/1.2 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .22em;
+  color: rgba(255, 120, 100, .45);
+}
+
+.dsc-open__read span { white-space: nowrap; }
+.dsc-open__read--l { left: max(18px, 4.5vmin); text-align: left; }
+.dsc-open__read--r { right: max(18px, 4.5vmin); text-align: right; }
+
+@media (max-width: 900px) {
+  .dsc-open__read { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-open__rings i, .dsc-open__rings b { animation: none; }
+}

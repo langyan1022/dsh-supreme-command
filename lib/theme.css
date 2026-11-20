@@ -267,7 +267,9 @@ html[data-dsh-command="on"] body {
   --dsw-alias-scrollbar-hover-l2: color-mix(in srgb, var(--dsc-accent, #ff3b30) 60%, transparent);
 
   /* ---------- 侧栏 / 气泡 / 输入 / 菜单 ---------- */
-  --dsw-specific-sidebar-fill: var(--dsc-panel);
+  /* 88% 不透明：Desktop 的 Windows 标题栏 overlay 也读这个 token；完全实心会在右上角
+     留下没有 HUD 纹理的"色块"，透一点能让刻度和网格透上来，接缝消失。 */
+  --dsw-specific-sidebar-fill: color-mix(in srgb, var(--dsc-panel) 88%, transparent);
   --dsw-specific-sidebar-nav-item-active: color-mix(in srgb, var(--dsc-accent, #ff3b30) 10%, transparent);
   --dsw-specific-sidebar-nav-item-active-accent: color-mix(in srgb, var(--dsc-accent, #ff3b30) 14%, transparent);
   --dsw-specific-bubble: var(--dsc-glass);                                    /* 用户气泡：红玻璃 */
@@ -1234,4 +1236,149 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
 
 @media (max-width: 900px) {
   .dsc-deco__wm { width: min(58vmin, 380px); opacity: .028; }
+}
+
+
+/* ============================================================================
+ * §16 FUI 增强层（参考《流浪地球》FUI：遥测读数 / 校准刻度 / 底部数据条 / 序列号）
+ * ----------------------------------------------------------------------------
+ * 全部是插件的 .dsc-deco 固定层（pointer-events:none），不新增宿主 DOM 钩子；
+ * 受 --dsc-hud-ui-alpha 闸门控制，hud=0 时整层一起消失。
+ * ========================================================================== */
+.dsc-deco__fui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: "Bahnschrift", "Consolas", "Noto Sans SC", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 遥测块：内容区右下角（在 composer 上方） ── */
+.dsc-deco__tele {
+  position: absolute;
+  right: 64px;
+  top: 42%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 3px;
+  justify-items: end;
+  font-size: 10px;
+  line-height: 1.35;
+  letter-spacing: .12em;
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 42%, transparent);
+  text-align: right;
+}
+
+.dsc-deco__tele b {
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 82%, transparent);
+  font-weight: 600;
+  letter-spacing: .18em;
+}
+
+.dsc-deco__tele i {
+  font-style: normal;
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 30%, transparent);
+}
+
+.dsc-deco__tele .dsc-deco__bars {
+  color: var(--dsc-accent, #ff3b30);
+  letter-spacing: .06em;
+}
+
+/* ── 序列号：内容区左上角 ── */
+.dsc-deco__serial {
+  position: absolute;
+  left: calc(var(--dsc-content-shift, 134px) + 26px);
+  bottom: 92px;
+  font-size: 9.5px;
+  letter-spacing: .26em;
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 26%, transparent);
+  white-space: nowrap;
+}
+
+/* ── 右侧垂直校准刻度（贴着内容右缘，刻度 + 数字） ── */
+.dsc-deco__scale {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  height: min(38vh, 420px);
+  width: 26px;
+  transform: translateY(-50%);
+  background:
+    repeating-linear-gradient(0deg, var(--dsc-hud-tick) 0 1px, transparent 1px 24px) right / 8px 100% no-repeat,
+    repeating-linear-gradient(0deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 8px) right / 4px 100% no-repeat,
+    linear-gradient(0deg, transparent, var(--dsc-hud-tick-soft) 12%, var(--dsc-hud-tick-soft) 88%, transparent) right / 1px 100% no-repeat;
+  opacity: .8;
+}
+
+.dsc-deco__scale em {
+  position: absolute;
+  right: 12px;
+  font-style: normal;
+  font-size: 8.5px;
+  letter-spacing: .1em;
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 24%, transparent);
+  transform: translateY(-50%);
+}
+
+/* ── 底部数据条：内容区正中，缓慢横向滚动 ── */
+.dsc-deco__ticker {
+  position: absolute;
+  left: calc(50% + var(--dsc-content-shift, 134px));
+  bottom: 88px;
+  width: min(62vw, 760px);
+  transform: translateX(-50%);
+  overflow: hidden;
+  white-space: nowrap;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 46%, transparent);
+  opacity: .75;
+}
+
+.dsc-deco__ticker span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: dsc-fui-ticker 46s linear infinite;
+}
+
+@keyframes dsc-fui-ticker {
+  to { transform: translateX(-100%); }
+}
+
+/* ── 内容区缓慢下扫的扫描带（FUI 的"刷新"） ── */
+.dsc-deco__sweep {
+  position: absolute;
+  left: calc(50% + var(--dsc-content-shift, 134px) - min(46vw, 900px));
+  width: min(92vw, 1800px);
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--dsc-accent, #ff3b30) 38%, transparent), transparent);
+  opacity: 0;
+  animation: dsc-fui-sweep 11s cubic-bezier(.5, 0, .5, 1) infinite;
+}
+
+@keyframes dsc-fui-sweep {
+  0% { transform: translateY(8vh); opacity: 0; }
+  8% { opacity: .55; }
+  78% { opacity: .35; }
+  100% { transform: translateY(86vh); opacity: 0; }
+}
+
+@media (max-width: 1100px) {
+  .dsc-deco__tele,
+  .dsc-deco__scale,
+  .dsc-deco__ticker,
+  .dsc-deco__serial {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-deco__ticker span,
+  .dsc-deco__sweep {
+    animation: none;
+  }
 }
