@@ -408,5 +408,5 @@
     var chat = document.querySelector('.mock__chat');
     if(chat) chat.innerHTML = '';
     document.documentElement.setAttribute('data-dsc-empty','on');
-  })()</script></body>
+  })()</script><script>if(/[?&]fui=off/.test(location.search))document.documentElement.setAttribute('data-dsc-fui-extra','off')</script></body>
 </html>

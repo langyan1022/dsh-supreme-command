@@ -1789,3 +1789,10 @@ html[data-dsc-empty="on"] .dsc-deco__radar { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .dsc-deco__radar i:nth-child(1), .dsc-deco__radar b { animation: none; }
 }
+
+
+/* ── FUI 增强层总闸门：设置里关掉 fuiExtra 时，只留基础 HUD ── */
+html[data-dsh-command="on"][data-dsc-fui-extra="off"]
+  :is(.dsc-deco__fui, .dsc-deco__rows, .dsc-deco__prompts) {
+  display: none !important;
+}
