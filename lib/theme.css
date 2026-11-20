@@ -589,13 +589,20 @@ html[data-dsh-command="on"]
     repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
     repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
     repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px);
+    repeating-linear-gradient(45deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 3px),
+    /* ⑥ 顶部细刻度尺（FUI 校准尺） */
+    repeating-linear-gradient(90deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 12px),
+    /* ⑦ 左侧细刻度尺 */
+    repeating-linear-gradient(0deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 12px),
+    /* ⑧ 底部刻度尺 */
+    repeating-linear-gradient(90deg, var(--dsc-hud-tick) 0 1px, transparent 1px 26px);
   background-repeat: no-repeat;
   background-size:
     14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px,
     calc(100% - 14px) 1px, calc(100% - 14px) 1px, 1px calc(100% - 14px), 1px calc(100% - 14px),
     calc(100% - 28px) 1px, 100% 22px,
-    7px 7px, 7px 7px, 7px 7px, 7px 7px;
+    7px 7px, 7px 7px, 7px 7px, 7px 7px,
+    calc(100% - 28px) 6px, 6px calc(100% - 28px), calc(100% - 28px) 3px;
   background-position:
     left 7px top 7px, left 7px top 7px,
     right 7px top 7px, right 7px top 7px,
@@ -603,7 +610,8 @@ html[data-dsh-command="on"]
     right 7px bottom 7px, right 7px bottom 7px,
     7px 7px, 7px calc(100% - 8px), 7px 7px, calc(100% - 8px) 7px,
     14px 7px, left bottom,
-    4px 4px, right 4px top 4px, left 4px bottom 4px, right 4px bottom 4px;
+    4px 4px, right 4px top 4px, left 4px bottom 4px, right 4px bottom 4px,
+    14px 9px, 9px 14px, 14px calc(100% - 4px);
   /* 发丝描边用 outline 而不是 box-shadow：outline 不参与布局，也不会覆盖面板自带的
      elevation（box-shadow）—— 宿主的面板阴影原样保留。 */
   outline: 1px solid var(--dsc-hud-stroke);
@@ -1260,24 +1268,25 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
   top: 42%;
   transform: translateY(-50%);
   display: grid;
-  gap: 3px;
+  gap: 4px;
   justify-items: end;
-  font-size: 10px;
-  line-height: 1.35;
-  letter-spacing: .12em;
-  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 42%, transparent);
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: .13em;
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 56%, transparent);
   text-align: right;
 }
 
 .dsc-deco__tele b {
-  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 82%, transparent);
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 94%, transparent);
   font-weight: 600;
-  letter-spacing: .18em;
+  font-size: 11.5px;
+  letter-spacing: .2em;
 }
 
 .dsc-deco__tele i {
   font-style: normal;
-  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 30%, transparent);
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 40%, transparent);
 }
 
 .dsc-deco__tele .dsc-deco__bars {
@@ -1290,9 +1299,9 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
   position: absolute;
   left: calc(var(--dsc-content-shift, 134px) + 26px);
   bottom: 92px;
-  font-size: 9.5px;
+  font-size: 10px;
   letter-spacing: .26em;
-  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 26%, transparent);
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 40%, transparent);
   white-space: nowrap;
 }
 
@@ -1315,9 +1324,9 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
   position: absolute;
   right: 12px;
   font-style: normal;
-  font-size: 8.5px;
+  font-size: 9.5px;
   letter-spacing: .1em;
-  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 24%, transparent);
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 36%, transparent);
   transform: translateY(-50%);
 }
 
@@ -1332,10 +1341,10 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
   white-space: nowrap;
   mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  font-size: 9.5px;
+  font-size: 10.5px;
   letter-spacing: .18em;
-  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 46%, transparent);
-  opacity: .75;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 62%, transparent);
+  opacity: .88;
 }
 
 .dsc-deco__ticker span {
@@ -1381,4 +1390,71 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
   .dsc-deco__sweep {
     animation: none;
   }
+}
+
+
+/* ── 内容区四角 reticle（相机取景框的角标，套在会话内容区外框） ── */
+.dsc-deco__reticle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.dsc-deco__reticle i {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) 48%, transparent);
+}
+
+.dsc-deco__reticle i:nth-child(1) { left: calc(50% + var(--dsc-content-shift, 134px) - var(--dsc-content-w, 100vw) / 2 + 14px); top: 58px; border-right: 0; border-bottom: 0; }
+.dsc-deco__reticle i:nth-child(2) { right: 14px; top: 58px; border-left: 0; border-bottom: 0; }
+.dsc-deco__reticle i:nth-child(3) { left: calc(50% + var(--dsc-content-shift, 134px) - var(--dsc-content-w, 100vw) / 2 + 14px); bottom: 14px; border-right: 0; border-top: 0; }
+.dsc-deco__reticle i:nth-child(4) { right: 14px; bottom: 14px; border-left: 0; border-top: 0; }
+
+/* ── 左缘竖排机构标签（writing-mode） ── */
+.dsc-deco__vlabel {
+  position: absolute;
+  left: max(14px, 1.1vw);
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font: 500 10px/1 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .46em;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 52%, transparent);
+  white-space: nowrap;
+  opacity: .8;
+}
+
+/* ── 内容区顶部刻度带（贴着内容区上沿，缓慢横向流动） ── */
+.dsc-deco__rail {
+  position: absolute;
+  left: calc(50% + var(--dsc-content-shift, 134px));
+  top: 52px;
+  width: min(52vw, 720px);
+  height: 5px;
+  transform: translateX(-50%);
+  background:
+    repeating-linear-gradient(90deg, var(--dsc-hud-tick-soft) 0 1px, transparent 1px 9px) 0 0 / 100% 3px no-repeat,
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--dsc-accent, #ff3b30) 38%, transparent), transparent) 0 0 / 100% 1px no-repeat;
+  opacity: .7;
+  animation: dsc-fui-rail 9s ease-in-out infinite;
+}
+
+@keyframes dsc-fui-rail {
+  0%, 100% { background-position: 0 0, 0 0; opacity: .45; }
+  50% { background-position: 0 0, 0 0; opacity: .85; }
+}
+
+@media (max-width: 1100px) {
+  .dsc-deco__reticle,
+  .dsc-deco__vlabel,
+  .dsc-deco__rail {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-deco__rail { animation: none; }
 }
