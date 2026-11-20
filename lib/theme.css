@@ -1458,3 +1458,79 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
 @media (prefers-reduced-motion: reduce) {
   .dsc-deco__rail { animation: none; }
 }
+
+
+/* ── 侧栏右缘信号条（贴在侧栏与内容区的分界线上） ── */
+.dsc-deco__sig {
+  position: absolute;
+  left: calc(50% + var(--dsc-content-shift, 134px) - var(--dsc-content-w, 100vw) / 2 - 13px);
+  top: 34%;
+  display: grid;
+  gap: 3px;
+  width: 7px;
+  transform: translateX(-50%);
+}
+
+.dsc-deco__sig i {
+  height: 2px;
+  background: var(--dsc-accent, #ff3b30);
+  opacity: .32;
+  transform-origin: right center;
+  animation: dsc-deco-sig 2.6s ease-in-out infinite;
+}
+
+.dsc-deco__sig i:nth-child(1) { animation-delay: 0s; }
+.dsc-deco__sig i:nth-child(2) { animation-delay: .18s; }
+.dsc-deco__sig i:nth-child(3) { animation-delay: .36s; }
+.dsc-deco__sig i:nth-child(4) { animation-delay: .54s; }
+.dsc-deco__sig i:nth-child(5) { animation-delay: .72s; }
+.dsc-deco__sig i:nth-child(6) { animation-delay: .9s; }
+.dsc-deco__sig i:nth-child(7) { animation-delay: 1.08s; }
+.dsc-deco__sig i:nth-child(8) { animation-delay: 1.26s; }
+.dsc-deco__sig i:nth-child(9) { animation-delay: 1.44s; }
+
+@keyframes dsc-deco-sig {
+  0%, 100% { opacity: .22; transform: scaleX(.55); }
+  50% { opacity: .85; transform: scaleX(1); }
+}
+
+/* ── OPS 读数（左侧栏 550W 标识上方） ── */
+.dsc-deco__ops {
+  position: absolute;
+  left: 24px;
+  bottom: 168px;
+  font: 500 9.5px/1 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .3em;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 46%, transparent);
+}
+
+/* ── 任务时钟（内容区右下，composer 上方） ── */
+.dsc-deco__clock {
+  position: absolute;
+  right: 26px;
+  bottom: 92px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font: 500 10px/1 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .16em;
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 40%, transparent);
+}
+
+.dsc-deco__clock b {
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 80%, transparent);
+  font-weight: 600;
+  letter-spacing: .22em;
+}
+
+@media (max-width: 1100px) {
+  .dsc-deco__sig,
+  .dsc-deco__ops,
+  .dsc-deco__clock {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-deco__sig i { animation: none; opacity: .4; }
+}

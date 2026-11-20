@@ -1835,3 +1835,67 @@
 @media (prefers-reduced-motion: reduce) {
   .dsc-open__rings i, .dsc-open__rings b { animation: none; }
 }
+
+
+/* ── 开屏自检行（左下）与连接进度条 ──────────────────────────────────────── */
+.dsc-open__boot {
+  position: absolute;
+  left: max(20px, 5vmin);
+  bottom: max(20vh, 150px);
+  display: grid;
+  gap: 7px;
+  font: 500 clamp(10px, 1vmin, 12px)/1.35 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .2em;
+  color: rgba(255, 126, 106, .62);
+  text-transform: uppercase;
+}
+
+.dsc-open__boot span {
+  opacity: 0;
+  transform: translateY(4px);
+  animation: dsc-open-boot .42s ease-out forwards;
+}
+
+.dsc-open__boot span:nth-child(1) { animation-delay: .45s; }
+.dsc-open__boot span:nth-child(2) { animation-delay: .85s; }
+.dsc-open__boot span:nth-child(3) { animation-delay: 1.25s; }
+.dsc-open__boot span:nth-child(4) { animation-delay: 1.65s; color: rgba(255, 240, 236, .9); }
+
+@keyframes dsc-open-boot {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dsc-open__connect {
+  position: absolute;
+  left: 50%;
+  top: calc(64.5% + 18px);
+  width: min(52vmin, 560px);
+  height: 2px;
+  transform: translateX(-50%);
+  background: rgba(255, 96, 76, .16);
+  overflow: hidden;
+}
+
+.dsc-open__connect i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, rgba(255, 96, 76, .35), rgba(255, 140, 120, .95));
+  box-shadow: 0 0 10px rgba(255, 110, 90, .55);
+  animation: dsc-open-connect 2.2s cubic-bezier(.25, .8, .3, 1) .35s forwards;
+}
+
+@keyframes dsc-open-connect {
+  0% { width: 0; }
+  70% { width: 88%; }
+  100% { width: 100%; }
+}
+
+@media (max-width: 900px) {
+  .dsc-open__boot { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-open__boot span, .dsc-open__connect i { animation: none; opacity: 1; transform: none; }
+  .dsc-open__connect i { width: 100%; }
+}
