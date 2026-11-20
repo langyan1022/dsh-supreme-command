@@ -1661,7 +1661,7 @@
 
 .dsc-splash.is-open-out .dsc-open {
   opacity: 0;
-  transition: opacity .45s ease-in;
+  transition: opacity .9s ease-in;
 }
 
 .dsc-open__logo {
@@ -1731,3 +1731,43 @@
   .dsc-particles { opacity: .55; }
 }
 
+
+/* ── 开屏的 FUI 细节（参考《流浪地球》FUI：机加工角框 + 刻度尺 + 微标签） ───── */
+.dsc-open__logo::before,
+.dsc-open__logo::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  border: 1px solid rgba(255, 96, 76, .5);
+}
+
+.dsc-open__logo::before { left: -20px; top: -18px; border-right: 0; border-bottom: 0; }
+.dsc-open__logo::after { right: -20px; bottom: -18px; border-left: 0; border-top: 0; }
+
+.dsc-open::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 64.5%;
+  width: min(52vmin, 560px);
+  height: 10px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 96, 76, .5) 12%, rgba(255, 96, 76, .5) 88%, transparent) top / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 120, 100, .38) 0 1px, transparent 1px 16px) top / 100% 7px no-repeat;
+  opacity: .9;
+}
+
+.dsc-open::after {
+  content: "SYS // 550W · UEG";
+  position: absolute;
+  left: max(22px, 3.2vmin);
+  top: max(18px, 2.6vh);
+  font: 500 clamp(9px, .9vmin, 11px)/1 "Bahnschrift", "Arial", sans-serif;
+  letter-spacing: .24em;
+  color: rgba(255, 120, 100, .55);
+  pointer-events: none;
+}

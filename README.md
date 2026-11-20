@@ -251,7 +251,7 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 
 ---
 
-## MOSS 式开屏（0–2s）
+## MOSS 式开屏（0–2.8s）
 
 参考本机 MOSS 服务（`http://127.0.0.1:18221`，只读参考，不改它）的 identity 开场，做成主题自己的版本：
 
@@ -259,7 +259,7 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
   先描边画出（1s）、再填充（0.52s，延迟 0.64s），红色 "0" 保持 #f51b19；
 - **底部两行**：中文 `智能量子计算机 550W` + 英文 `INTELLIGENT QUANTUM COMPUTER MOSS`，
   居中、字距拉开，像 MOSS 的开场字幕；
-- 结束后整层淡出（0.45s），主序列整体延后 2s 开始（`later()` 统一缩放，`speed` 也一样生效）；
+- 填充完后再停留约 1.2s，然后整层淡出（0.9s）；主序列整体延后 2.8s 开始（`later()` 统一缩放，`speed` 也一样生效）；
 - **静态帧 / 减少动态**时不播开屏（`?static=1` 截图、prefers-reduced-motion 都直接跳过）。
 
 补帧：开屏那枚 550W 是**服务端内联**进 `splash.js` 的（`/*__DSC_OPEN_LOGO__*/` 占位符），
@@ -297,7 +297,7 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 | 退场后 ~0.4s | 工牌退场、核心内容恢复；「授权通过 / AUTHORIZATION GRANTED」横幅 + 第 3 句播报 |
 | 授权后 ~2.4s（终幕语音没念完就等它念完） | 收尾：720ms 淡出，再移除遮罩、解锁页面 |
 
-> 以上时间点从**开屏结束后**开始算：整条时间线在 `later()` 里统一 `+OPEN(2000ms)`，所以实际落地时刻比表里晚 2s。
+> 以上时间点从**开屏结束后**开始算：整条时间线在 `later()` 里统一 `+OPEN(2800ms)`，所以实际落地时刻比表里晚 2.8s。
 
 - **跳过**：Esc / Enter / Space / 点击任意处（`allowSkip=false` 时禁用；跳过会同时掐掉语音）。
 - **只播一次**：`mode=session` 用 `sessionStorage`，`mode=daily` 用 `localStorage` 记日期；
@@ -346,6 +346,23 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 > 电影里那张卡确实没有照片，所以这里**不做头像上传** —— 也就不涉及任何人像素材的版权问题。
 
 ---
+
+## FUI 细节优化（参考《流浪地球》FUI）
+
+参考 [The Wandering Earth FUI design · Richard Chan（Behance）](https://www.behance.net/gallery/93931179/The-Wandering-Earth-FUI-design/)
+与[同系列 FUI 还原](https://www.zcool.com.cn/work/ZMzY3NjA0OTY%3d.html) 的设计语言，
+在不动宿主布局的前提下补了几处「机加工控制台」的细节：
+
+| 优化 | 做法 |
+|---|---|
+| **原生标题栏配色适配**（Win 桌面） | DSH Desktop 的 Windows 标题栏 overlay 颜色取自渲染器的 `--dsw-specific-sidebar-fill` / `--dsw-alias-label-primary`；插件启动时会触发一次 body style 变更，让 preload 重新取色，窗口按钮区不再是一块宿主的纯黑 |
+| **图标按钮的“对角刻度”** | ghost 图标按钮的 L 形刻度从常驻改为 **hover / focus 才出现**（对角双刻度），静止时干净——原来常驻的小 L 在窄图标上像断掉的角标 |
+| **primary 双切角** | 主按钮从「右下单切角」升级成**左上 + 右下双切角**，更像 FUI 的机加工面板 |
+| **danger 警示斜纹** | hover 时出现 45° 警示斜条 + 左侧 LED，对应 FUI 的危险色块 |
+| **面板焦点反馈** | composer / dock 面板 hover 或 focus-within 时，HUD 描边提亮一档（只改 outline-color，零布局位移） |
+| **开屏 FUI 细节** | 550W 标识加机加工角框、下方加刻度尺、左上角加 `SYS // 550W · UEG` 微标签 |
+
+> 这些全部是 CSS 变量 / 背景层 / 伪元素级别的小改动，不新增 DOM 钩子、不改宿主布局；宿主要是把对应结构改掉，规则只是不生效，不会把界面弄坏。
 
 ## 语音播报（MOSS 音色）
 
@@ -582,3 +599,4 @@ node scripts/shot.mjs <url> <out.png> [宽 高 虚拟时间ms]
 ---
 
 MIT License · 用 `dsh-startup-screen` 的架构经验搭起来，视觉与实现均为本项目原创。
+

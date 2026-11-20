@@ -609,6 +609,13 @@ html[data-dsh-command="on"]
 }
 
 /* ============================================================================
+/* 面板被悬停/聚焦时，HUD 描边提亮一档（不新增布局，只改 outline 颜色） */
+html[data-dsh-command="on"]
+  :is([data-dsc-hud], [data-composer-card], [data-dockkit-pane], [data-dockkit-float]):is(:hover, :focus-within) {
+  outline-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 42%, var(--dsc-hud-stroke));
+}
+
+/* ============================================================================
  * §6 强调发光（强度 = --dsc-glow；glow=0 时 blur 与 alpha 同时归零 → 发光消失）
  * 只挂状态/ARIA 钩子，不改底色、不改布局；text-shadow 会继承给子元素（正合语义）。
  * 注意：发光只给 [data-dsc-hud]（本插件可选增强钩子）加。真实宿主面板
@@ -908,7 +915,7 @@ html[data-dsh-command="on"] :not(pre) > code {
  * ========================================================================== */
 html[data-dsh-command="on"]
   :is(button, [role="button"]):is([class*="primary"], [data-variant="primary"], [data-tone="primary"]):not(:focus-visible) {
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
 }
 
 html[data-dsh-command="on"]
@@ -923,14 +930,19 @@ html[data-dsh-command="on"]
   background-repeat: no-repeat;
 }
 
-/* ghost / 图标按钮：左下角一个 5px 的 L 形刻度 */
+/* ghost / 图标按钮：静止时干净，hover/focus 出现「对角双刻度」的机加工框
+   （旧版常驻左下 L 刻度在窄图标按钮上会显得像断掉的角标，这里收掉） */
 html[data-dsh-command="on"]
-  :is(button, [role="button"]):not([class*="primary"]):not([class*="danger"]):not([class*="destructive"]) {
+  :is(button, [role="button"]):not([class*="primary"]):not([class*="danger"]):not([class*="destructive"]):is(:hover, :focus-visible) {
   background-image:
     linear-gradient(var(--dsc-hud-tick), var(--dsc-hud-tick)),
+    linear-gradient(var(--dsc-hud-tick), var(--dsc-hud-tick)),
+    linear-gradient(var(--dsc-hud-tick), var(--dsc-hud-tick)),
     linear-gradient(var(--dsc-hud-tick), var(--dsc-hud-tick));
-  background-size: 5px 1px, 1px 5px;
-  background-position: left 3px bottom 3px, left 3px bottom 3px;
+  background-size: 6px 1px, 1px 6px, 6px 1px, 1px 6px;
+  background-position:
+    left 3px bottom 3px, left 3px bottom 3px,
+    right 3px top 3px, right 3px top 3px;
   background-repeat: no-repeat;
 }
 
@@ -940,6 +952,16 @@ html[data-dsh-command="on"]
   background-image: radial-gradient(circle at 7px 50%, var(--dsc-err) 0 2px, transparent 2.6px);
   background-size: 100% 100%;
   background-repeat: no-repeat;
+}
+
+/* danger hover：FUI 斜纹警示条 + LED */
+html[data-dsh-command="on"]
+  :is(button, [role="button"]):is([class*="danger"], [class*="destructive"], [data-variant="danger"]):hover {
+  background-image:
+    radial-gradient(circle at 7px 50%, var(--dsc-err) 0 2px, transparent 2.6px),
+    repeating-linear-gradient(45deg, color-mix(in srgb, var(--dsc-err) 26%, transparent) 0 1px, transparent 1px 6px);
+  background-size: 100% 100%, 100% 100%;
+  background-repeat: no-repeat, no-repeat;
 }
 
 /* ============================================================================
