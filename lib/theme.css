@@ -1729,3 +1729,63 @@ html[data-dsh-command="on"] body::before {
 @media (max-width: 1100px) {
   .dsc-deco__cursor { display: none; }
 }
+
+
+/* ── 空状态雷达：没有会话轮次时才出现，扫一圈停在 45% ── */
+.dsc-deco__radar {
+  display: none;
+  position: absolute;
+  left: calc(50% + var(--dsc-content-shift, 134px));
+  top: 42%;
+  width: min(46vmin, 520px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: .5;
+}
+
+html[data-dsc-empty="on"] .dsc-deco__radar { display: block; }
+
+.dsc-deco__radar i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) 22%, transparent);
+  border-radius: 50%;
+}
+
+.dsc-deco__radar i:nth-child(1) { border-style: dashed; animation: dsc-radar-spin 42s linear infinite; }
+.dsc-deco__radar i:nth-child(2) { inset: 18%; border-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 14%, transparent); }
+.dsc-deco__radar i:nth-child(3) {
+  inset: 50% auto auto 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: color-mix(in srgb, var(--dsc-accent, #ff3b30) 55%, transparent);
+  border: 0;
+}
+
+.dsc-deco__radar b {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, color-mix(in srgb, var(--dsc-accent, #ff3b30) 16%, transparent), transparent 16%, transparent 100%);
+  mask-image: radial-gradient(circle, transparent 34%, #000 35%);
+  -webkit-mask-image: radial-gradient(circle, transparent 34%, #000 35%);
+  animation: dsc-radar-spin 6s linear infinite;
+}
+
+.dsc-deco__radar::before,
+.dsc-deco__radar::after {
+  content: "";
+  position: absolute;
+  background: color-mix(in srgb, var(--dsc-accent, #ff3b30) 18%, transparent);
+}
+
+.dsc-deco__radar::before { left: 50%; top: -2%; width: 1px; height: 104%; }
+.dsc-deco__radar::after { top: 50%; left: -2%; height: 1px; width: 104%; }
+
+@keyframes dsc-radar-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-deco__radar i:nth-child(1), .dsc-deco__radar b { animation: none; }
+}
