@@ -110,6 +110,16 @@
     <div class="dsc-deco__sig"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dsc-deco__ops">OPS // 0x1F</div>
     <div class="dsc-deco__clock"><b>MIS</b><span>T+0000:12:47</span></div>
+    <div class="dsc-deco__panel">
+      <span class="dsc-deco__ctag">PANEL-01 // INSTRUCTION INPUT</span>
+      <span class="dsc-deco__cid">C-01 · LIVE</span>
+      <div class="dsc-deco__creticle"><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="dsc-deco__opslog">
+      <span>&gt; OPS LOG 0x1F</span>
+      <span>&gt; WORKER POOL 04/04</span>
+      <span>&gt; SYNC 98% · HOLD</span>
+    </div>
     <div class="dsc-deco__serial">FUI-9393 // UEG-02</div>
     <div class="dsc-deco__tele">
       <b>UEG · 550W / SYS-CTL</b>
@@ -149,7 +159,7 @@
       <div class="mock__code">dsh plugin --profile desktop add link:F:\dsh-startup-theme</div>
       <div class="mock__bubble mock__bubble--ai">主题层已就位：125 枚 --dsw-* token 换成统帅红色板，扫描线/暗角/四角框都可关。</div>
     </div>
-    <div class="mock__composer">向 DeepSeek Harness 发送消息…</div>
+    <div class="mock__composer" data-composer-card>向 DeepSeek Harness 发送消息…</div>
   </main>
 </div>
 
@@ -332,5 +342,18 @@
     }, wait)
   }
 </script>
-</body>
+<script>(function(){
+    function m(){
+      var el = document.querySelector('[data-composer-card]');
+      if(!el) return;
+      var r = el.getBoundingClientRect(), d = document.documentElement;
+      d.style.setProperty('--dsc-composer-x', Math.round(r.left)+'px');
+      d.style.setProperty('--dsc-composer-y', Math.round(r.top)+'px');
+      d.style.setProperty('--dsc-composer-w', Math.round(r.width)+'px');
+      d.style.setProperty('--dsc-composer-h', Math.round(r.height)+'px');
+      d.setAttribute('data-dsc-composer','on');
+    }
+    m(); setTimeout(m, 300); setTimeout(m, 1200);
+    window.addEventListener('resize', m);
+  })()</script></body>
 </html>

@@ -1899,3 +1899,85 @@
   .dsc-open__boot span, .dsc-open__connect i { animation: none; opacity: 1; transform: none; }
   .dsc-open__connect i { width: 100%; }
 }
+
+
+/* ── 左右数字刻度列（贴在机壳内缘） ─────────────────────────────────────── */
+.dsc-rulex {
+  position: absolute;
+  top: 14%;
+  height: 72%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 2;
+  pointer-events: none;
+  opacity: .55;
+}
+
+.dsc-rulex--l { left: max(10px, 1.2vmin); align-items: flex-start; }
+.dsc-rulex--r { right: max(10px, 1.2vmin); align-items: flex-end; }
+
+.dsc-rulex i {
+  position: relative;
+  font: 500 8.5px/1 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .14em;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 42%, transparent);
+  font-style: normal;
+}
+
+.dsc-rulex i::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 1px;
+  background: color-mix(in srgb, var(--dsc-accent, #ff3b30) 38%, transparent);
+}
+
+.dsc-rulex--l i::after { left: calc(100% + 4px); }
+.dsc-rulex--r i::after { right: calc(100% + 4px); }
+
+@media (max-width: 900px) {
+  .dsc-rulex { display: none; }
+}
+
+/* ── 工牌扫描 UI：四角框 + ID SCAN 标签（只在扫描/核验时出现） ──────────── */
+.dsc-badge__scanui {
+  position: absolute;
+  inset: -7.2% -5%;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s ease-out;
+}
+
+.dsc-badge.is-scanning .dsc-badge__scanui,
+.dsc-badge.is-verified .dsc-badge__scanui { opacity: 1; }
+
+.dsc-badge__sc {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) 62%, transparent);
+}
+
+.dsc-badge__sc--tl { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.dsc-badge__sc--tr { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+.dsc-badge__sc--bl { left: 0; bottom: 0; border-right: 0; border-top: 0; }
+.dsc-badge__sc--br { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+
+.dsc-badge__scanlabel {
+  position: absolute;
+  left: 50%;
+  bottom: -26px;
+  transform: translateX(-50%);
+  font: 500 9.5px/1 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .26em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 72%, transparent);
+}
+
+.dsc-badge__scanstate { color: #fff; font-weight: 600; letter-spacing: .22em; }
+.dsc-badge.is-verified .dsc-badge__scanstate { color: var(--dsc-ok, #46e08a); }
+.dsc-badge.is-verified .dsc-badge__scanstate::after { content: ""; }
+.dsc-badge.is-verified .dsc-badge__scanstate { color: #4ce08a; }

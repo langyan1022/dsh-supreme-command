@@ -151,6 +151,8 @@ html[data-dsh-command="on"] {
  *    选择器 html[data-dsh-command="on"] body (0,1,2)
  *    > 宿主 body[data-ds-dark-theme] (0,1,1) / body (0,0,1) → 深浅两态同一套暗色
  * ========================================================================== */
+html[data-dsh-command="on"] * { caret-color: var(--dsc-accent, #ff3b30); }
+
 html[data-dsh-command="on"] body {
   /* ---------- 背景层级 ---------- */
   --dsw-alias-bg-base: var(--dsc-bg, #080305);
@@ -1533,4 +1535,96 @@ html[data-dsh-command="on"] [role="progressbar"] > * {
 
 @media (prefers-reduced-motion: reduce) {
   .dsc-deco__sig i { animation: none; opacity: .4; }
+}
+
+
+/* ── composer 面板编号 + 取景角标（几何来自 --dsc-composer-*，由测量脚本写入） ── */
+.dsc-deco__panel {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  font-family: "Bahnschrift", "Consolas", monospace;
+}
+
+html[data-dsc-composer="on"] .dsc-deco__panel { display: block; }
+
+.dsc-deco__ctag {
+  position: absolute;
+  left: calc(var(--dsc-composer-x, 0px) + 8px);
+  top: calc(var(--dsc-composer-y, 0px) - 15px);
+  font-size: 9px;
+  letter-spacing: .24em;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 62%, transparent);
+  white-space: nowrap;
+}
+
+.dsc-deco__cid {
+  position: absolute;
+  left: calc(var(--dsc-composer-x, 0px) + var(--dsc-composer-w, 0px) - 74px);
+  top: calc(var(--dsc-composer-y, 0px) - 15px);
+  font-size: 9px;
+  letter-spacing: .22em;
+  color: color-mix(in srgb, var(--dsc-text, #f3e7e4) 34%, transparent);
+  white-space: nowrap;
+}
+
+.dsc-deco__creticle {
+  position: absolute;
+  left: var(--dsc-composer-x, 0px);
+  top: var(--dsc-composer-y, 0px);
+  width: var(--dsc-composer-w, 0px);
+  height: var(--dsc-composer-h, 0px);
+}
+
+.dsc-deco__creticle i {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) 34%, transparent);
+}
+
+.dsc-deco__creticle i:nth-child(1) { left: -1px; top: -1px; border-right: 0; border-bottom: 0; }
+.dsc-deco__creticle i:nth-child(2) { right: -1px; top: -1px; border-left: 0; border-bottom: 0; }
+.dsc-deco__creticle i:nth-child(3) { left: -1px; bottom: -1px; border-right: 0; border-top: 0; }
+.dsc-deco__creticle i:nth-child(4) { right: -1px; bottom: -1px; border-left: 0; border-top: 0; }
+
+/* ── 侧栏 OPS 滚动日志（在 550W 标识上方逐行出现） ── */
+.dsc-deco__opslog {
+  position: absolute;
+  left: 24px;
+  bottom: 200px;
+  display: grid;
+  gap: 5px;
+  font: 500 9px/1.2 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .18em;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 40%, transparent);
+}
+
+.dsc-deco__opslog span {
+  opacity: 0;
+  animation: dsc-deco-ops 6s ease-in-out infinite;
+}
+
+.dsc-deco__opslog span:nth-child(1) { animation-delay: 0s; }
+.dsc-deco__opslog span:nth-child(2) { animation-delay: .9s; }
+.dsc-deco__opslog span:nth-child(3) { animation-delay: 1.8s; }
+
+@keyframes dsc-deco-ops {
+  0% { opacity: 0; transform: translateX(-4px); }
+  12% { opacity: .85; transform: translateX(0); }
+  72% { opacity: .85; }
+  100% { opacity: 0; transform: translateX(3px); }
+}
+
+@media (max-width: 1100px) {
+  .dsc-deco__panel,
+  .dsc-deco__opslog {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dsc-deco__opslog span { animation: none; opacity: .55; }
 }

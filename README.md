@@ -385,6 +385,17 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 这些都受 `--dsc-hud-ui-alpha` 闸门控制，HUD 关掉时一起消失；窄屏（<1100px）自动隐藏。开屏那边则是雷达环 + 旋扫锥 + 左右读数，外加左下角的**自检行**（`> UEG SECURE BOOT / OMNIVOICE LINK … OK /
 IQC AUTH … OK / 550W ONLINE`，逐行出现）和 550W 下方**连接进度条**（2.2s 填满），全部纯 CSS。
 
+面板级 FUI（几何由 `lib/center.js` 测量 `[data-composer-card]` 写入 `--dsc-composer-*`，resize/滚动跟手）：
+
+- **composer 编号标签**：左上 `PANEL-01 // INSTRUCTION INPUT`，右上 `C-01 · LIVE`；
+- **composer 取景角标**：贴着输入框四角的 12px 直角标；
+- **OPS 滚动日志**：侧栏底部三行 `> OPS LOG 0x1F / > WORKER POOL 04/04 / > SYNC 98% · HOLD`，6s 循环逐行出现。
+
+开屏这轮又加了两处：
+
+- **左右数字刻度列**：机壳内缘 000–160 的竖排校准尺；
+- **工牌扫描 UI**：扫描/核验时工牌四角出现取景框 + `ID SCAN // SCANNING` 标签，核验通过切成 `VERIFIED`。
+
 主题侧再加了三处仪表感：
 - **侧栏右缘信号条**：9 段红色小条按 2.6s 周期错峰呼吸，贴在侧栏与内容区的分界线上；
 - **OPS 读数**：左下 `OPS // 0x1F`；
