@@ -1628,3 +1628,31 @@ html[data-dsc-composer="on"] .dsc-deco__panel { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .dsc-deco__opslog span { animation: none; opacity: .55; }
 }
+
+
+/* ── 用户消息：终端提示符（deco 层定位）+ 发丝描边 ── */
+.dsc-deco__prompts {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482001;
+  pointer-events: none;
+}
+
+.dsc-deco__prompt {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font: 600 12px/1 "Bahnschrift", "Consolas", monospace;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 78%, transparent);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--dsc-accent, #ff3b30) 45%, transparent);
+  will-change: transform;
+}
+
+html[data-dsh-command="on"] [data-message-bubble] {
+  outline: 1px solid color-mix(in srgb, var(--dsc-accent, #ff3b30) 26%, transparent);
+  outline-offset: -1px;
+}
+
+html[data-dsh-command="on"] [data-message-bubble]:hover {
+  outline-color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 46%, transparent);
+}

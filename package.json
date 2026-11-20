@@ -1,6 +1,6 @@
 {
   "name": "dsh-supreme-command",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "DeepSeek Harness 启动屏与同风格界面主题：暗色金属控制台 + 红色 HUD，启动序列依次为标题砸下、进度与日志、北京航天中心工牌扫描翻面核准、授权通过；界面主题覆盖 125 枚 --dsw-* token，并带 UEG 水印与机构徽标。配色/质感/文案全可调。",
   "keywords": [
     "dsh",

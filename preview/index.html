@@ -109,7 +109,7 @@
     <div class="dsc-deco__vlabel">UEG · 550W · SYS-CTL</div>
     <div class="dsc-deco__sig"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dsc-deco__ops">OPS // 0x1F</div>
-    <div class="dsc-deco__clock"><b>MIS</b><span>T+0000:12:47</span></div>
+    <div class="dsc-deco__clock"><b>MIS</b><span data-dsc-live="uptime">T+0000:00:00</span></div>
     <div class="dsc-deco__panel">
       <span class="dsc-deco__ctag">PANEL-01 // INSTRUCTION INPUT</span>
       <span class="dsc-deco__cid">C-01 · LIVE</span>
@@ -125,8 +125,8 @@
       <b>UEG · 550W / SYS-CTL</b>
       <i>LAT 39.9042  //  LON 116.4074</i>
       <i>ALT +0043.5M  //  TMP -042&deg;C</i>
-      <i>MIS T+0000:12:47  //  HOLD 0x00</i>
-      <span class="dsc-deco__bars">PWR &#9613;&#9613;&#9613;&#9613;&#9613;&#9613;&#9613;&#9615; 87%</span>
+      <i>MIS <span data-dsc-live="uptime">T+0000:00:00</span>  //  HOLD 0x00</i>
+      <span class="dsc-deco__bars">PWR <b data-dsc-live="pwr">&#9613;&#9613;&#9613;&#9613;&#9613;&#9613;&#9613;&#9615;</b> <i data-dsc-live="pwrNum">87%</i></span>
     </div>
     <div class="dsc-deco__scale"><em style="top:0%">000</em><em style="top:20%">020</em><em style="top:40%">040</em><em style="top:60%">060</em><em style="top:80%">080</em><em style="top:100%">100</em></div>
     <div class="dsc-deco__ticker"><span>0x1F SEC-CH // 0x2A CRC-OK // 0x7E PWR 87% // 0x9C UEG-550W // SIG 98% // ENC AES-256 // LAT 39.9042 LON 116.4074 // T-042C // 0xB7 SYS 550W // 0xC2 ROT 0912 // HOLD 0x00 // </span></div>
@@ -154,7 +154,7 @@
   <main class="mock__main">
     <header class="mock__top"><span>SESSION · 0912</span><span>LINK OK · ENC AES-256</span></header>
     <div class="mock__chat">
-      <div class="mock__bubble mock__bubble--user">帮我做一个启动屏 + 同风格主题。</div>
+      <div class="mock__bubble mock__bubble--user" data-message-bubble>帮我做一个启动屏 + 同风格主题。</div>
       <div class="mock__bubble mock__bubble--ai">收到。先落盘契约，再并行铺开：启动屏、主题皮肤、两个 SVG 徽标管线。详见 <a class="mock__link" href="#">docs/CONFIG.md</a>。</div>
       <div class="mock__code">dsh plugin --profile desktop add link:F:\dsh-startup-theme</div>
       <div class="mock__bubble mock__bubble--ai">主题层已就位：125 枚 --dsw-* token 换成统帅红色板，扫描线/暗角/四角框都可关。</div>
@@ -355,5 +355,31 @@
     }
     m(); setTimeout(m, 300); setTimeout(m, 1200);
     window.addEventListener('resize', m);
-  })()</script></body>
+  })()</script><script>(function(){
+  var deco = document.getElementById('dsh-command-deco');
+  if(!deco) return;
+  var layer = document.createElement('div');
+  layer.className = 'dsc-deco__prompts';
+  layer.setAttribute('aria-hidden','true');
+  deco.appendChild(layer);
+  function paint(){
+    var bubbles = document.querySelectorAll('[data-message-bubble]');
+    var list = [];
+    for(var i=0;i<bubbles.length;i++){
+      var r = bubbles[i].getBoundingClientRect();
+      if(r.width>0) list.push(r);
+    }
+    while(layer.children.length<list.length){ var m=document.createElement('span'); m.className='dsc-deco__prompt'; m.textContent='>'; layer.appendChild(m); }
+    while(layer.children.length>list.length) layer.removeChild(layer.lastChild);
+    for(var k=0;k<list.length;k++){
+      layer.children[k].style.transform='translate('+Math.round(list[k].left-15)+'px,'+Math.round(list[k].top+5)+'px)';
+    }
+  }
+  paint(); window.addEventListener('resize',paint); setInterval(paint,900);
+  var t0=Date.now(), pad=function(n,w){return String(Math.max(0,Math.floor(n))).padStart(w||2,'0')};
+  setInterval(function(){
+    var s=(Date.now()-t0)/1000;
+    document.querySelectorAll('[data-dsc-live="uptime"]').forEach(function(n){n.textContent='T+'+pad(s/3600)+':'+pad((s%3600)/60)+':'+pad(s%60)});
+  },1000);
+})()</script></body>
 </html>
