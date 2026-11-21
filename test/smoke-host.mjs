@@ -344,7 +344,7 @@ ok('语音台词进入注入配置（含中英两组与素材路由）', () => {
 /* ── 工牌字段 ─────────────────────────────────────────────────────────── */
 ok('桌面宠物配置：默认开、尺寸夹取', () => {
   assert.equal(DEFAULTS.pet, true)
-  assert.equal(normalize({ petSize: 999 }).petSize, 260)
+  assert.equal(normalize({ petSize: 999 }).petSize, 520)
   assert.equal(normalize({ petSize: 10 }).petSize, 80)
   assert.equal(normalize({ petSize: 999, pet: false }).pet, false)
 })

@@ -87,7 +87,15 @@ function buildWav(sampleRate, pcm) {
   return Buffer.concat([header, pcm])
 }
 
+function pronounceFix(text) {
+  return String(text || '')
+    .replace(/MOSS/gi, 'moss')
+    .replace(/550\s*W/gi, '五五零 W')
+    .replace(/(^|[^A-Za-z])L1(?![0-9])/g, '$1L 一')
+}
+
 async function speak(text) {
+  text = pronounceFix(text)
   const res = await fetch(base + '/api/speak', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

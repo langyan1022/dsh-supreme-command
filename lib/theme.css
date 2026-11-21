@@ -1811,6 +1811,7 @@ html[data-dsh-command="on"][data-dsc-fui-extra="off"]
 
 .dsc-pet:hover { filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .6)) drop-shadow(0 0 20px color-mix(in srgb, var(--dsc-accent, #ff3b30) 36%, transparent)); }
 .dsc-pet.is-dragging { cursor: grabbing; }
+.dsc-pet.is-snapping { transition: left .34s cubic-bezier(.2,.8,.2,1), top .34s cubic-bezier(.2,.8,.2,1), opacity .35s ease-out, filter .2s ease-out; }
 .dsc-pet.is-hidden { opacity: 0; pointer-events: none; }
 
 .dsc-pet canvas {

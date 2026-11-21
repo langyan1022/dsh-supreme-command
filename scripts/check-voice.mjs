@@ -43,8 +43,8 @@ function check(name, cond, detail) {
 const zhLog = logOf(await dump(BASE + '/_tool/voice-probe.html?lang=zh'))
 check('中文模式：播了 4 句（开场 / 标题 / 操作员 / 授权）', Array.isArray(zhLog) && zhLog.length === 4, JSON.stringify(zhLog))
 if (Array.isArray(zhLog)) {
-  check('台词文本正确（boot 开场 + {operator} 替换为 丁兵兵）',
-    zhLog[0].text.includes('MOSS is online') && zhLog[1].text.includes('550W') && zhLog[2].text.includes('丁兵兵') && zhLog[3].text.includes('授权'),
+  check('台词文本正确（moss/五五零 发音修正 + {operator} 替换为 丁兵兵）',
+    zhLog[0].text.toLowerCase().includes('moss is online') && /五五零/.test(zhLog[1].text) && zhLog[2].text.includes('丁兵兵') && zhLog[3].text.includes('授权'),
     JSON.stringify(zhLog.map((x) => x.text)))
   check('参数与参考插件一致：rate 0.88 / pitch 0.85 / volume 0.9',
     zhLog.every((x) => x.rate === 0.88 && x.pitch === 0.85 && x.volume === 0.9),
