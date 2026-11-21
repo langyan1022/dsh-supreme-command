@@ -360,6 +360,7 @@ curl -X POST http://127.0.0.1:10022/dsh-command/config -d '{"action":"reset"}'
 | **primary 双切角** | 主按钮从「右下单切角」升级成**左上 + 右下双切角**，更像 FUI 的机加工面板 |
 | **danger 警示斜纹** | hover 时出现 45° 警示斜条 + 左侧 LED，对应 FUI 的危险色块 |
 | **面板焦点反馈** | composer / dock 面板 hover 或 focus-within 时，HUD 描边提亮一档（只改 outline-color，零布局位移） |
+| **开屏副标 [MOSS]** | 底部中文行 `智能量子计算机 550W [MOSS]`，方括号用主色高亮 |
 | **开屏 FUI 细节** | 550W 标识加机加工角框、刻度尺、`SYS // 550W · UEG` 微标签，外加雷达环 + 旋扫锥 + 左右两列读数（PWR/SIG/TMP/SEC 与 LAT/LON/ALT/ROT） |
 | **主题 FUI 增强层** | 固定的 .dsc-deco 里加了：右下遥测块（坐标 / 温度 / 功率条）、右缘校准刻度（000–100）、底部滚动的十六进制数据条、左下序列号 `FUI-9393 // UEG-02`、内容区缓慢下扫的扫描线 |
 | **桌面端外观重测** | ping 放在 **selfboot 自举脚本**里（桌面端真正会执行的路径），触发 body style 变化让 Electron preload 重新取色，把 Windows 原生标题栏 overlay 刷成主题色（并把侧栏 token 调成 88% 不透明，让 HUD 纹理能微微透上来） |

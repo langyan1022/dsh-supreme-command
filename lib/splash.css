@@ -1981,3 +1981,13 @@
 .dsc-badge.is-verified .dsc-badge__scanstate { color: var(--dsc-ok, #46e08a); }
 .dsc-badge.is-verified .dsc-badge__scanstate::after { content: ""; }
 .dsc-badge.is-verified .dsc-badge__scanstate { color: #4ce08a; }
+
+
+/* 开屏底部：550W 后的 [MOSS] 标记 */
+.dsc-open__moss {
+  margin-left: .18em;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: #f51b19;
+  text-shadow: 0 0 12px rgba(245, 27, 25, .45);
+}
