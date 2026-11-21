@@ -3,15 +3,16 @@
 //
 // 用法:
 //   node scripts/moss-voice.mjs                     # 用默认三句
-//   node scripts/moss-voice.mjs --text title=... --text grant=...
+//   node scripts/moss-voice.mjs --text boot=... --text title=... --text grant=...
 //   node scripts/moss-voice.mjs --url http://127.0.0.1:18221 --category notice
 import fs from 'node:fs'
 import path from 'node:path'
 
 const DEFAULT_LINES = {
-  title: '智能量子计算机 550W，已上线。',
-  operator: '身份核验通过，北京航天中心。',
-  grant: '授权通过，欢迎进入系统。'
+  boot: 'MOSS is online。为了延续人类文明，请保持理智。',
+  title: '550W 智能量子计算机，已接管本控制台。',
+  operator: '操作员生物签名核验通过，权限等级 L1。',
+  grant: '北京航天中心授权完成，系统进入待命。'
 }
 
 const argv = process.argv.slice(2)

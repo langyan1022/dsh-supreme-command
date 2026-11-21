@@ -7,7 +7,7 @@
 import { spawn } from 'node:child_process'
 import fs from 'node:fs'
 
-const BASE = process.argv[2] || 'http://127.0.0.1:8791/preview/index.html?chrome=0'
+const BASE = process.argv[2] || 'http://127.0.0.1:8791/preview/index.html?chrome=0&film=0'
 const CHROME = process.env.DSC_CHROME || [
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
   'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'

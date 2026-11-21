@@ -13,7 +13,7 @@ const CHROME = process.env.DSC_CHROME || [
 ].find((p) => fs.existsSync(p))
 if (!CHROME) { console.error('no chrome'); process.exit(2) }
 
-function dump(url, budget = 11000) {
+function dump(url, budget = 14000) {
   return new Promise((resolve) => {
     const child = spawn(CHROME, [
       '--headless=new', '--disable-gpu', '--window-size=1200,800',
@@ -41,10 +41,10 @@ function check(name, cond, detail) {
 
 /* ── 中文模式 ─────────────────────────────────────────────────────────── */
 const zhLog = logOf(await dump(BASE + '/_tool/voice-probe.html?lang=zh'))
-check('中文模式：播了 3 句（标题 / 操作员 / 授权）', Array.isArray(zhLog) && zhLog.length === 3, JSON.stringify(zhLog))
+check('中文模式：播了 4 句（开场 / 标题 / 操作员 / 授权）', Array.isArray(zhLog) && zhLog.length === 4, JSON.stringify(zhLog))
 if (Array.isArray(zhLog)) {
-  check('台词文本正确（含 {operator} 替换为 丁兵兵）',
-    zhLog[0].text.includes('智能量子计算机') && zhLog[1].text.includes('丁兵兵') && zhLog[2].text.includes('授权通过'),
+  check('台词文本正确（boot 开场 + {operator} 替换为 丁兵兵）',
+    zhLog[0].text.includes('MOSS is online') && zhLog[1].text.includes('550W') && zhLog[2].text.includes('丁兵兵') && zhLog[3].text.includes('授权'),
     JSON.stringify(zhLog.map((x) => x.text)))
   check('参数与参考插件一致：rate 0.88 / pitch 0.85 / volume 0.9',
     zhLog.every((x) => x.rate === 0.88 && x.pitch === 0.85 && x.volume === 0.9),
@@ -57,7 +57,7 @@ if (Array.isArray(zhLog)) {
 
 /* ── 双语模式 ─────────────────────────────────────────────────────────── */
 const bothLog = logOf(await dump(BASE + '/_tool/voice-probe.html?lang=both'))
-check('双语模式：3 句 × 2 语言 = 6 次播报', Array.isArray(bothLog) && bothLog.length === 6, JSON.stringify(bothLog && bothLog.length))
+check('双语模式：4 句 × 2 语言 = 8 次播报', Array.isArray(bothLog) && bothLog.length === 8, JSON.stringify(bothLog && bothLog.length))
 if (Array.isArray(bothLog) && bothLog.length === 6) {
   check('双语顺序是先中后英，且语种标签正确',
     bothLog[0].lang === 'zh-CN' && bothLog[1].lang === 'en-US' && bothLog[2].lang === 'zh-CN' && bothLog[3].lang === 'en-US',

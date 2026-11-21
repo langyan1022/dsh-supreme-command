@@ -1991,3 +1991,31 @@
   color: #f51b19;
   text-shadow: 0 0 12px rgba(245, 27, 25, .45);
 }
+
+
+/* ── 开屏第二段：550W 红光影片（4s，11×→1× 拉镜 + 亮度回落） ────────────── */
+.dsc-open__film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 6;
+  opacity: 0;
+  background: #050608;
+  transform: scale(var(--dsc-film-zoom, 11));
+  filter: brightness(var(--dsc-film-light, 1.55)) saturate(1.05);
+  transition: opacity .28s ease-out;
+}
+
+.dsc-splash.is-film .dsc-open__film { opacity: 1; }
+
+/* 影片开始后，identity 那套元素让位 */
+.dsc-splash.is-film .dsc-open__fui,
+.dsc-splash.is-film .dsc-open__logo,
+.dsc-splash.is-film .dsc-open__cap,
+.dsc-splash.is-film .dsc-open::before,
+.dsc-splash.is-film .dsc-open::after {
+  opacity: 0 !important;
+  transition: opacity .2s ease-out;
+}

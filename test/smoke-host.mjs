@@ -334,9 +334,10 @@ ok('语音字段越界被夹取、非法枚举回默认', () => {
 
 ok('语音台词进入注入配置（含中英两组与素材路由）', () => {
   const cfg = buildSplashConfig(normalize({ voiceLine2: '操作员 {operator} 验证通过。' }))
-  assert.ok(Array.isArray(cfg.voiceLines.zh) && cfg.voiceLines.zh.length === 3)
-  assert.ok(Array.isArray(cfg.voiceLines.en) && cfg.voiceLines.en.length === 3)
+  assert.ok(Array.isArray(cfg.voiceLines.zh) && cfg.voiceLines.zh.length === 4 && cfg.voiceLines.zh[0].includes('MOSS is online'))
+  assert.ok(Array.isArray(cfg.voiceLines.en) && cfg.voiceLines.en.length === 4)
   assert.ok(['.wav', '.mp3'].some((ext) => cfg.voiceUrls.grant === '/dsh-command/voice/grant' + ext))
+  assert.ok(['.wav', '.mp3'].some((ext) => cfg.voiceUrls.boot === '/dsh-command/voice/boot' + ext))
   assert.equal(cfg.voiceRate, 0.88)
 })
 

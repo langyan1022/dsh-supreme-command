@@ -78,6 +78,23 @@ async function serveHostRoutes(pathname, query, res) {
     }))
     return true
   }
+  if (sub === 'opening/film.mp4') {
+    const file = path.join(ROOT, 'lib/assets/opening/film.mp4')
+    let st
+    try { st = fs.statSync(file) } catch (e) { res.writeHead(404); res.end(); return true }
+    const range = String((res.req && res.req.headers && res.req.headers.range) || '')
+    const m = range.match(/^bytes=(\d*)-(\d*)$/)
+    if (!m) {
+      res.writeHead(200, { 'Content-Type': 'video/mp4', 'Content-Length': String(st.size), 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-store' })
+      fs.createReadStream(file).pipe(res); return true
+    }
+    const start = m[1] === '' ? Math.max(0, st.size - Number(m[2] || 0)) : Number(m[1])
+    const end = m[2] === '' ? st.size - 1 : Math.min(st.size - 1, Number(m[2]))
+    if (start > end || start >= st.size) { res.writeHead(416, { 'Content-Range': 'bytes */' + st.size }); res.end(); return true }
+    res.writeHead(206, { 'Content-Type': 'video/mp4', 'Content-Length': String(end - start + 1), 'Content-Range': 'bytes ' + start + '-' + end + '/' + st.size, 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-store' })
+    fs.createReadStream(file, { start, end }).pipe(res)
+    return true
+  }
   const logo = sub.match(/^logo\/([a-z0-9]+)\.svg$/)
   if (logo) {
     const svg = await logoSvg(logo[1])

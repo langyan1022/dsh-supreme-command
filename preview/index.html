@@ -288,7 +288,8 @@
     sound: params.get('sound') === '1',
     soundVolume: 0.3,
     version: '1.0.0-preview',
-    logoUrls: await logoUrls()
+    logoUrls: await logoUrls(),
+    filmUrl: params.get('film') === '0' ? '' : '/dsh-command/opening/film.mp4'
   }
 
   /* 主题装饰：把 UEG / BSC 的 blob 地址设成遮罩，颜色交给 theme.css 的 --dsc-logo */

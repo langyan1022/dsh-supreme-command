@@ -66,7 +66,7 @@ const knownKeys = [
   'voiceCue', 'voiceLead', 'voiceSource', 'voiceLines', 'voiceUrls',
   'badge', 'badgeName', 'badgeId', 'badgeNo', 'badgePinyin', 'badgeOrg', 'badgeOrgEn',
   'badgeLab', 'badgeLabEn', 'badgeLabShort', 'badgeRole', 'badgeClearance', 'badgeHold', 'staticBadge', 'staticFace',
-  'showModel', 'accent', 'accent2'
+  'showModel', 'accent', 'accent2', 'filmUrl', 'voiceLineBoot', 'voiceLineBootEn'
 ]
 ok('引用的配置键都在契约里', () => {
   const used = [...js.matchAll(/CFG\.([A-Za-z0-9_]+)/g)].map((m) => m[1])
