@@ -328,6 +328,19 @@
     })
   }
 
+  /* ?pet=1 → 挂 550W 桌面宠物（读本机 MOSS 模型） */
+  if (params.get('pet') === '1') {
+    try {
+      window.__DSC_CFG__ = { pet: true, petSize: Number(params.get('petSize')) || 160 }
+      ;(() => {
+        const tag = document.createElement('script')
+        tag.type = 'module'
+        tag.src = '/dsh-command/pet/pet.js'
+        document.head.appendChild(tag)
+      })()
+    } catch (err) { /* noop */ }
+  }
+
   /* 控制条 */
   if (!chrome) {
     document.querySelectorAll('.bar').forEach((el) => el.remove())

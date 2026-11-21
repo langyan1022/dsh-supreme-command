@@ -87,6 +87,23 @@ async function serveHostRoutes(pathname, query, res) {
     send('image/svg+xml; charset=utf-8', masked)
     return true
   }
+  if (sub === 'pet/pet.js') { send('application/javascript; charset=utf-8', fs.readFileSync(path.join(ROOT, 'lib/pet.js'), 'utf8')); return true }
+  const petThree = sub.match(/^pet\/three\/(three\.module\.min|GLTFLoader|BufferGeometryUtils|meshopt_decoder\.module)\.js$/)
+  if (petThree) { send('application/javascript; charset=utf-8', fs.readFileSync(path.join(ROOT, 'lib/assets/three', petThree[1] + '.js'), 'utf8')); return true }
+  if (sub === 'pet/model.glb') {
+    const candidates = [
+      process.env.DSC_PET_MODEL,
+      path.join(ROOT, 'assets/pet/model.glb'),
+      'F:/moss/agent-lab/prototype/static/conversation-assets/moss-exterior.glb'
+    ].filter(Boolean)
+    const found = candidates.find((f) => { try { return fs.statSync(f).isFile() } catch (e) { return false } })
+    if (!found) { res.writeHead(404); res.end(); return true }
+    const st = fs.statSync(found)
+    res.writeHead(200, { 'Content-Type': 'model/gltf-binary', 'Content-Length': String(st.size), 'Cache-Control': 'no-store' })
+    if (String((res.req && res.req.method) || 'GET').toUpperCase() === 'HEAD') { res.end(); return true }
+    fs.createReadStream(found).pipe(res)
+    return true
+  }
   const voice = sub.match(/^voice\/([a-z]+)\.(mp3|wav)$/)
   if (voice) {
     const f = path.join(ROOT, 'lib/assets/voice/' + voice[1] + '.' + voice[2])

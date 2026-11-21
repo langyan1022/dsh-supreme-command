@@ -421,6 +421,25 @@ IQC AUTH … OK / 550W ONLINE`，逐行出现）和 550W 下方**连接进度条
 - **OPS 读数**：左下 `OPS // 0x1F`；
 - **任务时钟**：右下 `MIS T+0000:12:47`。
 
+## 550W 桌面宠物（可拖动）
+
+在界面上浮一个会动的 550W 模型（three.js 渲染），像桌面宠物：
+
+- **默认停在窗口顶部右侧**，按住拖到任意位置（限制在视口上半部，左右滑动为主），位置记在 `localStorage`；
+- **待机动画**：模型缓慢自转 + 轻微浮动；模型里 5 个「机械臂」节点会小幅摆动；点一下会短促地"挥手"；
+- **没有吊轨、没有外框**，纯悬浮 + 主色辉光 + 小 `550W` 铭牌；
+- 启动屏播放期间自动隐藏；`prefers-reduced-motion` 时只渲染一帧、不跑动画；
+- 设置里可关（`pet`）或调尺寸（`petSize` 80–260px）。
+
+**模型来源**（不随插件分发，避免 39MB 资产 + 版权问题）：按以下顺序找第一个存在的文件：
+
+1. 环境变量 `DSC_PET_MODEL`；
+2. 插件目录 `assets/pet/model.glb`（放你自己的 550W 模型）；
+3. 本机 MOSS 原型：`F:/moss/agent-lab/prototype/static/conversation-assets/moss-exterior.glb`。
+
+Host 用 `/dsh-command/pet/model.glb` 把文件以同源方式喂给 three.js（绕过 CORS），three.js 本体
+（MIT，约 800KB）随插件放在 `lib/assets/three/`。
+
 ## FUI 总览与开关（fuiExtra）
 
 主题的 HUD 分成两层：

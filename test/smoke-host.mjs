@@ -341,6 +341,13 @@ ok('语音台词进入注入配置（含中英两组与素材路由）', () => {
 })
 
 /* ── 工牌字段 ─────────────────────────────────────────────────────────── */
+ok('桌面宠物配置：默认开、尺寸夹取', () => {
+  assert.equal(DEFAULTS.pet, true)
+  assert.equal(normalize({ petSize: 999 }).petSize, 260)
+  assert.equal(normalize({ petSize: 10 }).petSize, 80)
+  assert.equal(normalize({ petSize: 999, pet: false }).pet, false)
+})
+
 ok('工牌默认就是图恒宇那张（正反面要素齐全、没有照片字段）', () => {
   assert.equal(DEFAULTS.badge, true)
   assert.equal(DEFAULTS.badgeName, '图恒宇')
@@ -365,6 +372,21 @@ ok('工牌配置进注入包（正反面字段齐全）', () => {
 const selfBootRoute = routes.find((r) => r.kind === 'exact' && r.path === '/dsh-command/selfboot.js')
 ok('selfboot 路由已注册（桌面端没有 Host 注入时靠它）', () => {
   assert.ok(selfBootRoute, '缺 selfboot 路由')
+})
+
+const petRoute = routes.find((r) => r.path === '/dsh-command/pet')
+const petRes = fakeRes()
+await petRoute.handler(fakeReq('GET', '/dsh-command/pet/pet.js'), petRes)
+const petThreeRes = fakeRes()
+await petRoute.handler(fakeReq('GET', '/dsh-command/pet/three/three.module.min.js'), petThreeRes)
+const petModelRes = fakeRes()
+await petRoute.handler(fakeReq('HEAD', '/dsh-command/pet/model.glb'), petModelRes)
+ok('pet.js / three 静态文件 / 模型路由可用', () => {
+  assert.ok(petRoute, '没注册 /dsh-command/pet 路由')
+  assert.equal(petRes.statusCode, 200)
+  assert.ok(String(petRes.body).includes('startPet'))
+  assert.equal(petThreeRes.statusCode, 200)
+  assert.ok([200, 404].includes(petModelRes.statusCode), '模型路由状态异常: ' + petModelRes.statusCode)
 })
 const selfBootRes = fakeRes()
 await selfBootRoute.handler(fakeReq('GET', '/dsh-command/selfboot.js'), selfBootRes)

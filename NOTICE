@@ -29,6 +29,13 @@
 - 想换成自己的声音/文案：`node scripts/moss-voice.mjs --text title=... --text grant=...`
   （调用本机 MOSS 服务的 `/api/speak`，只读，不改对方服务）。
 
+## 第三方库 / 模型
+
+- `lib/assets/three/*`：three.js r160（MIT）及其官方 `GLTFLoader` / `BufferGeometryUtils` /
+  `meshopt_decoder`，用于渲染 550W 桌面宠物；未做修改（仅把模块说明符改成本地相对路径）。
+- 550W 模型**不随插件分发**：桌面宠物读取本机已有模型（`DSC_PET_MODEL` / 插件 `assets/pet/model.glb` /
+  本机 MOSS 原型路径）；模型版权归原权利人，用户自行提供。
+
 ## 图标与代码
 
 除上述材料外，插件代码与本仓库内自绘的 SVG / CSS 以 MIT 许可发布。

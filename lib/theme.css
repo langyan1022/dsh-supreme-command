@@ -1796,3 +1796,42 @@ html[data-dsh-command="on"][data-dsc-fui-extra="off"]
   :is(.dsc-deco__fui, .dsc-deco__rows, .dsc-deco__prompts) {
   display: none !important;
 }
+
+
+/* ── 550W 桌面宠物（three.js 渲染，可拖动） ─────────────────────────────── */
+.dsc-pet {
+  position: fixed;
+  z-index: 2147481975;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .55)) drop-shadow(0 0 14px color-mix(in srgb, var(--dsc-accent, #ff3b30) 22%, transparent));
+  transition: opacity .35s ease-out, filter .2s ease-out;
+}
+
+.dsc-pet:hover { filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .6)) drop-shadow(0 0 20px color-mix(in srgb, var(--dsc-accent, #ff3b30) 36%, transparent)); }
+.dsc-pet.is-dragging { cursor: grabbing; }
+.dsc-pet.is-hidden { opacity: 0; pointer-events: none; }
+
+.dsc-pet canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent;
+}
+
+.dsc-pet__tag {
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  transform: translateX(-50%);
+  font: 600 8.5px/1 "Bahnschrift", "Consolas", monospace;
+  letter-spacing: .28em;
+  color: color-mix(in srgb, var(--dsc-accent, #ff3b30) 66%, transparent);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--dsc-accent, #ff3b30) 40%, transparent);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* 启动屏期间藏起来，别挡住开场 */
+html.dsc-lock .dsc-pet { opacity: 0; pointer-events: none; }
