@@ -1835,3 +1835,11 @@ html[data-dsh-command="on"][data-dsc-fui-extra="off"]
 
 /* 启动屏期间藏起来，别挡住开场 */
 html.dsc-lock .dsc-pet { opacity: 0; pointer-events: none; }
+
+
+/* ── 保存后即时生效：装饰层单项开关（不重建 DOM，只切显示） ── */
+html[data-dsc-watermark="off"] .dsc-deco__wm,
+html[data-dsc-corner="off"] .dsc-deco__mark,
+html[data-dsc-model="off"] .dsc-deco__model {
+  display: none !important;
+}

@@ -59,9 +59,9 @@ ok('不碰 document.documentElement 之外的全局（不 setAttribute 到 html�
 })
 
 /* ── 数据接口 ─────────────────────────────────────────────────────────── */
-ok('只碰已注册路由：config / preview / selfboot.js（桌面端自举）', () => {
+ok('只碰已注册路由：config / preview / selfboot.js / vars.css', () => {
   const paths = [...new Set([...src.matchAll(/'(\/dsh-[^']+)'/g)].map((m) => m[1]))]
-  const allowed = ['/dsh-command/config', '/dsh-command/preview', '/dsh-command/selfboot.js']
+  const allowed = ['/dsh-command/config', '/dsh-command/preview', '/dsh-command/selfboot.js', '/dsh-command/vars.css']
   for (const p of paths) {
     assert.ok(allowed.includes(p), '面板访问了未定义的接口: ' + p)
   }
