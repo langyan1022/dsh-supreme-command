@@ -450,6 +450,7 @@ IQC AUTH … OK / 550W ONLINE`，逐行出现）和 550W 下方**连接进度条
 | `grant` | 授权通过，欢迎进入系统。 | `lib/assets/voice/grant.wav` |
 
 - 文件是 24kHz 单声道 wav（立体声源自动降混），浏览器 `Audio` 直接播；
+- **三句串行、绝不叠音**：素材比时间线间隙长时，下一句会排队等上一句念完（内部队列 + 独占播放）；重播/跳过会先停掉旧音频并复位队列；
 - 想换自己的文案/语气：`node scripts/moss-voice.mjs --text title=… --text operator=… --text grant=…`
   （只读调用本机 MOSS 服务的 `/api/speak`，会覆盖上面三个文件；`--category` 可选 reply/media/notice/warm）；
 - 没有 MOSS 服务时：把 `voiceSource` 设回 `tts`，走系统 `speechSynthesis`（语速 0.88 / 音调 0.85 /

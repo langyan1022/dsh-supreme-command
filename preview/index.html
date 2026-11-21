@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-dsh-command="on">
 <head>
+<script>(function(){
+  if(!/[?&]voicetest=1/.test(location.search)) return;
+  window.__VT__ = [];
+  var n = 0;
+  function FakeAudio(src){
+    n++;
+    this.src = String(src);
+    this.duration = 3.2;
+    this.paused = true;
+    this.ended = false;
+    this._timer = null;
+    this._id = n;
+    window.__VT__.push({ ev: 'new', id: this._id, t: Math.round(performance.now()) });
+  }
+  FakeAudio.prototype.play = function(){
+    var self = this;
+    window.__VT__.push({ ev: 'play', id: this._id, t: Math.round(performance.now()) });
+    this.paused = false;
+    this._timer = setTimeout(function(){
+      self.paused = true; self.ended = true;
+      window.__VT__.push({ ev: 'end', id: self._id, t: Math.round(performance.now()) });
+      if (self.onended) self.onended({});
+    }, 3200);
+    return Promise.resolve();
+  };
+  FakeAudio.prototype.pause = function(){
+    clearTimeout(this._timer);
+    this.paused = true;
+    window.__VT__.push({ ev: 'pause', id: this._id, t: Math.round(performance.now()) });
+  };
+  window.Audio = FakeAudio;
+  setInterval(function(){ document.title = 'VT ' + JSON.stringify(window.__VT__) }, 500);
+})()</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>dsh-supreme-command — 启动屏预览</title>
@@ -270,6 +303,19 @@
       if (model.MODEL_W_SVG) setVar('--dsc-deco-550w', mk(model.MODEL_W_SVG))
     } catch (err) { /* 缺模块就不显示装饰 */ }
   })()
+
+  /* ?voicetest=1 → asset 模式 + 真实 wav 路由（配合假 Audio 记录 play/pause/end） */
+  if (params.get('voicetest') === '1') {
+    window.__DSC_SPLASH_CONFIG__.voice = true
+    window.__DSC_SPLASH_CONFIG__.voiceSource = 'asset'
+    window.__DSC_SPLASH_CONFIG__.voiceCue = false
+    window.__DSC_SPLASH_CONFIG__.voiceLead = 0
+    window.__DSC_SPLASH_CONFIG__.voiceUrls = {
+      title: '/dsh-command/voice/title.wav',
+      operator: '/dsh-command/voice/operator.wav',
+      grant: '/dsh-command/voice/grant.wav'
+    }
+  }
 
   /* 加载真实运行时（同一个文件）。?splash=0 时不加载，直接看主题后的界面 */
   if (params.get('splash') !== '0') {
