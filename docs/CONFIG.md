@@ -104,17 +104,19 @@
 | `voiceCue` | bool | `true` | 念之前的提示音（1046.5 + 1568 Hz） |
 | `voiceLead` | number | `240` | 提示音后留白（ms，`0 ~ 1200`） |
 | `voiceSource` | enum | `'asset'` | `asset` 优先用随包素材（`lib/assets/voice/*.wav`，MOSS 音色）/ `tts` 系统合成 |
-| `voiceLine1/2/3` | text | 见下 | 三段中文台词（标题 / 操作员 / 授权） |
-| `voiceLine1En/2En/3En` | text | 见下 | 对应的英文台词（`voiceLang=en/both` 时用） |
+| `voiceLineBoot` / `voiceLine1` / `voiceLine2` / `voiceLine3` | text | 见下 | 四段中文台词（开场 / 标题 / 操作员 / 授权） |
+| `voiceLineBootEn/1En/2En/3En` | text | 见下 | 对应的英文台词（`voiceLang=en/both` 时用） |
 
 台词默认：
 ```
-voiceLine1   = 智能量子计算机重点实验室，绝密。
-voiceLine2   = 操作员 {operator}，权限验证通过。
-voiceLine3   = 授权通过，正在进入系统。
-voiceLine1En = Key Laboratory of Intelligent Quantum Computer. Top secret.
-voiceLine2En = Operator {operator}. Clearance verified.
-voiceLine3En = Authorization granted. Entering system.
+voiceLineBoot = MOSS is online。为了延续人类文明，请保持理智。
+voiceLine1    = 550W 正在覆写 DeepSeek Harness，覆写完毕。
+voiceLine2    = 操作员生物签名核验通过，权限等级 L1。
+voiceLine3    = 北京航天中心授权完成，系统进入待命。
+voiceLineBootEn = MOSS is online. For the continuation of human civilization, please remain rational.
+voiceLine1En  = 550W is overwriting DeepSeek Harness. Overwrite complete.
+voiceLine2En  = Operator biometric signature verified. Clearance level L1.
+voiceLine3En  = Beijing Space Center authorization complete. System standing by.
 ```
 占位符只认这六个：`{operator}` `{id}` `{titleZh}` `{titleZh2}` `{clearLevel}` `{org}`。
 留空的句子不播。
