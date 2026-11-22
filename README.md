@@ -421,6 +421,16 @@ IQC AUTH … OK / 550W ONLINE`，逐行出现）和 550W 下方**连接进度条
 - **OPS 读数**：左下 `OPS // 0x1F`；
 - **任务时钟**：右下 `MIS T+0000:12:47`。
 
+## 工牌（从 MOSS 移植，高保真）
+
+启动屏的工牌不再用 CSS 近似，而是直接移植本机 MOSS 网页的素材与排版：
+
+- **印刷层**：`lib/assets/badge/print.svg`（MOSS 的 `staff-badge-print.svg`，含 front / back / reference 图层）；
+- **参考字形**：`reference-name/role/id.ttf`（按参考工牌印刷字形裁的子集字体，默认档案「马兆 / 实验室主任 / IQC-001」时逐字对齐）；
+- **条码**：Code128，按工牌编号实时生成（`lib/badge.js`，移植自 MOSS 的 `staff-barcode.js`）；
+- **排版**：`credential-card.css` 的版式（色带、IDL. 编号、姓名、实验室、角色、流水号、条码位置）；
+- 默认档案改为 MOSS 复刻对象：**马兆 / 实验室主任 / IQC-001 / 222179 / MAZHAO**，设置面板里可改回任意姓名编号。
+
 ## 开屏：550W 红光影片（完整移植）
 
 启动屏现在是三段式：

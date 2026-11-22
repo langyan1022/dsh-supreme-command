@@ -78,6 +78,23 @@ async function serveHostRoutes(pathname, query, res) {
     }))
     return true
   }
+  const badgeMatch = sub.match(/^badge\/(badge\.js|badge\.css|print\.svg|reference-(?:name|role|id)\.ttf|staff-narrow\.woff2)$/)
+  if (badgeMatch) {
+    const rel = badgeMatch[1] === 'badge.js' ? 'lib/badge.js' : 'lib/assets/badge/' + badgeMatch[1]
+    const file = path.join(ROOT, rel)
+    let data
+    try { data = fs.readFileSync(file) } catch (e) { res.writeHead(404); res.end(); return true }
+    const types = {
+      'badge.js': 'application/javascript; charset=utf-8',
+      'badge.css': 'text/css; charset=utf-8',
+      'print.svg': 'image/svg+xml',
+      'staff-narrow.woff2': 'font/woff2'
+    }
+    const type = types[badgeMatch[1]] || 'font/ttf'
+    res.writeHead(200, { 'Content-Type': type, 'Content-Length': String(data.length), 'Cache-Control': 'no-store' })
+    res.end(data)
+    return true
+  }
   if (sub === 'opening/film.mp4') {
     const file = path.join(ROOT, 'lib/assets/opening/film.mp4')
     let st

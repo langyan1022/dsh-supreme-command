@@ -349,9 +349,9 @@ ok('桌面宠物配置：默认开、尺寸夹取', () => {
   assert.equal(normalize({ petSize: 999, pet: false }).pet, false)
 })
 
-ok('工牌默认就是图恒宇那张（正反面要素齐全、没有照片字段）', () => {
+ok('工牌默认就是 MOSS 参考档案（马兆 / 实验室主任，正反面要素齐全）', () => {
   assert.equal(DEFAULTS.badge, true)
-  assert.equal(DEFAULTS.badgeName, '图恒宇')
+  assert.equal(DEFAULTS.badgeName, '马兆')
   assert.ok(String(DEFAULTS.badgeId).indexOf('IQC') >= 0, '正面编号应带 IQC')
   assert.equal(DEFAULTS.badgeOrg, '北京航天中心')
   assert.equal(DEFAULTS.badgeLabShort, 'IQC')

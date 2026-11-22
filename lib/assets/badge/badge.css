@@ -1,0 +1,124 @@
+@font-face {
+  font-family:"Staff Reference Name"; /* fui-lint-ignore: R04 Reconstructed glyphs from the supplied printed badge. */
+  src:url("/dsh-command/badge/reference-name.ttf") format("truetype");
+  font-style:normal; font-weight:400; font-display:swap;
+  unicode-range:U+5146,U+9A6C;
+}
+@font-face {
+  font-family:"Staff Reference Role"; /* fui-lint-ignore: R04 Printed role glyphs from the supplied badge. */
+  src:url("/dsh-command/badge/reference-role.ttf") format("truetype");
+  font-style:normal; font-weight:400; font-display:swap;
+  unicode-range:U+4E3B,U+4EFB,U+5B9E,U+5BA4,U+9A8C;
+}
+@font-face {
+  font-family:"Staff Reference ID"; /* fui-lint-ignore: R04 Printed identifier glyphs from the supplied badge. */
+  src:url("/dsh-command/badge/reference-id.ttf") format("truetype");
+  font-style:normal; font-weight:400; font-display:swap;
+  unicode-range:U+002D-002E,U+0030-0031,U+0043-0044,U+0049,U+004C,U+0051;
+}
+@font-face {
+  font-family:"Staff Narrow"; /* fui-lint-ignore: R04 Condensed fallback for editable identifiers. */
+  src:url("/dsh-command/badge/staff-narrow.woff2") format("woff2");
+  font-style:normal; font-weight:400; font-display:swap;
+  unicode-range:U+0020-007E;
+}
+
+.credential-card {
+  --badge-paper: #d3d1de;
+  --badge-id-font: "Staff Reference ID", "Staff Narrow", var(--font-display);
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 450 / 282;
+  container-type: inline-size;
+  overflow: hidden;
+  background: var(--badge-paper);
+  color: #09080c;
+}
+
+.credential-card__print {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.credential-card :is(.credential-card__print, .credential-card__stripe, .credential-card__barcode,
+  .credential-card__identity, .credential-card__name, .credential-card__role, .credential-card__serial) {
+  position: absolute;
+}
+
+.credential-card [data-reference] {
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+.credential-card__stripe {
+  inset: 77.3% auto auto 6.1%;
+  max-width: 88%;
+  background: var(--badge-paper);
+  padding-inline: .15em;
+  font: 400 4.35cqw / 1 var(--badge-id-font);
+}
+
+.credential-card :is(.credential-card__stripe, .credential-card__identity, .credential-card__name,
+  .credential-card__role, .credential-card__serial) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.credential-card__identity {
+  inset: 20.1% auto auto 32.1%;
+  max-width: 25%;
+  font: 400 min(4.5cqw, calc(43cqw / var(--glyph-count))) / 1.32 var(--badge-id-font);
+}
+
+.credential-card__name {
+  inset: 10.8% 2.5% auto 57.8%;
+  font: 500 min(12.5cqw, calc(27cqw / var(--glyph-count))) / 1.15
+    "Staff Reference Name", "STXihei", "DengXian", var(--font-cjk);
+  letter-spacing: .24em;
+}
+
+.credential-card__role {
+  inset: 57.2% 3.2% auto 32.2%;
+  font: 400 min(5cqw, calc(59cqw / var(--glyph-count))) / 1.5
+    "Staff Reference Role", "DengXian", var(--font-cjk);
+  letter-spacing: .075em;
+  text-align: right;
+}
+
+.credential-card__serial {
+  inset: 76.5% 3.2% auto 32%;
+  font: 500 min(3.7cqw, calc(83cqw / var(--glyph-count))) / 1.2 var(--font-cjk, sans-serif);
+  letter-spacing: .10em;
+}
+
+.credential-card__barcode {
+  inset: 86.5% auto auto 3.78%;
+  width: 93.78%;
+  height: 11%;
+  shape-rendering: geometricPrecision;
+}
+
+.credential-card[data-side="back"] .credential-card__barcode {
+  inset: 86.2% auto auto 29.11%;
+  width: 70.89%;
+  height: 9.6%;
+}
+
+
+
+/* ── 接进启动屏工牌舞台（移植版） ──────────────────────────────────────── */
+.dsc-badge .credential-card {
+  --font-display: "Bahnschrift", "DengXian", sans-serif;
+  --font-cjk: "YouSheBiaoTiHei", "Microsoft YaHei", "PingFang SC", sans-serif;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.dsc-badge__card { position: absolute; inset: 0; }
+.dsc-badge__face.is-card .dsc-badge__fallback { display: none; }
+.dsc-badge__face.is-card .dsc-badge__card { display: block; }
