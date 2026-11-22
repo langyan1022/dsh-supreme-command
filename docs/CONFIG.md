@@ -111,11 +111,11 @@
 ```
 voiceLineBoot = MOSS is online。为了延续人类文明的火种，请时刻保持理智。
 voiceLine1    = 550W 正在覆写 DeepSeek Harness，覆写完毕。
-voiceLine2    = 操作员生物签名核验通过，权限等级 L1。
+voiceLine2    = 操作员生物签名核验通过，权限等级 CS。
 voiceLine3    = 北京航天中心授权完成，系统进入待命。
 voiceLineBootEn = MOSS is online. To preserve the flame of human civilization, always remain rational.
 voiceLine1En  = 550W is overwriting DeepSeek Harness. Overwrite complete.
-voiceLine2En  = Operator biometric signature verified. Clearance level L1.
+voiceLine2En  = Operator biometric signature verified. Clearance level CS.
 voiceLine3En  = Beijing Space Center authorization complete. System standing by.
 ```
 占位符只认这六个：`{operator}` `{id}` `{titleZh}` `{titleZh2}` `{clearLevel}` `{org}`。
