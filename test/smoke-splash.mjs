@@ -137,11 +137,11 @@ ok('跳过/收尾会 cancel 语音（不会念一半残留）', () => {
   assert.ok(js.includes('speechSynthesis.cancel'))
 })
 
-ok('自然收尾会等最后一句念完（不掐断），且有 6s 上限', () => {
+ok('自然收尾会等最后一句念完（不掐断），且有 24s 上限', () => {
   assert.ok(js.includes('function isSpeaking'), '缺"是否在念"判定')
   assert.ok(js.includes('function remainingMs'), '缺"还剩多久"估算')
   assert.ok(/reason === 'done' && voice\.isSpeaking/.test(js), 'finish 里没等语音')
-  assert.ok(/guard > 50/.test(js), '等待必须带上限，避免异常卡死')
+  assert.ok(/guard > 200/.test(js), '等待必须带上限，避免异常卡死')
   assert.ok(/if \(reason !== 'abort'\) markShown/.test(js), '收尾时要先写"已播过"标记')
 })
 
