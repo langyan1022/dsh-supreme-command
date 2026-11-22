@@ -1,31 +1,30 @@
 @font-face {
-  font-family:"Staff Reference Name"; /* fui-lint-ignore: R04 Reconstructed glyphs from the supplied printed badge. */
-  src:url("/dsh-command/badge/reference-name.ttf") format("truetype");
+  font-family:"Taobao Maicai"; /* fui-lint-ignore: R04 User-selected type for editable badge fields. */
+  src:url("/dsh-command/badge/fonts/taobao-maicai.woff2") format("woff2");
   font-style:normal; font-weight:400; font-display:swap;
-  unicode-range:U+5146,U+9A6C;
 }
 @font-face {
-  font-family:"Staff Reference Role"; /* fui-lint-ignore: R04 Printed role glyphs from the supplied badge. */
-  src:url("/dsh-command/badge/reference-role.ttf") format("truetype");
-  font-style:normal; font-weight:400; font-display:swap;
-  unicode-range:U+4E3B,U+4EFB,U+5B9E,U+5BA4,U+9A8C;
+  font-family:"ZiHun ChuangCuHei"; /* fui-lint-ignore: R04 Use the chosen official font for Chinese badge labels. */
+  src:url("/dsh-command/badge/fonts/zihun-chuangcuhei.ttf") format("truetype");
+  font-style:normal; font-weight:400; font-display:block;
+  unicode-range:U+3007,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+20000-323AF;
 }
 @font-face {
-  font-family:"Staff Reference ID"; /* fui-lint-ignore: R04 Printed identifier glyphs from the supplied badge. */
-  src:url("/dsh-command/badge/reference-id.ttf") format("truetype");
+  font-family:"Fira Sans"; /* fui-lint-ignore: R04 User-selected type for the editable badge serial. */
+  src:url("/dsh-command/badge/fonts/fira-sans.ttf") format("truetype");
   font-style:normal; font-weight:400; font-display:swap;
-  unicode-range:U+002D-002E,U+0030-0031,U+0043-0044,U+0049,U+004C,U+0051;
+  unicode-range:U+0000-024F,U+2000-206F;
 }
 @font-face {
-  font-family:"Staff Narrow"; /* fui-lint-ignore: R04 Condensed fallback for editable identifiers. */
-  src:url("/dsh-command/badge/staff-narrow.woff2") format("woff2");
-  font-style:normal; font-weight:400; font-display:swap;
-  unicode-range:U+0020-007E;
+  font-family:"Rajdhani";
+  src:url("/dsh-command/badge/fonts/rajdhani-bold.ttf") format("truetype");
+  font-style:normal; font-weight:700; font-display:swap;
 }
 
 .credential-card {
   --badge-paper: #d3d1de;
-  --badge-id-font: "Staff Reference ID", "Staff Narrow", var(--font-display);
+  --badge-font: "Taobao Maicai", var(--font-cjk), sans-serif;
+  --badge-zh: "ZiHun ChuangCuHei", "Taobao Maicai", var(--font-cjk, sans-serif);
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -34,6 +33,7 @@
   overflow: hidden;
   background: var(--badge-paper);
   color: #09080c;
+  font-synthesis: none;
 }
 
 .credential-card__print {
@@ -49,6 +49,7 @@
 }
 
 .credential-card [data-reference] {
+  font-family: var(--font-cjk);
   clip-path: inset(50%);
   pointer-events: none;
 }
@@ -58,7 +59,7 @@
   max-width: 88%;
   background: var(--badge-paper);
   padding-inline: .15em;
-  font: 400 4.35cqw / 1 var(--badge-id-font);
+  font: 400 min(4.35cqw, calc(76cqw / var(--glyph-count))) / 1 var(--badge-font);
 }
 
 .credential-card :is(.credential-card__stripe, .credential-card__identity, .credential-card__name,
@@ -71,28 +72,98 @@
 .credential-card__identity {
   inset: 20.1% auto auto 32.1%;
   max-width: 25%;
-  font: 400 min(4.5cqw, calc(43cqw / var(--glyph-count))) / 1.32 var(--badge-id-font);
+  font: 400 min(4.5cqw, calc(24cqw / var(--glyph-count))) / 1.23 var(--badge-font);
 }
 
 .credential-card__name {
-  inset: 10.8% 2.5% auto 57.8%;
-  font: 500 min(12.5cqw, calc(27cqw / var(--glyph-count))) / 1.15
-    "Staff Reference Name", "STXihei", "DengXian", var(--font-cjk);
-  letter-spacing: .24em;
+  inset: 10% 2.5% auto 57.8%;
+  font: 400 min(14cqw, calc(34cqw / var(--glyph-count))) / 1.22 var(--badge-font);
+  letter-spacing: .12em;
+}
+
+.credential-card__name[data-glyph-count="2"] {
+  letter-spacing: .34em;
+}
+
+.credential-card__name[data-han] {
+  font-family: var(--badge-zh);
+}
+
+.credential-card__name[data-reference-pair] {
+  inset-block-start: calc(10% - 1.3333cqw);
+  inset-inline-start: calc(57.8% - .3333cqw);
+  font-size: 13.1111cqw;
+  letter-spacing: 4cqw;
+}
+
+.credential-card__name[data-reference-pair] > span {
+  display: inline-block;
+  transform: translateY(-.6667cqw);
+}
+
+.credential-card :is(.credential-card__name, .credential-card__identity)[data-wrap] {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.credential-card__name[data-wrap] {
+  font-size: min(7.4cqw, calc(63cqw / var(--glyph-count)));
+  letter-spacing: .05em;
+}
+
+.credential-card__identity[data-wrap] {
+  font-size: min(4.5cqw, calc(48cqw / var(--glyph-count)));
+}
+
+.credential-card__identity:not([data-reference]) {
+  font: 700 min(4.8889cqw, calc(42cqw / var(--glyph-count))) / 1.23 "Rajdhani", var(--badge-font);
+  letter-spacing: -.025em;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.credential-card__identity[data-wrap]:not([data-reference]) {
+  font-size: min(4.8889cqw, calc(55cqw / var(--glyph-count)));
+}
+
+.credential-card__stripe:not([data-reference]) {
+  padding-block-end: .55cqw;
+}
+
+.credential-card__stripe:not([data-reference]) .credential-card__number {
+  /* The wrapper also counts the fixed IDL. prefix and its space. */
+  font: 700 min(4.5778cqw, calc(70cqw / (var(--glyph-count) - 5))) / 1 "Rajdhani", var(--badge-font);
+  letter-spacing: -.02524em;
 }
 
 .credential-card__role {
   inset: 57.2% 3.2% auto 32.2%;
-  font: 400 min(5cqw, calc(59cqw / var(--glyph-count))) / 1.5
-    "Staff Reference Role", "DengXian", var(--font-cjk);
-  letter-spacing: .075em;
+  font: 400 min(5cqw, calc(59cqw / var(--glyph-count))) / 1.5 var(--badge-font);
+  letter-spacing: .045em;
   text-align: right;
+}
+
+.credential-card__role[data-han] {
+  font-family: var(--badge-zh);
+  font-size: min(4.9778cqw, calc(55cqw / var(--glyph-count)));
+  letter-spacing: .4444cqw;
 }
 
 .credential-card__serial {
   inset: 76.5% 3.2% auto 32%;
-  font: 500 min(3.7cqw, calc(83cqw / var(--glyph-count))) / 1.2 var(--font-cjk, sans-serif);
-  letter-spacing: .10em;
+}
+
+.credential-card__serial:not([data-reference]) {
+  /* Optical settings for a 450px card, kept proportional at other widths. */
+  --serial-size: 17.2;
+  --serial-tracking: 2.6;
+  --serial-word-spacing: -2.4;
+  --serial-width: 291.6;
+  --serial-scale: min(1, calc(279 / (var(--serial-size) * var(--glyph-count))));
+  width: calc(var(--serial-width) / 4.5 * 1cqw);
+  font: 400 calc(var(--serial-size) / 4.5 * var(--serial-scale) * 1cqw) / 1.2 "Fira Sans", var(--badge-font);
+  letter-spacing: calc(var(--serial-tracking) / var(--serial-size) * 1em);
+  word-spacing: calc(var(--serial-word-spacing) / var(--serial-size) * 1em);
 }
 
 .credential-card__barcode {
@@ -102,7 +173,7 @@
   shape-rendering: geometricPrecision;
 }
 
-.credential-card[data-side="back"] .credential-card__barcode {
+.credential-card[data-side="front"] .credential-card__barcode {
   inset: 86.2% auto auto 29.11%;
   width: 70.89%;
   height: 9.6%;
@@ -110,10 +181,15 @@
 
 
 
-/* ── 接进启动屏工牌舞台（移植版） ──────────────────────────────────────── */
+/* ── 接进启动屏工牌舞台 + 兜底字体（思源黑体随包，OFL） ─────────────────── */
+@font-face {
+  font-family: "Badge Full CJK";
+  src: url("/dsh-command/badge/source-han-sans.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
 .dsc-badge .credential-card {
-  --font-display: "Bahnschrift", "DengXian", sans-serif;
-  --font-cjk: "YouSheBiaoTiHei", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --font-cjk: "Badge Full CJK", "Microsoft YaHei", "PingFang SC", sans-serif;
   position: absolute;
   inset: 0;
   width: 100%;
@@ -122,36 +198,3 @@
 .dsc-badge__card { position: absolute; inset: 0; }
 .dsc-badge__face.is-card .dsc-badge__fallback { display: none; }
 .dsc-badge__face.is-card .dsc-badge__card { display: block; }
-
-/* ── 任意姓名/编号也保持"印刷感"的全量字体 ─────────────────────────────── */
-@font-face {
-  font-family: "Badge Full CJK";
-  src: url("/dsh-command/badge/source-han-sans.woff2") format("woff2");
-  font-weight: 100 900;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Badge Name Display";
-  src: url("/dsh-command/font/YouSheBiaoTiHei.ttf") format("truetype");
-  font-display: swap;
-}
-@font-face {
-  font-family: "Badge ID Narrow";
-  src: url("/dsh-command/font/Anton-Regular.ttf") format("truetype");
-  font-display: swap;
-}
-.dsc-badge .credential-card {
-  --badge-id-font: "Staff Reference ID", "Badge ID Narrow", "Staff Narrow", sans-serif;
-}
-.dsc-badge .credential-card__stripe { font-family: var(--badge-id-font); }
-.dsc-badge .credential-card__identity { font-family: var(--badge-id-font); }
-.dsc-badge .credential-card__name {
-  font-family: "Staff Reference Name", "Badge Name Display", "Badge Full CJK", "Microsoft YaHei", sans-serif;
-}
-.dsc-badge .credential-card__role {
-  font-family: "Staff Reference Role", "Badge Full CJK", "Microsoft YaHei", sans-serif;
-  font-weight: 500;
-}
-.dsc-badge .credential-card__serial {
-  font-family: "Badge Full CJK", "Microsoft YaHei", sans-serif;
-}
