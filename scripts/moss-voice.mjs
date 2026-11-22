@@ -9,7 +9,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const DEFAULT_LINES = {
-  boot: 'MOSS is online。为了延续人类文明，请保持理智。',
+  boot: 'MOSS is online。为了延续人类文明的火种，请时刻保持理智。',
   title: '550W 正在覆写 DeepSeek Harness，覆写完毕。',
   operator: '操作员生物签名核验通过，权限等级 L1。',
   grant: '北京航天中心授权完成，系统进入待命。'

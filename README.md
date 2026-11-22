@@ -454,7 +454,7 @@ IQC AUTH … OK / 550W ONLINE`，逐行出现）和 550W 下方**连接进度条
 
 | 槽位 | 时机 | 默认中文 |
 | --- | --- | --- |
-| `voiceLineBoot` | 红光影片开始 | MOSS is online。为了延续人类文明，请保持理智。 |
+| `voiceLineBoot` | 红光影片开始 | MOSS is online。为了延续人类文明的火种，请时刻保持理智。 |
 | `voiceLine1` | 标题砸下 | 550W 正在覆写 DeepSeek Harness，覆写完毕。 |
 | `voiceLine2` | 工牌核验通过 | 操作员生物签名核验通过，权限等级 L1。 |
 | `voiceLine3` | 授权通过 | 北京航天中心授权完成，系统进入待命。 |
