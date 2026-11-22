@@ -449,7 +449,16 @@ IQC AUTH … OK / 550W ONLINE`，逐行出现）和 550W 下方**连接进度条
 
 ## 550W 桌面宠物（可拖动）
 
-在界面上浮一个会动的 550W 模型（three.js 渲染），像桌面宠物（**设置里保存后即时生效，不用重启**）：
+在界面上浮一个 550W 桌面宠物（**设置里保存后即时生效，不用重启**）。两种渲染模式：
+
+- **完整移植（优先）**：直接复用本机 MOSS 网页的 `moss-render.js`（Worker + OffscreenCanvas），
+  它程序化重建的 550W 自带小屏数据、LED 阵列、光圈、TOF 转子、舵机姿态，效果与参考网页一致；
+  需要本机存在 `F:/moss/agent-lab/prototype/static/conversation-assets`（可用 `DSC_MOSS_ASSETS` 覆盖），
+  Host 以同源路由下发 worker 与 `moss-exterior.glb` / `moss-tof.glb`；首次载入约 20–35 秒（本地磁盘 56MB）；
+- **GLB 轻量回退**：本机没有 MOSS 资源（或 Worker/OffscreenCanvas 不可用）时，回退到 `pet-glb.js`
+  （`moss-exterior.glb` + three.js，之前那套轻量实现）。
+
+两者共用：
 
 - **默认停在窗口顶部右侧**，按住拖到任意位置（限制在视口上半部，左右滑动为主），位置记在 `localStorage`；
 - **尺寸/开关即时生效**：设置里的滑块一拖就变；点保存后也会把最终值应用上去（不用刷新）；

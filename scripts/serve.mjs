@@ -105,6 +105,19 @@ async function serveHostRoutes(pathname, query, res) {
     return true
   }
   if (sub === 'pet/pet.js') { send('application/javascript; charset=utf-8', fs.readFileSync(path.join(ROOT, 'lib/pet.js'), 'utf8')); return true }
+  if (sub === 'pet/pet-glb.js') { send('application/javascript; charset=utf-8', fs.readFileSync(path.join(ROOT, 'lib/pet-glb.js'), 'utf8')); return true }
+  if (sub === 'pet/moss-render.js' || sub === 'pet/moss-exterior.glb' || sub === 'pet/moss-tof.glb') {
+    if (process.env.DSC_SKIP_EXTERIOR === '1' && sub.endsWith('moss-exterior.glb')) { res.writeHead(404); res.end(); return true }
+    const dir = process.env.DSC_MOSS_ASSETS || 'F:/moss/agent-lab/prototype/static/conversation-assets'
+    const file = path.join(dir, sub.replace(/^pet\//, ''))
+    let st
+    try { st = fs.statSync(file) } catch (e) { res.writeHead(404); res.end(); return true }
+    const type = sub.endsWith('.js') ? 'application/javascript; charset=utf-8' : 'model/gltf-binary'
+    res.writeHead(200, { 'Content-Type': type, 'Content-Length': String(st.size), 'Cache-Control': 'no-store' })
+    if (String((res.req && res.req.method) || 'GET').toUpperCase() === 'HEAD') { res.end(); return true }
+    fs.createReadStream(file).pipe(res)
+    return true
+  }
   const petThree = sub.match(/^pet\/three\/(three\.module\.min|GLTFLoader|BufferGeometryUtils|meshopt_decoder\.module)\.js$/)
   if (petThree) { send('application/javascript; charset=utf-8', fs.readFileSync(path.join(ROOT, 'lib/assets/three', petThree[1] + '.js'), 'utf8')); return true }
   if (sub === 'pet/model.glb') {
