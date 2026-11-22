@@ -29,6 +29,9 @@
 - 想换成自己的声音/文案：`node scripts/moss-voice.mjs --text title=... --text grant=...`
   （调用本机 MOSS 服务的 `/api/speak`，只读，不改对方服务）。
 
+- 全量中文字形 `lib/assets/badge/source-han-sans.woff2` 为 Source Han Sans，SIL Open Font License 1.1，
+  全文见 `lib/assets/badge/SourceHanSans-OFL.txt`。
+
 ## 第三方库 / 模型
 
 - `lib/assets/three/*`：three.js r160（MIT）及其官方 `GLTFLoader` / `BufferGeometryUtils` /

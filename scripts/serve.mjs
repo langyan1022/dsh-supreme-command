@@ -78,7 +78,7 @@ async function serveHostRoutes(pathname, query, res) {
     }))
     return true
   }
-  const badgeMatch = sub.match(/^badge\/(badge\.js|badge\.css|print\.svg|reference-(?:name|role|id)\.ttf|staff-narrow\.woff2)$/)
+  const badgeMatch = sub.match(/^badge\/(badge\.js|badge\.css|print\.svg|reference-(?:name|role|id)\.ttf|staff-narrow\.woff2|source-han-sans\.woff2)$/)
   if (badgeMatch) {
     const rel = badgeMatch[1] === 'badge.js' ? 'lib/badge.js' : 'lib/assets/badge/' + badgeMatch[1]
     const file = path.join(ROOT, rel)
@@ -88,7 +88,8 @@ async function serveHostRoutes(pathname, query, res) {
       'badge.js': 'application/javascript; charset=utf-8',
       'badge.css': 'text/css; charset=utf-8',
       'print.svg': 'image/svg+xml',
-      'staff-narrow.woff2': 'font/woff2'
+      'staff-narrow.woff2': 'font/woff2',
+      'source-han-sans.woff2': 'font/woff2'
     }
     const type = types[badgeMatch[1]] || 'font/ttf'
     res.writeHead(200, { 'Content-Type': type, 'Content-Length': String(data.length), 'Cache-Control': 'no-store' })

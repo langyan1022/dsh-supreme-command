@@ -122,3 +122,36 @@
 .dsc-badge__card { position: absolute; inset: 0; }
 .dsc-badge__face.is-card .dsc-badge__fallback { display: none; }
 .dsc-badge__face.is-card .dsc-badge__card { display: block; }
+
+/* ── 任意姓名/编号也保持"印刷感"的全量字体 ─────────────────────────────── */
+@font-face {
+  font-family: "Badge Full CJK";
+  src: url("/dsh-command/badge/source-han-sans.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Badge Name Display";
+  src: url("/dsh-command/font/YouSheBiaoTiHei.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Badge ID Narrow";
+  src: url("/dsh-command/font/Anton-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+.dsc-badge .credential-card {
+  --badge-id-font: "Staff Reference ID", "Badge ID Narrow", "Staff Narrow", sans-serif;
+}
+.dsc-badge .credential-card__stripe { font-family: var(--badge-id-font); }
+.dsc-badge .credential-card__identity { font-family: var(--badge-id-font); }
+.dsc-badge .credential-card__name {
+  font-family: "Staff Reference Name", "Badge Name Display", "Badge Full CJK", "Microsoft YaHei", sans-serif;
+}
+.dsc-badge .credential-card__role {
+  font-family: "Staff Reference Role", "Badge Full CJK", "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+}
+.dsc-badge .credential-card__serial {
+  font-family: "Badge Full CJK", "Microsoft YaHei", sans-serif;
+}
