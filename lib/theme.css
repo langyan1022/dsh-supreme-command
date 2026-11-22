@@ -1844,3 +1844,145 @@ html[data-dsc-corner="off"] .dsc-deco__mark,
 html[data-dsc-model="off"] .dsc-deco__model {
   display: none !important;
 }
+
+
+/* ── 电影级 FUI 整改（wandering-earth-fui-design 规则） ─────────────────────
+ * 1. 黑色底、白色墨；只有橙色表示"选中/在用"，绿=正常，青=遥测，红=错误/品牌。
+ * 2. 扁平：去掉发光、阴影、模糊、装饰渐变；只留 1px 发丝线。
+ * 3. 形状优先：控制件 2px / 键 6px / 面板 0；四角框只给"输入区"这一个目标。
+ * 4. 动效只跟状态变化：取消扫描、雷达、跑马灯、呼吸网格等无限循环。
+ * ------------------------------------------------------------------------- */
+html[data-dsh-command="on"] {
+  --dsc-fui-ink: #f1f6f8;
+  --dsc-fui-ink-2: #c2d2d9;
+  --dsc-fui-dim: #8ea6b1;
+  --dsc-fui-line: #10303d;
+  --dsc-fui-line-2: #24495b;
+  --dsc-fui-line-3: #5f8596;
+  --dsc-fui-line-hi: #dfeaf0;
+  --dsc-fui-act: #ff9a2e;
+  --dsc-fui-ok: #35e1a3;
+  --dsc-fui-data: #4fd0e6;
+  --dsc-fui-crit: #ff645a;
+  /* 用户气泡：从红玻璃改成黑底（橙只在选中/悬停出现） */
+  --dsw-specific-bubble: #08090b;
+  --dsw-specific-bubble-highlight: #111418;
+}
+
+/* 扁平：装饰层内的发光/阴影/模糊/文字光晕全部取消 */
+html[data-dsh-command="on"] .dsc-deco,
+html[data-dsh-command="on"] .dsc-deco *,
+html[data-dsh-command="on"] .dsc-deco::before,
+html[data-dsh-command="on"] .dsc-deco::after {
+  text-shadow: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* 去掉全局网格/扫描线背景与装饰性循环动画（数据更新用文字刷新，不用动画） */
+html[data-dsh-command="on"] .dsc-deco::before,
+html[data-dsh-command="on"] .dsc-deco::after,
+html[data-dsh-command="on"] .dsc-deco__fui,
+html[data-dsh-command="on"] .dsc-deco__fui * {
+  background-image: none !important;
+  animation: none !important;
+}
+
+/* 只保留真实仪表：标签用暗色，读数值用白色/青色 */
+html[data-dsh-command="on"] .dsc-deco__vlabel,
+html[data-dsh-command="on"] .dsc-deco__ctag,
+html[data-dsh-command="on"] .dsc-deco__cid,
+html[data-dsh-command="on"] .dsc-deco__clock b {
+  color: var(--dsc-fui-dim) !important;
+  text-shadow: none !important;
+}
+html[data-dsh-command="on"] .dsc-deco__clock span,
+html[data-dsh-command="on"] .dsc-deco__cursor span {
+  color: var(--dsc-fui-data) !important;
+  text-shadow: none !important;
+}
+html[data-dsh-command="on"] .dsc-deco__prompt,
+html[data-dsh-command="on"] .dsc-deco__turnno {
+  color: var(--dsc-fui-dim) !important;
+  text-shadow: none !important;
+}
+html[data-dsh-command="on"] .dsc-deco__outline {
+  background: var(--dsc-fui-line-2) !important;
+  animation: none !important;
+}
+
+/* 输入区（唯一保留四角框的目标）：1.5px 白轮廓 + 6px 键半径，聚焦时橙色 lit 边 */
+html[data-dsh-command="on"] [data-composer-card] {
+  --dsc-glow: 0 !important;
+  --dsc-focus-a: 0 !important;
+  border-radius: 6px !important;
+  outline: 1.5px solid var(--dsc-fui-line-hi) !important;
+  outline-offset: -1px !important;
+  background-image: none !important;
+  animation: none !important;
+}
+html[data-dsh-command="on"] [data-composer-card]:focus-within {
+  outline-color: var(--dsc-fui-act) !important;
+}
+html[data-dsh-command="on"] [data-composer-card]::before,
+html[data-dsh-command="on"] [data-composer-card]::after {
+  display: none !important;
+}
+
+/* 面板/停靠区：去掉装饰框与发光，只留 1px 结构线（面板不是"形状"，框只给需要滚动的区域） */
+html[data-dsh-command="on"] :is([data-dsc-hud], [data-dockkit-pane], [data-dockkit-float]) {
+  box-shadow: none !important;
+  animation: none !important;
+  background-image: none !important;
+  outline: 1px solid var(--dsc-fui-line-2) !important;
+  outline-offset: -1px !important;
+  border-radius: 0 !important;
+}
+html[data-dsh-command="on"] :is([data-dsc-hud], [data-dockkit-pane], [data-dockkit-float]):is(:hover, :focus-within) {
+  outline-color: var(--dsc-fui-line-3) !important;
+}
+
+/* 消息气泡：白字、1px 发丝线；悬停才出现橙色（表示"看这里"） */
+html[data-dsh-command="on"] [data-message-bubble] {
+  outline: 1px solid var(--dsc-fui-line-2) !important;
+  outline-offset: -1px !important;
+  color: var(--dsc-fui-ink) !important;
+  box-shadow: none !important;
+}
+html[data-dsh-command="on"] [data-message-bubble]:hover {
+  outline-color: var(--dsc-fui-act) !important;
+}
+
+/* 代码块/表格：左侧 accent 轨道改中性发丝线，避免红色到处跑 */
+html[data-dsh-command="on"] :is(pre, code, .dsc-code, [data-code-block]) {
+  text-shadow: none !important;
+}
+
+/* 宠物：不发光，只保留轻微投影把模型从背景里分出来 */
+.dsc-pet {
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, .45)) !important;
+}
+.dsc-pet:hover {
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, .5)) !important;
+}
+
+/* 减少动态时：所有状态过渡也压到最短 */
+@media (prefers-reduced-motion: reduce) {
+  html[data-dsh-command="on"] *,
+  html[data-dsh-command="on"] *::before,
+  html[data-dsh-command="on"] *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+
+/* FUI film pass · body token overrides */
+html[data-dsh-command="on"] body {
+  --dsw-specific-bubble: #08090b;
+  --dsw-specific-bubble-highlight: #111418;
+  --dsw-alias-label-primary: #f1f6f8;
+  --dsw-alias-label-secondary: #c2d2d9;
+  --dsw-alias-label-tertiary: #8ea6b1;
+}
